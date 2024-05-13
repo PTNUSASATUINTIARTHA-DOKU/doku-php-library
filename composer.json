@@ -1,5 +1,6 @@
 {
     "name": "doku/doku-php-library",
+    "description": "Program to handle API Token v1",
     "type": "library",
     "autoload": {
         "psr-4": {
@@ -12,5 +13,7 @@
             "email": "technology@doku.com"
         }
     ],
-    "require": {}
+    "require": {
+        "php": ">=8.2"
+    }
 }
