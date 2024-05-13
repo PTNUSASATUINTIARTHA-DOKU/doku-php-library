@@ -1,0 +1,16 @@
+{
+    "name": "doku/doku",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Doku\\Doku\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Doku",
+            "email": "technology@doku.com"
+        }
+    ],
+    "require": {}
+}
