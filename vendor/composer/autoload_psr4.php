@@ -6,5 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Doku\\Doku\\' => array($baseDir . '/src'),
+    'Doku\\DokuPhpLibrary\\' => array($baseDir . '/src'),
 );

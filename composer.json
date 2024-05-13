@@ -1,14 +1,14 @@
 {
-    "name": "doku/doku",
+    "name": "doku/doku-php-library",
     "type": "library",
     "autoload": {
         "psr-4": {
-            "Doku\\Doku\\": "src/"
+            "Doku\\DokuPhpLibrary\\": "src/"
         }
     },
     "authors": [
         {
-            "name": "Doku",
+            "name": "doku",
             "email": "technology@doku.com"
         }
     ],
