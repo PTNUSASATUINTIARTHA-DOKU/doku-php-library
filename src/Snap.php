@@ -1,6 +1,6 @@
 <?php
 
-require_once 'src/controllers/TokenController.php';
+require_once 'src/controllers/TokenControllers.php';
 class DokuSnap
 {
     private $privateKey;
@@ -55,5 +55,9 @@ class DokuSnap
         $this->tokenB2B = $tokenB2BResponseDto->accessToken;
         $this->tokenExpiresIn = $tokenB2BResponseDto->expiresIn - 10; // Subtract 10 seconds as in diagram requirements
         $this->tokenTimestamp = time(); // Get the current Unix timestamp
+
+        // kalau belum expire jangan lanjutin / tembak lagi 
+        // redis?
+        // 
     }
 }

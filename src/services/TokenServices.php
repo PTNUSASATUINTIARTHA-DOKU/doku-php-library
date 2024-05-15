@@ -1,6 +1,7 @@
 <?php
 
 require_once "src/commons/config.php";
+require_once "src/models/TokenB2BRequestDTO.php";
 class TokenServices
 {
     private $tokenB2B;
@@ -16,8 +17,7 @@ class TokenServices
     {
         try {
             $currentTimestamp = time();
-            $formattedTimestamp = gmdate('YmdTHis.000\Z', $currentTimestamp);
-
+            $formattedTimestamp = gmdate('Y-m-d\TH:i:s+07:00', $currentTimestamp);
             return $formattedTimestamp;
         } catch (Exception $e) {
             throw new Exception("Failed to generate timestamp: " . $e->getMessage());
@@ -40,24 +40,14 @@ class TokenServices
             throw new Exception('Invalid privateKey, clientId, or timestamp');
         }
 
-        // Load the private key from a file (adjust this based on your implementation)
-        $privateKeyResource = openssl_get_privatekey($privateKey);
-        if ($privateKeyResource === false) {
-            throw new Exception('Invalid privateKey format');
-        }
-
-        // Construct the string to sign
+        // Construct the string to sign and generate signature in base 64
         $stringToSign = $clientId . '|' . $timestamp;
-
-        // Generate the signature
         $signature = '';
-        $success = openssl_sign($stringToSign, $signature, $privateKeyResource, 'SHA256');
+        $success = openssl_sign($stringToSign, $signature, $privateKey, OPENSSL_ALGO_SHA256);
 
-        if (!$success) {
+        if (empty($signature) || !$success) {
             throw new Exception('Failed to generate signature');
         }
-
-        // Encode the signature in base64
         $base64Signature = base64_encode($signature);
 
         return $base64Signature;
@@ -91,20 +81,27 @@ class TokenServices
     public function createTokenB2B(TokenB2BRequestDTO $requestDto, bool $isProduction): TokenB2BResponseDTO
     {
         $apiEndpoint = getBaseURL($isProduction);
-        $payload = [
-            'signature' => $requestDto->signature,
-            'timestamp' => $requestDto->timestamp,
-            'client_id' => $requestDto->clientId,
-            'grant_type' => $requestDto->grantType,
-        ];
 
-        $payloadStr = http_build_query($payload);
+        $headers = array(
+            "X-CLIENT-KEY: " . $requestDto->clientId,
+            "X-TIMESTAMP: " .  $requestDto->timestamp,
+            "X-SIGNATURE: " . $requestDto->signature,
+            "Content-Type: " . "application/json"
+        );
+
+        $body = json_encode([
+            'grantType' => 'client_credentials',
+            'additionalInfo' => [],
+        ]);
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $apiEndpoint);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $payloadStr);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $apiEndpoint,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_POSTFIELDS => $body,
+        ]);
         $response = curl_exec($ch);
 
         if (curl_errno($ch)) {
@@ -126,7 +123,7 @@ class TokenServices
                 $responseData['additional_info'] ?? ''
             );
         } else {
-            throw new Exception('Get token http Error: ' . $responseData['response_message']);
+            throw new Exception('Get token http Error: ' . implode(',',$responseData));
         }
     }
 }
