@@ -38,7 +38,7 @@ class DokuSnap
     {
         // Perform string validation and sanitization here
         // TODO
-        //Regex (waiting for the sanitation requirements)
+        // Regex (waiting for the sanitation requirements)
         // prefix BRN / RCH (?), length still unknown
         // no empty string, must be char/digit (?)
         $regex = '/[^A-Za-z0-9\-]/';
@@ -56,8 +56,10 @@ class DokuSnap
         $this->tokenExpiresIn = $tokenB2BResponseDto->expiresIn - 10; // Subtract 10 seconds as in diagram requirements
         $this->tokenTimestamp = time(); // Get the current Unix timestamp
 
+        // TODO
+        // The code should be more efficient
         // kalau belum expire jangan lanjutin / tembak lagi 
+        // persistent token should be handled
         // redis?
-        // 
     }
 }
