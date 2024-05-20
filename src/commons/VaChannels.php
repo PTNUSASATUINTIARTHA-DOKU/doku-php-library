@@ -1,0 +1,3 @@
+<?php
+
+const VIRTUAL_ACCOUNT_CHANNELS = [];

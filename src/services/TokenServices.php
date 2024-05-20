@@ -80,7 +80,8 @@ class TokenServices
      */
     public function createTokenB2B(TokenB2BRequestDTO $requestDto, bool $isProduction): TokenB2BResponseDTO
     {
-        $apiEndpoint = getBaseURL($isProduction);
+        $baseUrl = getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . ACCESS_TOKEN;
 
         $headers = array(
             "X-CLIENT-KEY: " . $requestDto->clientId,
@@ -125,6 +126,11 @@ class TokenServices
         } else {
             throw new Exception('Get token http Error: ' . implode(',',$responseData));
         }
+    }
+
+    public function isTokenEmpty(string $tokenB2B): bool
+    {
+        if
     }
 }
 

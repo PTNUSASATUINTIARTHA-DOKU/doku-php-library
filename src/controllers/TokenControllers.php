@@ -28,4 +28,26 @@ class TokenController
         $tokenB2BResponseDto = $this->tokenServices->createTokenB2B($tokenB2BRequestDto, $isProduction);
         return $tokenB2BResponseDto;
     }
+
+    /**
+     * Check validity of a TokenB2BResponseDto by following the pipeline
+     *
+     * @param string $privateKey The private key for authentication
+     * @param string $clientId The client ID for authentication
+     * @param bool $isProduction Whether to use the production or sandbox environment
+     * @return TokenB2BResponseDTO
+     * @throws Exception If any step in the pipeline fails
+     */
+    public function isTokenInvalid(string $tokenB2B, string $tokenExpiresIn, string $tokenGeneratedTimestamp): bool
+    {
+        if(tokenServices.isTokenEmpty(tokenB2B)){
+            return true;
+        }else{
+            if(isTokenExpired(tokenB2B, tokenExpiresIn, tokenGeneratedTimestamp)){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }
 }
