@@ -40,12 +40,12 @@ class TokenController
      */
     public function isTokenInvalid(string $tokenB2B, string $tokenExpiresIn, string $tokenGeneratedTimestamp): bool
     {
-        if(tokenServices.isTokenEmpty(tokenB2B)){
+        if($this->tokenServices->isTokenEmpty($tokenB2B)){
             return true;
-        }else{
-            if(isTokenExpired(tokenB2B, tokenExpiresIn, tokenGeneratedTimestamp)){
+        } else {
+            if($this->tokenServices->isTokenExpired($tokenExpiresIn, $tokenGeneratedTimestamp)){
                 return true;
-            }else{
+            } else {
                 return false;
             }
         }

@@ -128,9 +128,34 @@ class TokenServices
         }
     }
 
+    /**
+     * Checking if a generated TokenB2B is empty or not.
+     *
+     * @param string $tokenB2B The generated tokenB2B
+     * @return bool true if tokenB2B isEmpty, else false
+     * @throws Exception If there is an error creating the token
+     */
     public function isTokenEmpty(string $tokenB2B): bool
     {
-        if
+        if(is_null($tokenB2B)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Checking if a generated TokenB2B has been already expired or not
+     *
+     * @param string $tokenB2B The generated tokenB2B
+     * @return bool true if tokenB2B is already expired, else false
+     * @throws Exception If there is an error creating the token
+     */
+    public function isTokenExpired($tokenExpiresIn, $tokenGeneratedTimestamp) {
+        $currentTimestamp = time();
+        $expirationTimestamp = $tokenGeneratedTimestamp + $tokenExpiresIn;
+        
+        // Check if the token has expired
+        return $expirationTimestamp < $currentTimestamp;
     }
 }
 

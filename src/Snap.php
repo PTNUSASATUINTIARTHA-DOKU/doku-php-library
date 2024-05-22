@@ -62,4 +62,21 @@ class DokuSnap
         // persistent token should be handled
         // redis?
     }
+
+    public function createVa($createVaRequestDto): CreateVaResponseDto
+    {
+        $status = $createVaRequestDto->validateVaRequestDto();
+        if(!$status){
+            throw new Error();
+        }
+        $tokenB2BController = new TokenController();
+        $checkTokenInvalid = $tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
+        if($checkTokenInvalid){
+            $tokenB2BResponseDto = $tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
+            $this->setTokenB2B($tokenB2BResponseDto);
+        }	
+        $vaController = new VaController($this->privateKey, $this->clientId, $this->tokenB2B);
+        $createVAResponseDTO = $vaController->createVa($createVaRequestDto);
+        return $createVAResponseDTO;
+    }
 }

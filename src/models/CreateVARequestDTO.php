@@ -7,20 +7,60 @@ class CreateVaRequestDTO
 {
     public string $partnerServiceId;
     public string $customerNo;
-    public string $virtualAccountNo;
+    public ?string $virtualAccountNo;
     public string $virtualAccountName;
     public string $virtualAccountEmail;
     public string $virtualAccountPhone;
     public string $trxId;
     public TotalAmount $totalAmount;
-    public string $currency;
     public string $virtualAccountTrxType;
     public string $expiredDate;
+    // TODO pertanyaan
+    public string $channelId;
+
+    public function __construct(
+        string $partnerServiceId,
+        string $customerNo,
+        ?string $virtualAccountNo,
+        string $virtualAccountName,
+        string $virtualAccountEmail,
+        string $virtualAccountPhone,
+        string $trxId,
+        TotalAmount $totalAmount,
+        string $virtualAccountTrxType,
+        string $expiredDate,
+        string $channelId
+    ) {
+        $this->partnerServiceId = $partnerServiceId;
+        $this->customerNo = $customerNo;
+        $this->virtualAccountNo = $virtualAccountNo;
+        $this->virtualAccountName = $virtualAccountName;
+        $this->virtualAccountEmail = $virtualAccountEmail;
+        $this->virtualAccountPhone = $virtualAccountPhone;
+        $this->trxId = $trxId;
+        $this->totalAmount = $totalAmount;
+        $this->virtualAccountTrxType = $virtualAccountTrxType;
+        $this->expiredDate = $expiredDate;
+        $this->channelId = $channelId;
+    }
 
     // TODO
     public function validateVaRequestDTO(): bool
     {
-        // call seruna validation method di bawah for convenience
+        $status = true;
+        $status &= $this->validatePartnerServiceId();
+        $status &= $this->validateCustomerNo();
+        $status &= $this->validateVirtualAccountName();
+        $status &= $this->validateVirtualAccountEmail();
+        $status &= $this->validateVirtualAccountPhone();
+        $status &= $this->validateTrxId();
+        $status &= $this->validateValue();
+        $status &= $this->validateCurrency();
+        $status &= $this->validateChannel();
+        $status &= $this->validateReusableStatus();
+        $status &= $this->validateVirtualAccountTrxType();
+        $status &= $this->validateExpiredDate();
+        return $status;
     }
 
     public function validatePartnerServiceId(): bool
@@ -30,14 +70,13 @@ class CreateVaRequestDTO
         }
         return true;
     }
-
-    // TODO validated virtualaccount inside
+    
     public function validateCustomerNo(): bool
     {
         if (is_null($this->customerNo) || !is_string($this->customerNo) || strlen($this->customerNo) !== 8 || !preg_match('/^\s{0,7}\d{1,8}$/', $this->customerNo)) {
             return false;
         }
-        return true;
+        return $this->validateVirtualAccountNo();
     }
 
     public function validateVirtualAccountNo(): bool
