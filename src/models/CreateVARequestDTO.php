@@ -13,10 +13,9 @@ class CreateVaRequestDTO
     public string $virtualAccountPhone;
     public string $trxId;
     public TotalAmount $totalAmount;
+    public AdditionalInfo $additionalInfo;
     public string $virtualAccountTrxType;
     public string $expiredDate;
-    // TODO pertanyaan
-    public string $channelId;
 
     public function __construct(
         string $partnerServiceId,
@@ -27,9 +26,9 @@ class CreateVaRequestDTO
         string $virtualAccountPhone,
         string $trxId,
         TotalAmount $totalAmount,
+        AdditionalInfo $additionalInfo,
         string $virtualAccountTrxType,
-        string $expiredDate,
-        string $channelId
+        string $expiredDate
     ) {
         $this->partnerServiceId = $partnerServiceId;
         $this->customerNo = $customerNo;
@@ -39,9 +38,9 @@ class CreateVaRequestDTO
         $this->virtualAccountPhone = $virtualAccountPhone;
         $this->trxId = $trxId;
         $this->totalAmount = $totalAmount;
+        $this->additionalInfo = $additionalInfo;
         $this->virtualAccountTrxType = $virtualAccountTrxType;
         $this->expiredDate = $expiredDate;
-        $this->channelId = $channelId;
     }
 
     // TODO
@@ -129,11 +128,10 @@ class CreateVaRequestDTO
         return true;
     }
 
-    // TODO
-    public function validateValue($value): bool
+    public function validateValue(): bool
     {
+        $value = $this->totalAmount->value;
         $pattern = '/^(0|[1-9]\d{0,15})(\.\d{2})?$/';
-
         if (is_null($value) || !is_string($value) || strlen($value) < 4 || strlen($value) > 19 || !preg_match($pattern, $value)) {
             return false;
         }
@@ -143,30 +141,29 @@ class CreateVaRequestDTO
 
     public function validateCurrency(): bool
     {
-        if (!is_null($this->currency) && (!is_string($this->currency) || strlen($this->currency) !== 3 || ($this->currency !== 'IDR' && $this->currency !== null))) {
+        $currency = $this->totalAmount->currency;
+        if (!is_null($currency) && (!is_string($currency) || strlen($currency) !== 3 || ($currency !== 'IDR' && $currency !== null))) {
             return false;
         }
 
         return true;
     }
 
-    // TODO
     public function validateChannel(): bool
     {
-        // Define a list of valid channel values in lowercase (mock channels only)
-        $validChannels = ['web', 'mobile', 'pos', 'qris', 'other'];
-
-        if (is_null($this->channel) || !is_string($this->channel) || strlen($this->channel) < 1 || strlen($this->channel) > 30 || !in_array(strtolower($this->channel), $this->validChannels)) {
+        $validChannels = VIRTUAL_ACCOUNT_CHANNELS;
+        $channel = $this->additionalInfo->channel;
+        if (is_null($channel) || !is_string($channel) || strlen($channel) < 1 || strlen($channel) > 30 || !in_array(strtolower($channel), $validChannels)) {
             return false;
     }
 
     return true;
     }
 
-    // TODO
     public function validateReusableStatus(): bool
     {
-        if (!is_null($this->reusableStatus) && !is_bool($this->reusableStatus)) {
+        $reusableStatus = $this->additionalInfo->virtualAccountConfig->reusableStatus;
+        if (!is_null($reusableStatus) && !is_bool($reusableStatus)) {
             return false;
     }
 
@@ -177,22 +174,15 @@ class CreateVaRequestDTO
     public function validateVirtualAccountTrxType(): bool
     {
         if ($this->virtualAccountTrxType === null || 
-        !is_string($this->virtualAccountTrxType) || 
-        strlen($this->virtualAccountTrxType) !== 1 || 
-        ($this->virtualAccountTrxType !== '1' && $this->virtualAccountTrxType !== '2')) 
-        {
+            !is_string($this->virtualAccountTrxType) || 
+            strlen($this->virtualAccountTrxType) !== 1 || 
+            !($this->virtualAccountTrxType === '1' || $this->virtualAccountTrxType === '2')
+        ) {
             return false;
         }
 
-
-        if ($this->virtualAccountTrxType === '2') {
-            if (!array_key_exists('value', $this->totalAmount) || !array_key_exists('currency', $this->totalAmount)) {
-                throw new InvalidArgumentException('totalAmount array is missing required keys');
-            }
-
-            if ($this->totalAmount['value'] === 0 || $this->totalAmount['currency'] !== 'IDR') {
-                return false;
-            }
+        if ($this->virtualAccountTrxType === '2' && ($this->totalAmount->value !== 0 || $this->totalAmount->currency !== 'IDR')) {
+            return false;
         }
 
         return true;
