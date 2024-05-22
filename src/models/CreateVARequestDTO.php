@@ -43,7 +43,6 @@ class CreateVaRequestDTO
         $this->expiredDate = $expiredDate;
     }
 
-    // TODO
     public function validateVaRequestDTO(): bool
     {
         $status = true;
