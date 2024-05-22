@@ -2,24 +2,19 @@
 
 class VaController
 {
-    private $privateKey;
-    private $clientId;
-    private $tokenB2B;
-
-    public function __construct(string $privateKey, string $clientId, string $tokenB2B)
-    {
-        $this->privateKey = $privateKey;
-        $this->clientId = $clientId;
-        $this->tokenB2B = $tokenB2B;
+    private $vaServices;
+    private $tokenServices;
+    public function __construct() {
+        $this->vaServices = new VaServices();
+        $this->tokenServices = new TokenServices();
     }
-
-    public function createVa(CreateVaRequestDto $createVaRequestDto)
+    public function createVa(CreateVaRequestDto $createVaRequestDto, string $privateKey, string $clientId, string $tokenB2B, bool $isProduction): CreateVaResponseDTO
     {
-        // Create an instance of the service class responsible for creating a virtual account
-        $vaServices = new VaServices($this->privateKey, $this->clientId, $this->tokenB2B);
-        $createVaResponseDto = $vaServices->createVa($createVaRequestDto);
-
-        // Return the response from the service
+        $externalId = $this->vaServices->generateExternalId();
+        $timestamp = $this->tokenServices->getTimestamp();
+        $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
+        $requestHeaderDto = $this->vaServices->createVaRequestHeaderDto($createVaRequestDto, $privateKey, $clientId, $tokenB2B, $timestamp, $externalId, $signature);
+        $createVaResponseDto = $this->vaServices->createVa($requestHeaderDto, $createVaRequestDto, $isProduction);
         return $createVaResponseDto;
     }
 }

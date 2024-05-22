@@ -75,8 +75,8 @@ class DokuSnap
             $tokenB2BResponseDto = $tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
             $this->setTokenB2B($tokenB2BResponseDto);
         }	
-        $vaController = new VaController($this->privateKey, $this->clientId, $this->tokenB2B);
-        $createVAResponseDTO = $vaController->createVa($createVaRequestDto);
+        $vaController = new VaController();
+        $createVAResponseDTO = $vaController->createVa($createVaRequestDto, $this->privateKey, $this->clientId, $this->tokenB2B, $this->isProduction);
         return $createVAResponseDTO;
     }
 }

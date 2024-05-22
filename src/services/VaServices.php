@@ -2,31 +2,6 @@
 
 class VaServices
 {
-    public function __construct(
-        string $partnerServiceId,
-        string $customerNo,
-        ?string $virtualAccountNo,
-        string $virtualAccountName,
-        string $virtualAccountEmail,
-        string $virtualAccountPhone,
-        string $trxId,
-        TotalAmount $totalAmount,
-        string $virtualAccountTrxType,
-        string $expiredDate,
-        string $channelId
-    ) {
-        $this->partnerServiceId = $partnerServiceId;
-        $this->customerNo = $customerNo;
-        $this->virtualAccountNo = $virtualAccountNo;
-        $this->virtualAccountName = $virtualAccountName;
-        $this->virtualAccountEmail = $virtualAccountEmail;
-        $this->virtualAccountPhone = $virtualAccountPhone;
-        $this->trxId = $trxId;
-        $this->totalAmount = $totalAmount;
-        $this->virtualAccountTrxType = $virtualAccountTrxType;
-        $this->expiredDate = $expiredDate;
-        $this->channelId = $channelId;
-    }
     /**
      * Create a virtual account by making a request to the DOKU API
      *
@@ -36,7 +11,7 @@ class VaServices
      * @return CreateVaResponseDTO
      * @throws Exception If there is an error creating the virtual account
      */
-    // TODO isProduction
+
     public function createVa(RequestHeaderDTO $requestHeaderDto, CreateVaRequestDTO $requestDto, bool $isProduction): CreateVaResponseDTO
     {
         $baseUrl = getBaseURL($isProduction);
@@ -90,11 +65,13 @@ class VaServices
      * @param string $timestamp The timestamp
      * @return string The generated external ID
      */
-    public function generateExternalId(string $timestamp): string
+    public function generateExternalId(): string
     {
         // Generate a UUID and combine the UUID and timestamp
+        $currentTimestamp = time();
+        $formattedTimestamp = gmdate('Y-m-d\TH:i:s+07:00', $currentTimestamp);
         $uuid = bin2hex(random_bytes(16));
-        $externalId = $uuid . $timestamp;
+        $externalId = $uuid . $formattedTimestamp;
 
         return $externalId;
     }
@@ -116,16 +93,15 @@ class VaServices
         string $clientId,
         string $tokenB2B,
         string $timestamp,
-        string $externalId
+        string $externalId,
+        string $signature
     ): RequestHeaderDTO {
-        $tokenServices = new TokenServices();
-        $signature = $tokenServices->createSignature($privateKey, $clientId, $timestamp);
         $requestHeaderDto = new RequestHeaderDTO(
             $timestamp,
             $signature,
             $clientId,
             $externalId,
-            $createVaRequestDto->channelId,
+            $createVaRequestDto->additionalInfo->channel,
             $tokenB2B
         );
         return $requestHeaderDto;

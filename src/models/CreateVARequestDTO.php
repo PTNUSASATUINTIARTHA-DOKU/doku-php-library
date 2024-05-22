@@ -169,7 +169,6 @@ class CreateVaRequestDTO
     return true;
     }
 
-    // TODO
     public function validateVirtualAccountTrxType(): bool
     {
         if ($this->virtualAccountTrxType === null || 
