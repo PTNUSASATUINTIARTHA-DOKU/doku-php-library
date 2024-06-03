@@ -63,7 +63,13 @@ class DokuSnap
         // redis?
     }
 
-    public function createVa($createVaRequestDto): CreateVaResponseDto
+    /**
+     * create Virtual Account based on the request
+     *
+     * @param CreateVaRequestDTO $createVaRequestDto The DTO containing the create virtual account request
+     * @return CreateVaResponseDTO The DTO containing the create virtual account response
+    */
+    public function createVa($createVaRequestDto): CreateVaResponseDTO
     {
         $status = $createVaRequestDto->validateVaRequestDto();
         if(!$status){
@@ -78,5 +84,22 @@ class DokuSnap
         $vaController = new VaController();
         $createVAResponseDTO = $vaController->createVa($createVaRequestDto, $this->privateKey, $this->clientId, $this->tokenB2B, $this->isProduction);
         return $createVAResponseDTO;
+    }
+
+    // TODO
+    /**
+     *  generate notification response
+     *  @return NotificationTokenDTO
+     */
+    public function generateNotificationResponse(): NotificationTokenDTO
+    {
+        return null;
+    }
+
+    public function validateSignature($requestSignature, $requestTimestamp, $privateKey, $clientId): bool
+    {
+        $tokenB2BController = new TokenController();
+        $checkTokenValid = $tokenB2BController->validateSignature($requestSignature, $requestTimestamp, $privateKey, $clientId);
+        return $checkTokenValid;
     }
 }

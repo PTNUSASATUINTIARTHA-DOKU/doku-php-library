@@ -50,4 +50,33 @@ class TokenController
             }
         }
     }
+
+    /**
+     * Validate the request signature against the signature generated from the provided parameters.
+     *
+     * @param string $requestSignature The signature received in the request
+     * @param string $requestTimestamp The timestamp received in the request
+     * @param string $privateKey The private key used for signature generation
+     * @param string $clientId The client ID used for signature generation
+     *
+     * @return bool True if the signatures match, false otherwise
+     */
+    public function validateSignature($requestSignature, $requestTimestamp, $privateKey, $clientId): bool
+    {
+        $createdSignature = $this->tokenServices->createSignature($requestTimestamp, $privateKey, $clientId);
+
+        return $this->tokenServices->compareSignatures($requestSignature, $createdSignature);
+    }
+
+    /**
+     * Generate a response for invalid signature.
+     *
+     * @return NotificationTokenDto
+     */
+    public function generateInvalidSignatureResponse(): NotificationTokenDto
+    {
+        $timestamp = $this->tokenServices->getTimestamp();
+        return $this->tokenServices->generateInvalidSignature($timestamp);
+    }
 }
+
