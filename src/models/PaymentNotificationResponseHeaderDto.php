@@ -1,16 +1,16 @@
 <?php
 
 /**
- * Class PaymentNotificationResponseHeaderDto
+ * Class PaymentNotificationResponseHeaderDTO
  * This class represents the header for payment notification response.
  */
-class PaymentNotificationResponseHeaderDto
+class PaymentNotificationResponseHeaderDTO
 {
     public string $xTimestamp;
     public string $contentType = "application/json";
 
     /**
-     * Constructor for PaymentNotificationResponseHeaderDto
+     * Constructor for PaymentNotificationResponseHeaderDTO
      *
      * @param string $xTimestamp
      */

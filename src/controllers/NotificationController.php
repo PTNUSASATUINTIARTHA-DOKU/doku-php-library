@@ -16,11 +16,11 @@ class NotificationController
    /**
     * Generate a notification response based on the provided payment notification request body.
     *
-    * @param PaymentNotificationRequestBodyDto $paymentNotificationRequestBodyDto
+    * @param PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO
     * @return PaymentNotificationResponseDto
     */
-   public function generateNotificationResponse(PaymentNotificationRequestBodyDto $paymentNotificationRequestBodyDto): PaymentNotificationResponseDto
+   public function generateNotificationResponse(PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO): PaymentNotificationResponseDto
    {
-       return $this->notificationServices->generateNotificationResponse($paymentNotificationRequestBodyDto);
+       return $this->notificationServices->generateNotificationResponse($paymentNotificationRequestBodyDTO);
    }
 }

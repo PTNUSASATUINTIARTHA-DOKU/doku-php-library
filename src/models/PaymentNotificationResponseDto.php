@@ -4,20 +4,20 @@
  * Class PaymentNotificationResponseDto
  * This class represents the payment notification response.
  */
-class PaymentNotificationResponseDto
+class PaymentNotificationResponseDTO
 {
-    public PaymentNotificationResponseHeaderDto $header;
-    public PaymentNotificationResponseBodyDto $body;
+    public PaymentNotificationResponseHeaderDTO $header;
+    public PaymentNotificationResponseBodyDTO $body;
 
     /**
-     * Constructor for PaymentNotificationResponseDto
+     * Constructor for PaymentNotificationResponseDTO
      *
-     * @param PaymentNotificationResponseHeaderDto $header
-     * @param PaymentNotificationResponseBodyDto $body
+     * @param PaymentNotificationResponseHeaderDTO $header
+     * @param PaymentNotificationResponseBodyDTO $body
      */
     public function __construct(
-        PaymentNotificationResponseHeaderDto $header,
-        PaymentNotificationResponseBodyDto $body
+        PaymentNotificationResponseHeaderDTO $header,
+        PaymentNotificationResponseBodyDTO $body
     ) {
         $this->header = $header;
         $this->body = $body;

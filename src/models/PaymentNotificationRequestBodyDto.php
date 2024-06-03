@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Class PaymentNotificationRequestBodyDto
+ * Class PaymentNotificationRequestBodyDTO
  * This class represents the request body for payment notification.
  */
-class PaymentNotificationRequestBodyDto
+class PaymentNotificationRequestBodyDTO
 {
     public string $partnerServiceId;
     public string $customerNo;
@@ -17,7 +17,7 @@ class PaymentNotificationRequestBodyDto
     public string $virtualAccountPhone;
 
     /**
-     * Constructor for PaymentNotificationRequestBodyDto
+     * Constructor for PaymentNotificationRequestBodyDTO
      *
      * @param string $partnerServiceId
      * @param string $customerNo
