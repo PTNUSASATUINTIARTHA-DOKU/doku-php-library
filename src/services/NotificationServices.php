@@ -9,9 +9,9 @@ class NotificationServices
     * Generate a notification response based on the provided payment notification request body.
     *
     * @param PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO
-    * @return PaymentNotificationResponseDto
+    * @return PaymentNotificationResponseDTO
     */
-   public function generateNotificationResponse(PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO): PaymentNotificationResponseDto
+   public function generateNotificationResponse(PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO): PaymentNotificationResponseDTO
    {
        $responseCode = '2002700';
        $responseMessage = 'success';
@@ -31,12 +31,69 @@ class NotificationServices
        );
 
        $responseHeader = new PaymentNotificationResponseHeaderDTO(
-           date('Y-m-d H:i:s') // TODO fix this
+           Helper::getTimestamp()
        );
 
-       return new PaymentNotificationResponseDto(
+       return new PaymentNotificationResponseDTO(
            $responseHeader,
            $responseBody
        );
    }
+
+    /**
+     * Generate a NotificationTokenDTO object with invalid signature details
+     *
+     * @param string $timestamp The timestamp received in the request
+     * @return NotificationTokenDTO
+     */
+    public function generateInvalidSignature(string $timestamp): NotificationTokenDTO
+    {
+        $responseCode = '4017300';
+        $responseMessage = 'Unauthorized. Invalid Signature';
+        
+        $body = new NotificationTokenBodyDTO(
+            $responseCode,
+            $responseMessage,
+            null,
+            null,
+            null, // invalid null, must be integer
+            null
+        );
+
+        $header = new NotificationTokenHeaderDTO(null, $timestamp);
+
+        return new NotificationTokenDTO($header, $body);
+    }
+
+    /**
+     * Generate a PaymentNotificationResponseDTO object with invalid signature details
+     *
+     * @param PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO
+     * @return PaymentNotificationResponseDTO
+     */
+    public function generateInvalidTokenNotificationResponse(PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDto): PaymentNotificationResponseDTO
+    {
+        $responseCode = '4012701';
+        $responseMessage = 'invalid Token (B2B)';
+
+        $virtualAccountData = new NotificationVirtualAccountData(
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+        
+        $body = new PaymentNotificationResponseBodyDTO(
+            $responseCode,
+            $responseMessage,
+            $virtualAccountData
+        );
+
+        $header = new PaymentNotificationResponseHeaderDTO(
+            Helper::getTimestamp()
+        );
+
+        return new PaymentNotificationResponseDTO($header, $body); 
+    }
 }

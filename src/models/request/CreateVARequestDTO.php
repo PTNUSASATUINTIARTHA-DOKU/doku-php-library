@@ -3,6 +3,8 @@
  * Class CreateVaRequestDTO
  * Represents the data transfer object for creating a virtual account request
  */
+
+ // TODO add error message
 class CreateVaRequestDTO
 {
     public string $partnerServiceId;

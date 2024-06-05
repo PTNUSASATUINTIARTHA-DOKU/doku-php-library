@@ -4,7 +4,7 @@ require_once 'src/services/TokenServices.php';
 
 class TokenController
 {
-    private $tokenServices;
+    private TokenServices $tokenServices;
 
     public function __construct()
     {
@@ -12,7 +12,7 @@ class TokenController
     }
 
     /**
-     * Generate a TokenB2BResponseDto by following the pipeline
+     * Generate a TokenB2BResponseDTO by following the pipeline
      *
      * @param string $privateKey The private key for authentication
      * @param string $clientId The client ID for authentication
@@ -24,13 +24,13 @@ class TokenController
     {
         $timestamp = $this->tokenServices->getTimestamp();
         $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
-        $tokenB2BRequestDto = $this->tokenServices->createTokenB2BRequestDTO($signature, $timestamp, $clientId);
-        $tokenB2BResponseDto = $this->tokenServices->createTokenB2B($tokenB2BRequestDto, $isProduction);
-        return $tokenB2BResponseDto;
+        $tokenB2BRequestDTO = $this->tokenServices->createTokenB2BRequestDTO($signature, $timestamp, $clientId);
+        $tokenB2BResponseDTO = $this->tokenServices->createTokenB2B($tokenB2BRequestDTO, $isProduction);
+        return $tokenB2BResponseDTO;
     }
 
     /**
-     * Check validity of a TokenB2BResponseDto by following the pipeline
+     * Check validity of a TokenB2BResponseDTO by following the pipeline
      *
      * @param string $privateKey The private key for authentication
      * @param string $clientId The client ID for authentication
@@ -38,7 +38,7 @@ class TokenController
      * @return TokenB2BResponseDTO
      * @throws Exception If any step in the pipeline fails
      */
-    public function isTokenInvalid(string $tokenB2B, string $tokenExpiresIn, string $tokenGeneratedTimestamp): bool
+    public function isTokenInvalid(string $tokenB2B, int $tokenExpiresIn, int $tokenGeneratedTimestamp): bool
     {
         if($this->tokenServices->isTokenEmpty($tokenB2B)){
             return true;
@@ -71,12 +71,25 @@ class TokenController
     /**
      * Generate a response for invalid signature.
      *
-     * @return NotificationTokenDto
+     * @return NotificationTokenDTO
      */
-    public function generateInvalidSignatureResponse(): NotificationTokenDto
+    public function generateInvalidSignatureResponse(): NotificationTokenDTO
     {
         $timestamp = $this->tokenServices->getTimestamp();
         return $this->tokenServices->generateInvalidSignature($timestamp);
+    }
+
+    // TODO 2259 , 2335 (spike)
+    /**
+     * Validate the TokenB2B received in a payment notification HTTP request
+     *
+     * @param string $jwtToken The JWT token received in the request
+     * @param string $publicKey The public key used for token verification
+     * @return bool True if the token is valid, false otherwise
+     */
+    public function validateTokenB2B($requestTokenB2B, $publicKey): bool 
+    {
+        return $this->tokenServices->validateTokenB2b($requestTokenB2B, $publicKey);
     }
 }
 

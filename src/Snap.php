@@ -1,14 +1,18 @@
 <?php
 
-require_once 'src/controllers/TokenControllers.php';
+require_once "src/controllers/TokenController.php";
 class DokuSnap
 {
-    private $privateKey;
-    private $clientId;
-    private $isProduction;
-    private $tokenB2B;
-    private $tokenB2BExpiresIn = 900; // 15 minutes (900 seconds)
-    private $tokenB2BGeneratedTimestamp;
+    private string $privateKey;
+    private string $clientId;
+    private bool $isProduction;
+    private string $tokenB2B;
+    private int $tokenB2BExpiresIn = 900; // 15 minutes (900 seconds)
+    private int $tokenB2BGeneratedTimestamp; 
+    private string $publicKey;
+    private string $issuer;
+    private TokenController $tokenB2BController;
+    private NotificationController $notificationController;
 
     /**
      * Constructor
@@ -17,15 +21,19 @@ class DokuSnap
      * @param string $clientId The client ID for authentication
      * @param bool $isProduction Flag indicating whether to use production or sandbox environment
      */
-    public function __construct(string $privateKey, string $clientId, bool $isProduction)
+    public function __construct(string $privateKey, string $publicKey, string $clientId, string $issuer, bool $isProduction)
     {
         $this->privateKey = $this->validateString($privateKey);
+        $this->publicKey = $this->validateString($publicKey);
+        $this->issuer = $this->validateString($issuer);
         $this->clientId = $this->validateString($clientId);
         $this->isProduction = $isProduction;
 
-        $tokenB2BController = new TokenController();
-        $tokenB2BResponseDTO = $tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
+        $this->tokenB2BController = new TokenController();
+        $tokenB2BResponseDTO = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
         $this->setTokenB2B($tokenB2BResponseDTO);
+        
+        $this->notificationController = new NotificationController();
     }
 
     /**
@@ -48,13 +56,13 @@ class DokuSnap
     /**
      * Set the B2B token properties
      *
-     * @param TokenB2BResponseDTO $tokenB2BResponseDto The DTO containing the B2B token response
+     * @param TokenB2BResponseDTO $tokenB2BResponseDTO The DTO containing the B2B token response
     */
-    public function setTokenB2B(TokenB2BResponseDTO $tokenB2BResponseDto)
+    public function setTokenB2B(TokenB2BResponseDTO $tokenB2BResponseDTO)
     {
-        $this->tokenB2B = $tokenB2BResponseDto->accessToken;
-        $this->tokenExpiresIn = $tokenB2BResponseDto->expiresIn - 10; // Subtract 10 seconds as in diagram requirements
-        $this->tokenTimestamp = time(); // Get the current Unix timestamp
+        $this->tokenB2B = $tokenB2BResponseDTO->accessToken;
+        $this->tokenExpiresIn = $tokenB2BResponseDTO->expiresIn - 10; // Subtract 10 seconds as in diagram requirements
+        $this->tokenB2BGeneratedTimestamp = time();
 
         // TODO
         // The code should be more efficient
@@ -66,40 +74,85 @@ class DokuSnap
     /**
      * create Virtual Account based on the request
      *
-     * @param CreateVaRequestDTO $createVaRequestDto The DTO containing the create virtual account request
+     * @param CreateVaRequestDTO $createVaRequestDTO The DTO containing the create virtual account request
      * @return CreateVaResponseDTO The DTO containing the create virtual account response
     */
-    public function createVa($createVaRequestDto): CreateVaResponseDTO
+    public function createVa($createVaRequestDTO): CreateVaResponseDTO
     {
-        $status = $createVaRequestDto->validateVaRequestDto();
+        // TODO refactor error message
+        $status = $createVaRequestDTO->validateVaRequestDTO();
         if(!$status){
             throw new Error();
         }
-        $tokenB2BController = new TokenController();
-        $checkTokenInvalid = $tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
+        // TODO review is it referring to the same token or not
+        // what if there are 2 merchant in same time hitting API
+        // async or not
+        $checkTokenInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
         if($checkTokenInvalid){
-            $tokenB2BResponseDto = $tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
-            $this->setTokenB2B($tokenB2BResponseDto);
+            $tokenB2BResponseDTO = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
+            $this->setTokenB2B($tokenB2BResponseDTO);
         }	
         $vaController = new VaController();
-        $createVAResponseDTO = $vaController->createVa($createVaRequestDto, $this->privateKey, $this->clientId, $this->tokenB2B, $this->isProduction);
+        $createVAResponseDTO = $vaController->createVa($createVaRequestDTO, $this->privateKey, $this->clientId, $this->tokenB2B, $this->isProduction);
         return $createVAResponseDTO;
     }
 
-    // TODO
+    // TODO 2262
     /**
-     *  generate notification response
-     *  @return NotificationTokenDTO
+     * Generate a notification response based on token validity and request body
+     *
+     * @param bool $isTokenValid Whether the token is valid or not
+     * @param PaymentNotificationRequestBodyDTO|null $requestBodyDTO The payment notification request body DTO
+     * @return PaymentNotificationResponseDTO
+     * @throws Exception If the token is valid but the request body DTO is missing
      */
-    public function generateNotificationResponse(): NotificationTokenDTO
+    public function generateNotificationResponse(bool $isTokenValid, ?PaymentNotificationRequestBodyDTO $requestBodyDTO): PaymentNotificationResponseDTO
     {
-        return null;
+        if ($isTokenValid) {
+            if ($requestBodyDTO !== null) {
+                return $this->notificationController->generateNotificationResponse($requestBodyDTO);
+            } else {
+                throw new Exception('If token is valid, please provide PaymentNotificationRequestBodyDTO');
+            }
+        } else {
+            return $this->notificationController->generateInvalidTokenResponse();
+        }
     }
 
-    public function validateSignature($requestSignature, $requestTimestamp, $privateKey, $clientId): bool
-    {
-        $tokenB2BController = new TokenController();
-        $checkTokenValid = $tokenB2BController->validateSignature($requestSignature, $requestTimestamp, $privateKey, $clientId);
-        return $checkTokenValid;
-    }
+    // TODO 2261
+    // public function validateSignature($requestSignature, $requestTimestamp, $privateKey, $clientId): bool
+    // {
+    //     $tokenB2BController = new TokenController();
+    //     $checkTokenValid = $tokenB2BController->validateSignature($requestSignature, $requestTimestamp, $privateKey, $clientId);
+    //     return $checkTokenValid;
+    // }
+
+     
+    // TODO 2258
+    // public function validateTokenAndGenerateNotificationResponse($requestHeaderDTO, $paymentNotificationRequestBodyDTO):PaymentNotificationResponseDTO
+    // {
+    //     return null;
+    // }
+
+    // TODO 2257
+    // public function validateTokenB2b($requestTokenB2B):boolean{
+    //     TokenController.validateTokenB2B(requestTokenB2B, this.publicKey);
+    // }
+
+    // TODO 2264
+    // public function validateSignatureAndGenerateToken($requestSignature,$requestTimestamp){
+    // $isSignatureValid = this.validateSignature(requestSignature, requestTimestamp, this.privateKey, this.clientId);
+    // this.generateTokenB2B(isSignatureValid);
+    // }
+
+    // TODO 2260
+    // public function generateTokenB2B($isSignatureValid:boolean):NotificationTokenDTO{
+    //         if(isSignatureValid){
+    //                 TokenController.generateTokenB2B(expiredIn, issuer, privateKey, clientId);
+    //         }else{
+    //                 TokenController.generateInvalidSignatureResponse();
+    //         }
+    // }
+
+
 }

@@ -1,10 +1,10 @@
 <?php
 
 /**
-* Class NotificationTokenBodyDto
+* Class NotificationTokenBodyDTO
 * This class represents the body portion of the notification token.
 */
-class NotificationTokenBodyDto
+class NotificationTokenBodyDTO
 {
    public string $responseCode;
    public string $responseMessage;
@@ -14,7 +14,7 @@ class NotificationTokenBodyDto
    public string $additionalInfo;
 
    /**
-    * Constructor for NotificationTokenBodyDto
+    * Constructor for NotificationTokenBodyDTO
     *
     * @param string $responseCode The response code
     * @param string $responseMessage The response message

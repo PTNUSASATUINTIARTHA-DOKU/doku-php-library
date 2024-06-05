@@ -5,19 +5,19 @@ class VaServices
     /**
      * Create a virtual account by making a request to the DOKU API
      *
-     * @param CreateVaRequestDTO $requestDto The request DTO
+     * @param CreateVaRequestDTO $requestDTO The request DTO
      * @param string $accessToken The access token
      * @param bool $isProduction Whether to use the production or sandbox environment
      * @return CreateVaResponseDTO
      * @throws Exception If there is an error creating the virtual account
      */
 
-    public function createVa(RequestHeaderDTO $requestHeaderDto, CreateVaRequestDTO $requestDto, bool $isProduction): CreateVaResponseDTO
+    public function createVa(RequestHeaderDTO $requestHeaderDTO, CreateVaRequestDTO $requestDTO, bool $isProduction): CreateVaResponseDTO
     {
         $baseUrl = getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . CREATE_VA;
-        $headerJson = json_encode($requestHeaderDto);
-        $payloadJson = json_encode($requestDto);
+        $headerJson = json_encode($requestHeaderDTO);
+        $payloadJson = json_encode($requestDTO);
 
         $ch = curl_init();
 
@@ -79,7 +79,7 @@ class VaServices
     /**
      * Create the request header DTO for the create virtual account request.
      *
-     * @param CreateVaRequestDTO $createVaRequestDto The create virtual account request DTO
+     * @param CreateVaRequestDTO $createVaRequestDTO The create virtual account request DTO
      * @param string $privateKey The private key for authentication
      * @param string $clientId The client ID for authentication
      * @param string $tokenB2B The B2B token
@@ -87,8 +87,8 @@ class VaServices
      * @param string $externalId The external ID
      * @return RequestHeaderDTO The request header DTO
      */
-    public function createVaRequestHeaderDto(
-        CreateVaRequestDTO $createVaRequestDto,
+    public function createVaRequestHeaderDTO(
+        CreateVaRequestDTO $createVaRequestDTO,
         string $privateKey,
         string $clientId,
         string $tokenB2B,
@@ -96,14 +96,14 @@ class VaServices
         string $externalId,
         string $signature
     ): RequestHeaderDTO {
-        $requestHeaderDto = new RequestHeaderDTO(
+        $requestHeaderDTO = new RequestHeaderDTO(
             $timestamp,
             $signature,
             $clientId,
             $externalId,
-            $createVaRequestDto->additionalInfo->channel,
+            $createVaRequestDTO->additionalInfo->channel,
             $tokenB2B
         );
-        return $requestHeaderDto;
+        return $requestHeaderDTO;
     }
 }

@@ -1,16 +1,16 @@
 <?php
 
 /**
-* Class NotificationTokenHeaderDto
+* Class NotificationTokenHeaderDTO
 * This class represents the header portion of the notification token.
 */
-class NotificationTokenHeaderDto
+class NotificationTokenHeaderDTO
 {
    public string $XClientKey;
    public string $XTimeStamp;
 
    /**
-    * Constructor for NotificationTokenHeaderDto
+    * Constructor for NotificationTokenHeaderDTO
     *
     * @param string $XClientKey
     * @param string $XTimeStamp
