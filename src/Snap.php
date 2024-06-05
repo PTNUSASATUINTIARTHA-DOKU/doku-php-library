@@ -30,10 +30,10 @@ class DokuSnap
         $this->isProduction = $isProduction;
 
         $this->tokenB2BController = new TokenController();
+        $this->notificationController = new NotificationController();
+
         $tokenB2BResponseDTO = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
         $this->setTokenB2B($tokenB2BResponseDTO);
-        
-        $this->notificationController = new NotificationController();
     }
 
     /**
@@ -106,53 +106,98 @@ class DokuSnap
      * @return PaymentNotificationResponseDTO
      * @throws Exception If the token is valid but the request body DTO is missing
      */
-    public function generateNotificationResponse(bool $isTokenValid, ?PaymentNotificationRequestBodyDTO $requestBodyDTO): PaymentNotificationResponseDTO
+    public function generateNotificationResponse(bool $isTokenValid, ?PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO): PaymentNotificationResponseDTO
     {
         if ($isTokenValid) {
-            if ($requestBodyDTO !== null) {
-                return $this->notificationController->generateNotificationResponse($requestBodyDTO);
+            if ($paymentNotificationRequestBodyDTO !== null) {
+                return $this->notificationController->generateNotificationResponse($paymentNotificationRequestBodyDTO);
             } else {
                 throw new Exception('If token is valid, please provide PaymentNotificationRequestBodyDTO');
             }
         } else {
-            return $this->notificationController->generateInvalidTokenResponse();
+            return $this->notificationController->generateInvalidTokenResponse($paymentNotificationRequestBodyDTO);
         }
     }
 
-    // TODO 2261
-    // public function validateSignature($requestSignature, $requestTimestamp, $privateKey, $clientId): bool
-    // {
-    //     $tokenB2BController = new TokenController();
-    //     $checkTokenValid = $tokenB2BController->validateSignature($requestSignature, $requestTimestamp, $privateKey, $clientId);
-    //     return $checkTokenValid;
-    // }
+    /**
+     * Validates the signature received in the request.
+     *
+     * @param string $requestSignature The signature received in the request.
+     * @param string $requestTimestamp The timestamp received in the request.
+     * @param string $privateKey The private key for authentication.
+     * @param string $clientId The client ID for authentication.
+     *
+     * @return bool True if the signature is valid, false otherwise.
+     */
+    public function validateSignature(string $requestSignature, string $requestTimestamp, string $privateKey, string $clientId): bool
+    {
+        // Call the validateSignature method of the tokenB2BController to validate the signature
+        return $this->tokenB2BController->validateSignature($requestSignature, $requestTimestamp, $privateKey, $clientId);
+    }
 
      
-    // TODO 2258
-    // public function validateTokenAndGenerateNotificationResponse($requestHeaderDTO, $paymentNotificationRequestBodyDTO):PaymentNotificationResponseDTO
-    // {
-    //     return null;
-    // }
+    /**
+     * Validates the TokenB2B received in the request and generates a notification response.
+     *
+     * This method is responsible for validating the TokenB2B received in the request and generating a notification response.
+     * If the TokenB2B is valid, it calls the `generateNotificationResponse` method of the `NotificationController` to generate the notification response.
+     *
+     * @param RequestHeaderDTO $requestHeaderDTO The header DTO containing the TokenB2B for validation.
+     * @param PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO The payment notification request body DTO.
+     * @return PaymentNotificationResponseDTO The generated notification response.
+     */
+    public function validateTokenAndGenerateNotificationResponse(RequestHeaderDTO $requestHeaderDTO, PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO): PaymentNotificationResponseDTO
+    {
+        $isTokenValid = $this->validateTokenB2B($requestHeaderDTO->authorization);
+        return $this->generateNotificationResponse($isTokenValid, $paymentNotificationRequestBodyDTO);
+    }
 
-    // TODO 2257
-    // public function validateTokenB2b($requestTokenB2B):boolean{
-    //     TokenController.validateTokenB2B(requestTokenB2B, this.publicKey);
-    // }
 
-    // TODO 2264
-    // public function validateSignatureAndGenerateToken($requestSignature,$requestTimestamp){
-    // $isSignatureValid = this.validateSignature(requestSignature, requestTimestamp, this.privateKey, this.clientId);
-    // this.generateTokenB2B(isSignatureValid);
-    // }
+    /**
+     * Validates the TokenB2B received in the request.
+     *
+     * @param string $requestTokenB2B The TokenB2B received in the request.
+     *
+     * @return bool Returns `true` if the TokenB2B is valid, `false` otherwise.
+     */
+    public function validateTokenB2B(string $requestTokenB2B): bool
+    {
+        return $this->tokenB2BController->validateTokenB2B($requestTokenB2B, $this->publicKey);
+    }
 
-    // TODO 2260
-    // public function generateTokenB2B($isSignatureValid:boolean):NotificationTokenDTO{
-    //         if(isSignatureValid){
-    //                 TokenController.generateTokenB2B(expiredIn, issuer, privateKey, clientId);
-    //         }else{
-    //                 TokenController.generateInvalidSignatureResponse();
-    //         }
-    // }
+    /**
+     * Validates the signature and generates a TokenB2B object accordingly.
+     *
+     * @param string $requestSignature The signature received in the request.
+     * @param string $requestTimestamp The timestamp received in the request.
+     *
+     * @return void
+     */
+    public function validateSignatureAndGenerateToken(string $requestSignature, string $requestTimestamp): void
+    {
+        // Validate the signature
+        $isSignatureValid = $this->validateSignature($requestSignature, $requestTimestamp, $this->privateKey, $this->clientId);
+
+        // Generate a TokenB2B object based on the signature validity and set token
+        $notificationTokenDTO = $this->generateTokenB2B($isSignatureValid);
+        $notificationTokenBodyDTO = $notificationTokenDTO->body;
+        $this->tokenB2B = $notificationTokenBodyDTO->accessToken;
+    }
+
+    /**
+     * Generates a TokenB2B object based on the validity of the signature.
+     *
+     * @param bool $isSignatureValid Determines if the signature is valid.
+     * @return NotificationTokenDTO The generated TokenB2B object.
+     */
+    public function generateTokenB2B(bool $isSignatureValid): NotificationTokenDTO
+    {
+            if($isSignatureValid){
+                    return $this->tokenB2BController->generateTokenB2B($this->tokenB2BExpiresIn, $this->issuer, $this->privateKey, $this->clientId);
+            }else{
+                    return $this->tokenB2BController->generateInvalidSignatureResponse();
+            }
+    }
 
 
 }

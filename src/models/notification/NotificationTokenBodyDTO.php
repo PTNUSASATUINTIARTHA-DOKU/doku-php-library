@@ -23,7 +23,7 @@ class NotificationTokenBodyDTO
     * @param int $expiresIn The expiration time (in seconds) for the access token
     * @param string $additionalInfo Additional information
     */
-   public function __construct(string $responseCode, string $responseMessage, string $accessToken, string $tokenType, int $expiresIn, string $additionalInfo)
+   public function __construct(string $responseCode, string $responseMessage, string $accessToken, string $tokenType, ?int $expiresIn, string $additionalInfo)
    {
        $this->responseCode = $responseCode;
        $this->responseMessage = $responseMessage;

@@ -6,7 +6,15 @@ namespace Composer\Autoload;
 
 class ComposerStaticInit3006d0051f3e1edb1c3696ffaba50b3a
 {
+    public static $files = array (
+        '3109cb1a231dcd04bee1f9f620d46975' => __DIR__ . '/..' . '/paragonie/sodium_compat/autoload.php',
+    );
+
     public static $prefixLengthsPsr4 = array (
+        'F' => 
+        array (
+            'Firebase\\JWT\\' => 13,
+        ),
         'D' => 
         array (
             'Doku\\DokuPhpLibrary\\' => 20,
@@ -14,6 +22,10 @@ class ComposerStaticInit3006d0051f3e1edb1c3696ffaba50b3a
     );
 
     public static $prefixDirsPsr4 = array (
+        'Firebase\\JWT\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
+        ),
         'Doku\\DokuPhpLibrary\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',

@@ -61,7 +61,7 @@ class TokenController
      *
      * @return bool True if the signatures match, false otherwise
      */
-    public function validateSignature($requestSignature, $requestTimestamp, $privateKey, $clientId): bool
+    public function validateSignature(string $requestSignature, string $requestTimestamp, string $privateKey, string $clientId): bool
     {
         $createdSignature = $this->tokenServices->createSignature($requestTimestamp, $privateKey, $clientId);
 
@@ -87,9 +87,26 @@ class TokenController
      * @param string $publicKey The public key used for token verification
      * @return bool True if the token is valid, false otherwise
      */
-    public function validateTokenB2B($requestTokenB2B, $publicKey): bool 
+    public function validateTokenB2B(string $requestTokenB2B, string $publicKey): bool 
     {
         return $this->tokenServices->validateTokenB2b($requestTokenB2B, $publicKey);
+    }
+
+    /**
+     * Generates a TokenB2B token with the given expiration time, issuer, private key, and client ID.
+     *
+     * @param int $expiredIn The expiration time of the token in seconds.
+     * @param string $issuer The issuer of the token.
+     * @param string $privateKey The private key used for signing the token.
+     * @param string $clientId The client ID to include in the token.
+     * @return NotificationTokenDTO The generated TokenB2B tokenDTO.
+     */
+    public function generateTokenB2B(int $expiredIn, string $issuer, string $privateKey, string $clientId): NotificationTokenDTO
+    {
+        $timestamp = $this->tokenServices->getTimestamp();
+        $token = $this->tokenServices->generateToken($expiredIn, $issuer, $privateKey, $clientId);
+        $notificationTokenDTO = $this->tokenServices->generateNotificationTokenDTO($token, $timestamp, $clientId, $expiredIn);
+        return $notificationTokenDTO;
     }
 }
 

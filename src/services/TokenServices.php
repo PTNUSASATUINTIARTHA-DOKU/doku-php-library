@@ -9,7 +9,6 @@ class TokenServices
 {
     private string $tokenB2B;
     private string $tokenExpiresIn;
-    private string $tokenTimestamp;
 
     /**
      * Generate the timestamp in the required format for the DOKU SNAP API.
@@ -191,7 +190,7 @@ class TokenServices
             "Unauthorized. Invalid Signature",
             null,
             null,
-            null, // TODO
+            null,
             null
         );
 
@@ -245,46 +244,47 @@ class TokenServices
      * @param string $jwtToken The JWT token received in the request
      * @param string $publicKey The public key used for token verification
      * @return bool True if the token is valid, false otherwise
-     * @throws Exception If there is an error validating the token
      */
     public function validateTokenB2B(string $jwtToken, string $publicKey): bool
     {
         try {
-            $publicKeyResource = openssl_pkey_get_public($publicKey);
+        //     Validate Token manual procedure
+        //     $publicKeyResource = openssl_pkey_get_public($publicKey);
 
-            if ($publicKeyResource === false) {
-                throw new Exception('Invalid public key format');
-            }
+        //     if ($publicKeyResource === false) {
+        //         throw new Exception('Invalid public key format');
+        //     }
 
-            $tokenParts = explode('.', $jwtToken);
+        //     $tokenParts = explode('.', $jwtToken);
 
-            if (count($tokenParts) !== 3) {
-                throw new Exception('Invalid JWT token format');
-            }
+        //     if (count($tokenParts) !== 3) {
+        //         throw new Exception('Invalid JWT token format');
+        //     }
 
-            $header = base64_decode($tokenParts[0]);
-            $payload = base64_decode($tokenParts[1]);
-            $signature = base64_decode($tokenParts[2]);
+        //     $header = base64_decode($tokenParts[0]);
+        //     $payload = base64_decode($tokenParts[1]);
+        //     $signature = base64_decode($tokenParts[2]);
 
-            $data = $tokenParts[0] . '.' . $tokenParts[1];
+        //     $data = $tokenParts[0] . '.' . $tokenParts[1];
 
-            $verified = openssl_verify($data, $signature, $publicKeyResource, 'SHA256');
+        //     $verified = openssl_verify($data, $signature, $publicKeyResource, 'SHA256');
 
-            if ($verified !== 1) {
-                throw new Exception('Invalid token signature');
-            }
+        //     if ($verified !== 1) {
+        //         throw new Exception('Invalid token signature');
+        //     }
 
-            $claims = json_decode($payload, true);
+        //     $claims = json_decode($payload, true);
 
-            if (!isset($claims['clientId'])) {
-                throw new Exception('Missing clientId claim in token payload');
-            }
+        //     if (!isset($claims['clientId'])) {
+        //         throw new Exception('Missing clientId claim in token payload');
+        //     }
 
-            // You can add additional claim validations here, e.g., expiration, issuer, etc.
-
+        // Using firebase JWT library
+            $decodedToken = JWT::decode($jwtToken, new Key($publicKey, 'RS256'));
+            // access decoded token if needed: decodedToken->iss, $decodedToken->exp, etc.
             return true;
         } catch (Exception $e) {
-            throw $e;
+            return false;
         }
     }
 
@@ -313,32 +313,9 @@ class TokenServices
             'clientId' => $clientId,
         ];
 
-        $header = [
-            'typ' => 'JWT',
-            'alg' => 'RS256',
-        ];
-
-        // Manual procedure to generate the signature
-        // $base64Header = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode(json_encode($header)));
-        // $base64Payload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode(json_encode($payload)));
-
-        // $signature = '';
-        // $success = openssl_sign($base64Header . '.' . $base64Payload, $signature, $privateKey, 'SHA256');
-
-        // if (!$success) {
-        //     throw new Exception('Failed to generate signature');
-        // }
-
-        // $base64Signature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
-
-        // return $base64Header . '.' . $base64Payload . '.' . $base64Signature;
-
-        // Using JWT library
         $jwt = JWT::encode($payload, $privateKey, 'RS256');
 
         return $jwt;
     }
 
 }
-
-

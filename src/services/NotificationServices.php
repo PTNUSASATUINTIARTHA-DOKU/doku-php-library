@@ -56,7 +56,7 @@ class NotificationServices
             $responseMessage,
             null,
             null,
-            null, // invalid null, must be integer
+            null, 
             null
         );
 

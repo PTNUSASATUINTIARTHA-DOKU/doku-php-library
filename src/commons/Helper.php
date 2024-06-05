@@ -2,6 +2,12 @@
 
 class Helper
 {
+    /**
+     * Retrieves the current timestamp in the format 'Y-m-d\TH:i:s+07:00'.
+     *
+     * @return string The formatted timestamp.
+     * @throws Exception If the timestamp generation fails.
+     */
     public static function getTimestamp(): string {
         try {
             $currentTimestamp = time();
