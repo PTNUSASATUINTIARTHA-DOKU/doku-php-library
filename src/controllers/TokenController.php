@@ -1,7 +1,5 @@
 <?php
-
-require_once 'src/services/TokenServices.php';
-
+require "src/services/TokenServices.php";
 class TokenController
 {
     private TokenServices $tokenServices;
@@ -12,7 +10,7 @@ class TokenController
     }
 
     /**
-     * Generate a TokenB2BResponseDTO by following the pipeline
+     * Get a TokenB2BResponseDTO from backend by following the pipeline
      *
      * @param string $privateKey The private key for authentication
      * @param string $clientId The client ID for authentication
@@ -24,10 +22,12 @@ class TokenController
     {
         $timestamp = $this->tokenServices->getTimestamp();
         $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
+        echo "Generated Signature: " . "\n\n" . $signature . "\n\n";
+        echo "Generated Timestamp: " . $timestamp . "\n\n";
         $tokenB2BRequestDTO = $this->tokenServices->createTokenB2BRequestDTO($signature, $timestamp, $clientId);
         $tokenB2BResponseDTO = $this->tokenServices->createTokenB2B($tokenB2BRequestDTO, $isProduction);
         return $tokenB2BResponseDTO;
-    }
+    } 
 
     /**
      * Check validity of a TokenB2BResponseDTO by following the pipeline
@@ -79,7 +79,6 @@ class TokenController
         return $this->tokenServices->generateInvalidSignature($timestamp);
     }
 
-    // TODO 2259 , 2335 (spike)
     /**
      * Validate the TokenB2B received in a payment notification HTTP request
      *

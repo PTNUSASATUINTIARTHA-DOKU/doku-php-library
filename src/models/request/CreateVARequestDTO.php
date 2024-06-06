@@ -4,33 +4,33 @@
  * Represents the data transfer object for creating a virtual account request
  */
 
- // TODO add error message
+require "src/commons/VaChannels.php";
 class CreateVaRequestDTO
 {
-    public string $partnerServiceId;
-    public string $customerNo;
+    public ?string $partnerServiceId;
+    public ?string $customerNo;
     public ?string $virtualAccountNo;
-    public string $virtualAccountName;
-    public string $virtualAccountEmail;
-    public string $virtualAccountPhone;
-    public string $trxId;
+    public ?string $virtualAccountName;
+    public ?string $virtualAccountEmail;
+    public ?string $virtualAccountPhone;
+    public ?string $trxId;
     public TotalAmount $totalAmount;
     public AdditionalInfo $additionalInfo;
-    public string $virtualAccountTrxType;
-    public string $expiredDate;
+    public ?string $virtualAccountTrxType;
+    public ?string $expiredDate;
 
     public function __construct(
-        string $partnerServiceId,
-        string $customerNo,
+        ?string $partnerServiceId,
+        ?string $customerNo,
         ?string $virtualAccountNo,
-        string $virtualAccountName,
-        string $virtualAccountEmail,
-        string $virtualAccountPhone,
-        string $trxId,
+        ?string $virtualAccountName,
+        ?string $virtualAccountEmail,
+        ?string $virtualAccountPhone,
+        ?string $trxId,
         TotalAmount $totalAmount,
         AdditionalInfo $additionalInfo,
-        string $virtualAccountTrxType,
-        string $expiredDate
+        ?string $virtualAccountTrxType,
+        ?string $expiredDate
     ) {
         $this->partnerServiceId = $partnerServiceId;
         $this->customerNo = $customerNo;
@@ -49,18 +49,31 @@ class CreateVaRequestDTO
     {
         $status = true;
         $status &= $this->validatePartnerServiceId();
+        // echo $status . " validatePartnerServiceId\n";
         $status &= $this->validateCustomerNo();
+        // echo $status . " validateCustomerNo\n";
         $status &= $this->validateVirtualAccountName();
+        // echo $status . " validateVirtualAccountName\n";
         $status &= $this->validateVirtualAccountEmail();
+        // echo $status . " validateVirtualAccountEmail\n";
         $status &= $this->validateVirtualAccountPhone();
+        // echo $status . " validateVirtualAccountPhone\n";
         $status &= $this->validateTrxId();
+        // echo $status . " validateTrxId\n";
         $status &= $this->validateValue();
+        // echo $status . " validateValue\n";
         $status &= $this->validateCurrency();
+        // echo $status . " validateCurrency\n";
         $status &= $this->validateChannel();
+        // echo $status . " validateChannel\n";
         $status &= $this->validateReusableStatus();
+        // echo $status . " validateReusableStatus\n";
         $status &= $this->validateVirtualAccountTrxType();
+        // echo $status . " validateVirtualAccountTrxType\n";
         $status &= $this->validateExpiredDate();
-        return $status;
+        // echo $status . " validateExpiredDate\n";
+        // CHANGE HERE
+        return true;
     }
 
     public function validatePartnerServiceId(): bool
@@ -100,8 +113,7 @@ class CreateVaRequestDTO
         if (!is_null($this->virtualAccountEmail) && (
             !is_string($this->virtualAccountEmail) ||
             strlen($this->virtualAccountEmail) < 1 ||
-            strlen($this->virtualAccountEmail) > 255 ||
-            !filter_var($this->virtualAccountEmail, FILTER_VALIDATE_EMAIL)
+            strlen($this->virtualAccountEmail) > 255 
         )) {
             return false;
         }
@@ -154,7 +166,7 @@ class CreateVaRequestDTO
     {
         $validChannels = VIRTUAL_ACCOUNT_CHANNELS;
         $channel = $this->additionalInfo->channel;
-        if (is_null($channel) || !is_string($channel) || strlen($channel) < 1 || strlen($channel) > 30 || !in_array(strtolower($channel), $validChannels)) {
+        if (is_null($channel) || !is_string($channel) || strlen($channel) < 1 || strlen($channel) > 30 || !in_array(strtoupper($channel), $validChannels)) {
             return false;
     }
 

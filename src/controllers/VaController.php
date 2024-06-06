@@ -1,5 +1,5 @@
 <?php
-
+require "src/services/VaServices.php";
 class VaController
 {
     private VaServices $vaServices;

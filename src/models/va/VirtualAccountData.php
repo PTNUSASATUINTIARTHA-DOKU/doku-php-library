@@ -5,22 +5,22 @@
  */
 class VirtualAccountData
 {
-    public string $partnerServiceId;
-    public string $customerNo;
-    public string $virtualAccountNo;
-    public string $virtualAccountName;
-    public string $virtualAccountEmail;
-    public string $trxId;
+    public ?string $partnerServiceId;
+    public ?string $customerNo;
+    public ?string $virtualAccountNo;
+    public ?string $virtualAccountName;
+    public ?string $virtualAccountEmail;
+    public ?string $trxId;
     public TotalAmount $totalAmount;
     public AdditionalInfo $additionalInfo;
 
     public function __construct(
-        string $partnerServiceId,
-        string $customerNo,
-        string $virtualAccountNo,
-        string $virtualAccountName,
-        string $virtualAccountEmail,
-        string $trxId,
+        ?string $partnerServiceId,
+        ?string $customerNo,
+        ?string $virtualAccountNo,
+        ?string $virtualAccountName,
+        ?string $virtualAccountEmail,
+        ?string $trxId,
         TotalAmount $totalAmount,
         AdditionalInfo $additionalInfo
     ) {

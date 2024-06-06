@@ -5,13 +5,13 @@
  */
 class VirtualAccountConfig
 {
-    public bool $reusableStatus;
+    public ?bool $reusableStatus;
 
     /**
      * VirtualAccountConfig constructor
      * @param bool $reusableStatus The reusable status of the virtual account
      */
-    public function __construct(bool $reusableStatus)
+    public function __construct(?bool $reusableStatus)
     {
         $this->reusableStatus = $reusableStatus;
     }

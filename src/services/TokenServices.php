@@ -2,9 +2,10 @@
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-
-require_once "src/commons/config.php";
-require_once "src/models/TokenB2BRequestDTO.php";
+require "src/commons/Helper.php";
+require "src/commons/config.php";
+require "src/models/request/TokenB2BRequestDTO.php";
+require "src/models/response/TokenB2BResponseDTO.php";
 class TokenServices
 {
     private string $tokenB2B;
@@ -35,13 +36,13 @@ class TokenServices
         if (empty($privateKey) || empty($clientId) || empty($timestamp)) {
             throw new Exception('Invalid privateKey, clientId, or timestamp');
         }
-
+        
         // Construct the string to sign and generate signature in base 64
-        $stringToSign = $clientId . '|' . $timestamp;
-        $signature = '';
+        $stringToSign = $clientId . "|" . $timestamp;
+        $signature = "";
         $success = openssl_sign($stringToSign, $signature, $privateKey, OPENSSL_ALGO_SHA256);
 
-        if (empty($signature) || !$success) {
+        if (!$success) {
             throw new Exception('Failed to generate signature');
         }
         $base64Signature = base64_encode($signature);
@@ -110,18 +111,14 @@ class TokenServices
 
         $responseData = json_decode($response, true);
 
-        if (isset($responseData['response_code']) && $responseData['response_code'] === '200') {
-            return new TokenB2BResponseDTO(
-                $responseData['response_code'],
-                $responseData['response_message'],
-                $responseData['access_token'],
-                $responseData['token_type'],
-                $responseData['expires_in'],
-                $responseData['additional_info'] ?? ''
-            );
-        } else {
-            throw new Exception('Get token http Error: ' . implode(',',$responseData));
-        }
+        return new TokenB2BResponseDTO(
+            $responseData['responseCode'],
+            $responseData['responseMessage'],
+            $responseData['accessToken'],
+            $responseData['tokenType'],
+            $responseData['expiresIn'],
+            $responseData['additionalInfo'] ?? ''
+        );
     }
 
     /**
@@ -237,7 +234,6 @@ class TokenServices
         );
     }
 
-    // // TODO 2269
     /**
      * Validate the TokenB2B received in a payment notification HTTP request
      *
@@ -288,8 +284,6 @@ class TokenServices
         }
     }
 
-
-    // // TODO 2274
     /**
      * Generate a JWT token
      *

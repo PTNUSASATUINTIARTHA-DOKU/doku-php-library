@@ -1,5 +1,7 @@
 <?php
-
+require "src/models/request/RequestHeaderDTO.php";
+require "src/models/va/VirtualAccountData.php";
+require "src/models/response/CreateVAResponseDTO.php";
 class VaServices
 {
     /**
@@ -16,16 +18,61 @@ class VaServices
     {
         $baseUrl = getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . CREATE_VA;
-        $headerJson = json_encode($requestHeaderDTO);
-        $payloadJson = json_encode($requestDTO);
+        // $headerJson = json_encode($requestHeaderDTO);
+        $header = array(
+            "Content-Type: application/json",
+            'X-PARTNER-ID: ' . $requestHeaderDTO->xPartnerId,
+            'X-EXTERNAL-ID: ' . $requestHeaderDTO->xRequestId,
+            'X-TIMESTAMP: ' . $requestHeaderDTO->xTimestamp,
+            'X-SIGNATURE: ' . $requestHeaderDTO->xSignature,
+            'Authorization:Bearer ' . $requestHeaderDTO->authorization,
+            'CHANNEL-ID: ' . $requestHeaderDTO->channelId
+        );
+        $totalAmountArr = array(
+            'value' => $requestDTO->totalAmount->value,
+            'currency' => $requestDTO->totalAmount->currency
+        );
+        $virtualAccountConfigArr = array(
+            'reusableStatus' => $requestDTO->additionalInfo->virtualAccountConfig->reusableStatus
+        );
+        $additionalInfoArr = array(
+            'channel' => $requestDTO->additionalInfo->channel,
+            'virtualAccountConfig' => $virtualAccountConfigArr
+        );
+        $payload = array(
+            'partnerServiceId' => $requestDTO->partnerServiceId,
+            'customerNo' => $requestDTO->customerNo,
+            'virtualAccountNo' => $requestDTO->virtualAccountNo,
+            'virtualAccountName' => $requestDTO->virtualAccountName,
+            'virtualAccountEmail' => $requestDTO->virtualAccountEmail,
+            'virtualAccountPhone' => $requestDTO->virtualAccountPhone,
+            'trxId' => $requestDTO->trxId,
+            'totalAmount' => $totalAmountArr,
+            'additionalInfo' => $additionalInfoArr,
+            'virtualAccountTrxType' => $requestDTO->virtualAccountTrxType,
+            'expiredDate' => $requestDTO->expiredDate
+        );
+        // $payload = array(
+        //     'partnerServiceId' => '190080',
+        //     'virtualAccountName' => 'Toru Yamashita',
+        //     'trxId' => '23219829713',
+        //     'virtualAccountTrxType' => '1',
+        //     'totalAmount' => array(
+        //         'value' => '11500.00',
+        //         'currency' => 'IDR'
+        //     )
+        // );
+        $payload = json_encode($payload);
+        
+        print_r($payload);
 
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL, $apiEndpoint);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $payloadJson);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headerJson);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 
         $response = curl_exec($ch);
 
@@ -36,26 +83,37 @@ class VaServices
         }
         curl_close($ch);
 
-        $responseData = json_decode($response, true);
-
-        if (isset($responseData['response_code']) && $responseData['response_code'] === '2007300') {
+        $responseObject = json_decode($response, true);
+        if (isset($responseObject['responseCode']) && $responseObject['responseCode'] === '2002700') {
+            $responseData = $responseObject["virtualAccountData"];
+            $totalAmount = new TotalAmount(
+                $responseData['totalAmount']['value'] ?? null, 
+                $responseData['totalAmount']['currency'] ?? null
+            );
+            $virtualAccountConfig = new VirtualAccountConfig(
+                $responseData['additionalInfo']['virtualAccountConfig']['reusableStatus'] ?? null
+            );
+            $additionalInfo = new AdditionalInfo(
+                $responseData['additionalInfo']['channel'] ?? null,
+                $virtualAccountConfig
+            );
             $virtualAccountData = new VirtualAccountData(
-                $responseData['virtual_account_no'],
-                $responseData['virtual_account_name'],
-                $responseData['virtual_account_email'],
-                $responseData['virtual_account_phone'],
-                $responseData['total_amount']['value'] ?? null,
-                $responseData['total_amount']['currency'] ?? null,
-                $responseData['expired_date'],
-                $responseData['additional_info'] ?? []
+                $responseData['partnerServiceId'],
+                $responseData['customerNo'],
+                $responseData['virtualAccountNo'],
+                $responseData['virtualAccountName'],
+                $responseData['virtualAccountEmail'],
+                $responseData['trxId'],
+                $totalAmount,
+                $additionalInfo
             );
             return new CreateVaResponseDTO(
-                $responseData['response_code'],
-                $responseData['response_message'],
+                $responseObject['responseCode'],
+                $responseObject['responseMessage'],
                 $virtualAccountData
             );
         } else {
-            throw new Exception('Error creating virtual account: ' . $responseData['response_message']);
+            throw new Exception('Error creating virtual account: ' . $responseObject['responseMessage']);
         }
     }
 
@@ -68,10 +126,8 @@ class VaServices
     public function generateExternalId(): string
     {
         // Generate a UUID and combine the UUID and timestamp
-        $currentTimestamp = time();
-        $formattedTimestamp = gmdate('Y-m-d\TH:i:s+07:00', $currentTimestamp);
         $uuid = bin2hex(random_bytes(16));
-        $externalId = $uuid . $formattedTimestamp;
+        $externalId = $uuid . Helper::getTimestamp();
 
         return $externalId;
     }

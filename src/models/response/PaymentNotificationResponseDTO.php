@@ -1,8 +1,5 @@
 <?php
 
-require_once "src/models/PaymentNotificationResponseHeaderDTO.php";
-require_once "src/models/PaymentNotificationResponseBodyDTO.php";
-
 /**
  * Class PaymentNotificationResponseDTO
  * This class represents the payment notification response.

@@ -1,6 +1,7 @@
 <?php
-
 require_once "src/controllers/TokenController.php";
+require_once "src/controllers/NotificationController.php";
+require_once "src/controllers/VaController.php";
 class DokuSnap
 {
     private string $privateKey;
@@ -23,10 +24,10 @@ class DokuSnap
      */
     public function __construct(string $privateKey, string $publicKey, string $clientId, string $issuer, bool $isProduction)
     {
-        $this->privateKey = $this->validateString($privateKey);
-        $this->publicKey = $this->validateString($publicKey);
-        $this->issuer = $this->validateString($issuer);
-        $this->clientId = $this->validateString($clientId);
+        $this->privateKey = $privateKey;
+        $this->publicKey = $publicKey;
+        $this->issuer = $issuer;
+        $this->clientId =$clientId;
         $this->isProduction = $isProduction;
 
         $this->tokenB2BController = new TokenController();
@@ -61,7 +62,7 @@ class DokuSnap
     public function setTokenB2B(TokenB2BResponseDTO $tokenB2BResponseDTO)
     {
         $this->tokenB2B = $tokenB2BResponseDTO->accessToken;
-        $this->tokenExpiresIn = $tokenB2BResponseDTO->expiresIn - 10; // Subtract 10 seconds as in diagram requirements
+        $this->tokenB2BExpiresIn = $tokenB2BResponseDTO->expiresIn - 10; // Subtract 10 seconds as in diagram requirements
         $this->tokenB2BGeneratedTimestamp = time();
 
         // TODO
@@ -70,6 +71,21 @@ class DokuSnap
         // persistent token should be handled
         // redis?
     }
+
+
+    /**
+     * ONLY FOR TESTING
+     * Get the token, timestamp, and expiration time of the B2B token
+     *
+     * @return string The token, timestamp, and expiration time of the B2B token
+     */
+    public function getTokenAndTime(): string
+    {
+        $string = $this->tokenB2B . PHP_EOL;
+        $string = $string . "Generated timestamp: " . $this->tokenB2BGeneratedTimestamp . PHP_EOL;
+        return $string  . "Expired In: " . $this->tokenB2BExpiresIn . PHP_EOL;
+    }
+
 
     /**
      * create Virtual Account based on the request
@@ -97,7 +113,6 @@ class DokuSnap
         return $createVAResponseDTO;
     }
 
-    // TODO 2262
     /**
      * Generate a notification response based on token validity and request body
      *
@@ -198,6 +213,4 @@ class DokuSnap
                     return $this->tokenB2BController->generateInvalidSignatureResponse();
             }
     }
-
-
 }
