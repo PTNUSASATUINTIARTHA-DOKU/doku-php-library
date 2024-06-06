@@ -18,7 +18,6 @@ class VaServices
     {
         $baseUrl = getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . CREATE_VA;
-        // $headerJson = json_encode($requestHeaderDTO);
         $header = array(
             "Content-Type: application/json",
             'X-PARTNER-ID: ' . $requestHeaderDTO->xPartnerId,
@@ -52,18 +51,9 @@ class VaServices
             'virtualAccountTrxType' => $requestDTO->virtualAccountTrxType,
             'expiredDate' => $requestDTO->expiredDate
         );
-        // $payload = array(
-        //     'partnerServiceId' => '190080',
-        //     'virtualAccountName' => 'Toru Yamashita',
-        //     'trxId' => '23219829713',
-        //     'virtualAccountTrxType' => '1',
-        //     'totalAmount' => array(
-        //         'value' => '11500.00',
-        //         'currency' => 'IDR'
-        //     )
-        // );
+
         $payload = json_encode($payload);
-        
+
         print_r($payload);
 
         $ch = curl_init();

@@ -244,38 +244,6 @@ class TokenServices
     public function validateTokenB2B(string $jwtToken, string $publicKey): bool
     {
         try {
-        //     Validate Token manual procedure
-        //     $publicKeyResource = openssl_pkey_get_public($publicKey);
-
-        //     if ($publicKeyResource === false) {
-        //         throw new Exception('Invalid public key format');
-        //     }
-
-        //     $tokenParts = explode('.', $jwtToken);
-
-        //     if (count($tokenParts) !== 3) {
-        //         throw new Exception('Invalid JWT token format');
-        //     }
-
-        //     $header = base64_decode($tokenParts[0]);
-        //     $payload = base64_decode($tokenParts[1]);
-        //     $signature = base64_decode($tokenParts[2]);
-
-        //     $data = $tokenParts[0] . '.' . $tokenParts[1];
-
-        //     $verified = openssl_verify($data, $signature, $publicKeyResource, 'SHA256');
-
-        //     if ($verified !== 1) {
-        //         throw new Exception('Invalid token signature');
-        //     }
-
-        //     $claims = json_decode($payload, true);
-
-        //     if (!isset($claims['clientId'])) {
-        //         throw new Exception('Missing clientId claim in token payload');
-        //     }
-
-        // Using firebase JWT library
             $decodedToken = JWT::decode($jwtToken, new Key($publicKey, 'RS256'));
             // access decoded token if needed: decodedToken->iss, $decodedToken->exp, etc.
             return true;
@@ -296,7 +264,6 @@ class TokenServices
      */
     function generateToken(int $expiredIn, string $issuer, string $privateKey, string $clientId): string
     {
-        // TODO format datenya gimana
         $issuedAt = time();
         $expiredAt = $issuedAt + $expiredIn;
 
