@@ -100,26 +100,6 @@ Mxz+iuYBDeqRKo3q9Du8lzaaEzXu
 $clientId1 = "BRN-0221-1693209567392";
 $clientId2 = "BRN-0201-1708598315618";
 $cliendId3 = "BRN-0248-1674717085445";
-// $isProduction = false;
-// $issuer = "";
-// $publicKey = "";
-// $timestamp = time();
-// $totalAmount = new TotalAmount("12500.00", "IDR");
-// $virtualAccountConfig = new VirtualAccountConfig(false);
-// $additionalInfo = new AdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB", $virtualAccountConfig);
-// $createVaRequestDTO = new CreateVARequestDTO(
-//     "    1899",
-//     null,
-//     null,
-//     "T_" . $timestamp,
-//     "test.bnc" . "@test.com",
-//     "6281234567890",
-//     "INV_CIMB_" . $timestamp,
-//     $totalAmount,
-//     $additionalInfo,
-//     "1",
-//     Helper::getTimestamp(500)
-// );
 
 $isProduction = false;
 $issuer = "";
