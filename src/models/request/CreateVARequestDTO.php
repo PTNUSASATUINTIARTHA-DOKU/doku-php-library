@@ -47,38 +47,27 @@ class CreateVaRequestDTO
 
     public function validateVaRequestDTO(): bool
     {
+        // TODO check if the Validate trailing null value in front of string already correct or not
         $status = true;
         $status &= $this->validatePartnerServiceId();
-        // echo $status . " validatePartnerServiceId\n";
         $status &= $this->validateCustomerNo();
-        // echo $status . " validateCustomerNo\n";
         $status &= $this->validateVirtualAccountName();
-        // echo $status . " validateVirtualAccountName\n";
         $status &= $this->validateVirtualAccountEmail();
-        // echo $status . " validateVirtualAccountEmail\n";
         $status &= $this->validateVirtualAccountPhone();
-        // echo $status . " validateVirtualAccountPhone\n";
         $status &= $this->validateTrxId();
-        // echo $status . " validateTrxId\n";
         $status &= $this->validateValue();
-        // echo $status . " validateValue\n";
         $status &= $this->validateCurrency();
-        // echo $status . " validateCurrency\n";
         $status &= $this->validateChannel();
-        // echo $status . " validateChannel\n";
         $status &= $this->validateReusableStatus();
-        // echo $status . " validateReusableStatus\n";
         $status &= $this->validateVirtualAccountTrxType();
-        // echo $status . " validateVirtualAccountTrxType\n";
         $status &= $this->validateExpiredDate();
-        // echo $status . " validateExpiredDate\n";
-        // CHANGE HERE
+
         return true;
     }
 
     public function validatePartnerServiceId(): bool
     {
-        if (is_null($this->partnerServiceId) || !is_string($this->partnerServiceId) || strlen($this->partnerServiceId) > 20 || !preg_match('/^\d+$/', $this->partnerServiceId)) {
+        if (is_null($this->partnerServiceId) || !is_string($this->partnerServiceId) || strlen($this->partnerServiceId) > 20 || !preg_match('/^0*\d+$/', $this->partnerServiceId)) {
             return false;
         }
         return true;

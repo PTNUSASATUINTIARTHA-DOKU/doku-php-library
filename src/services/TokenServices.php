@@ -111,14 +111,26 @@ class TokenServices
 
         $responseData = json_decode($response, true);
 
-        return new TokenB2BResponseDTO(
-            $responseData['responseCode'],
-            $responseData['responseMessage'],
-            $responseData['accessToken'],
-            $responseData['tokenType'],
-            $responseData['expiresIn'],
-            $responseData['additionalInfo'] ?? ''
-        );
+        if ($responseData === null) {
+            throw new Exception('Failed to decode JSON response');
+        }
+
+        if (isset($responseData['error'])) {
+            throw new Exception($responseData['error']['message'] ?? 'Missing error in response data');
+        }
+
+        try {
+            return new TokenB2BResponseDTO(
+                $responseData['responseCode'] ?? '',
+                $responseData['responseMessage'] ?? '',
+                $responseData['accessToken'] ?? '',
+                $responseData['tokenType'] ?? '',
+                $responseData['expiresIn'] ?? '',
+                $responseData['additionalInfo'] ?? ''
+            );
+        } catch (Error $e) {
+            throw new Exception('Failed to create TokenB2BResponseDTO: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -244,6 +256,7 @@ class TokenServices
     public function validateTokenB2B(string $jwtToken, string $publicKey): bool
     {
         try {
+            // object, not boolean
             $decodedToken = JWT::decode($jwtToken, new Key($publicKey, 'RS256'));
             // access decoded token if needed: decodedToken->iss, $decodedToken->exp, etc.
             return true;

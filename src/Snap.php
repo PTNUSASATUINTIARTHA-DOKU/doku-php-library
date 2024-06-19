@@ -14,6 +14,7 @@ class DokuSnap
     private string $issuer;
     private TokenController $tokenB2BController;
     private NotificationController $notificationController;
+    private string $secretKey;
 
     /**
      * Constructor
@@ -22,7 +23,7 @@ class DokuSnap
      * @param string $clientId The client ID for authentication
      * @param bool $isProduction Flag indicating whether to use production or sandbox environment
      */
-    public function __construct(string $privateKey, string $publicKey, string $clientId, string $issuer, bool $isProduction)
+    public function __construct(string $privateKey, string $publicKey, string $clientId, string $issuer, bool $isProduction, string $secretKey)
     {
         $this->privateKey = $privateKey;
         $this->publicKey = $publicKey;
@@ -108,7 +109,7 @@ class DokuSnap
             $tokenB2BResponseDTO = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
             $this->setTokenB2B($tokenB2BResponseDTO);
         }	
-        $vaController = new VaController();
+        $vaController = new VaController(); // TODO move or not
         $createVAResponseDTO = $vaController->createVa($createVaRequestDTO, $this->privateKey, $this->clientId, $this->tokenB2B, $this->isProduction);
         return $createVAResponseDTO;
     }
@@ -212,5 +213,88 @@ class DokuSnap
             }else{
                     return $this->tokenB2BController->generateInvalidSignatureResponse();
             }
+    }
+
+    /**
+     * Create a virtual account using CreateVaRequestDtoV1
+     *
+     * @param CreateVaRequestDTOV1 $createVaRequestDtoV1
+     * @return CreateVaResponseDto
+     * @throws Exception If there is an error creating the virtual account
+     */
+    public function createVaV1(CreateVaRequestDTOV1 $createVaRequestDTOV1): CreateVaResponseDTO
+    {
+        try {
+            $createVaRequestDTO = $createVaRequestDTOV1->convertToCreateVaRequestDTO();
+            $status = $createVaRequestDTO->validateVaRequestDTO();
+            if(!$status){
+                throw new Error();
+            }
+            return $this->createVa($createVaRequestDTO);
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     * Generates a request header DTO.
+     *
+     * This function checks if the current token is invalid and generates a new one if necessary.
+     * Then, it generates a request header DTO using the token obtained from the token B2B controller.
+     *
+     * @return RequestHeaderDTO The generated request header DTO.
+     */
+    public function generateRequestHeader(string $channelId): RequestHeaderDTO
+    {
+        $isTokenInvalid = $this->tokenB2BController->isTokenInvalid(
+            $this->tokenB2B,
+            $this->tokenB2BExpiresIn,
+            $this->tokenB2BGeneratedTimestamp
+        );
+
+        if ($isTokenInvalid) {
+            $tokenB2BResponseDTO = $this->tokenB2BController->getTokenB2B(
+                $this->privateKey,
+                $this->clientId,
+                $this->isProduction
+            );
+            $this->setTokenB2B($tokenB2BResponseDTO);
+        }
+
+        $requestHeaderDTO = $this->tokenB2BController->doGenerateRequestHeader(
+            $this->privateKey,
+            $this->clientId,
+            $this->tokenB2B,
+            $channelId
+        );
+
+        return $requestHeaderDTO;
+    }
+
+     /**
+     * Updates a virtual account based on the provided request DTO.
+     *
+     * @param UpdateVaDTO $updateVaRequestDto The DTO containing the update virtual account request.
+     * @return UpdateVaResponseDTO The DTO containing the update virtual account response.
+     * @throws Exception If the request DTO is invalid.
+     */
+    public function updateVa(UpdateVaDTO $updateVaRequestDto): UpdateVaResponseDTO
+    {
+        if (!$updateVaRequestDto->validateUpdateVaRequestDto()) {
+            return new UpdateVaResponseDTO('400', 'Invalid request data', null);
+        }
+
+        $isTokenInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
+
+        if ($isTokenInvalid) {
+            $tokenController = new TokenController();
+            $tokenB2BResponseDto = $tokenController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
+            $this->setTokenB2B($tokenB2BResponseDto);
+        }
+
+        $vaController = new VaController();
+        $updateVaResponseDto = $vaController->doUpdateVa($updateVaRequestDto, $this->privateKey, $this->clientId, $this->tokenB2B, $this->secretKey);
+
+        return $updateVaResponseDto;
     }
 }

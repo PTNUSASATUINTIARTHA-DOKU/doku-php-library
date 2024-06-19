@@ -54,8 +54,6 @@ class VaServices
 
         $payload = json_encode($payload);
 
-        print_r($payload);
-
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL, $apiEndpoint);
@@ -125,7 +123,6 @@ class VaServices
     /**
      * Create the request header DTO for the create virtual account request.
      *
-     * @param CreateVaRequestDTO $createVaRequestDTO The create virtual account request DTO
      * @param string $privateKey The private key for authentication
      * @param string $clientId The client ID for authentication
      * @param string $tokenB2B The B2B token
@@ -134,20 +131,19 @@ class VaServices
      * @return RequestHeaderDTO The request header DTO
      */
     public function createVaRequestHeaderDTO(
-        CreateVaRequestDTO $createVaRequestDTO,
-        string $privateKey,
-        string $clientId,
-        string $tokenB2B,
         string $timestamp,
+        string $signature,
+        string $clientId,
         string $externalId,
-        string $signature
+        string $channelId,
+        string $tokenB2B
     ): RequestHeaderDTO {
         $requestHeaderDTO = new RequestHeaderDTO(
             $timestamp,
             $signature,
             $clientId,
             $externalId,
-            $createVaRequestDTO->additionalInfo->channel,
+            $channelId,
             $tokenB2B
         );
         return $requestHeaderDTO;
