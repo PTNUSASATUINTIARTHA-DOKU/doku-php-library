@@ -107,30 +107,56 @@ $issuer = "";
 $publicKey = "";
 $timestamp = time();
 $createVaRequestDTO = new CreateVARequestDTO(
-   "    1899",
-   null,
-   null,
-   "T_" . $timestamp,
-   "test.bnc." . $timestamp . "@test.com",
-   "00000062" . $timestamp,
-   "INV_CIMB_" . $timestamp,
-   new TotalAmount("12500.00", "IDR"),
-   new AdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB", new VirtualAccountConfig(false)),
-   "1",
-   "2024-06-24T15:54:04+07:00"
+   "    1899", // $partnerServiceId
+   null, // $customerNo
+   null, // $virtualAccountNo
+   "T_" . $timestamp, // $virtualAccountName
+   "test.bnc." . $timestamp . "@test.com", // $virtualAccountEmail
+   "00000062" . $timestamp, // $virtualAccountPhone
+   "INV_CIMB_" . $timestamp, // $trxId
+   new TotalAmount("12500.00", "IDR"), // $totalAmount
+   new AdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB", new VirtualAccountConfig(false)), // $additionalInfo
+   "1", // $virtualAccountTrxType
+   "2024-06-24T15:54:04+07:00" // $expiredDate
 );
 
-// $dtov1 = new CreateVaRequestDTOV1();
-// $dtov1->paymentChannel = "VIRTUAL_ACCOUNT_BANK_CIMB";
-// $dtov1->expiredDate = "2024-06-24T15:54:04+07:00";
-// $dtov1->trxId = "INV_CIMB_" . $timestamp;
-// $dtov1->amount = "12500.00";
-// $dtov1->customerNo = "00000062" . $timestamp;
-// $dtov1->invoiceNo = "INV_CIMB_" . $timestamp;
-// $dtov1->email = "test.bnc." . $timestamp . "@test.com";
-// $dtov1->bankCode = "T_" . $timestamp;
-// $dtov1->currency = "IDR";
-// $dtov1->transIdMerchant = "INV_CIMB_" . $timestamp;
+$timestamp = time();
+$createVaRequestDtoV1 = new CreateVaRequestDTOV1(
+    "1899", // $mallId
+    "CHAIN_MERCHANT", // $chainMerchant
+    "12500.00", // $amount
+    "12500.00", // $purchaseAmount
+    "INV_CIMB_" . $timestamp, // $transIdMerchant
+    "VIRTUAL_ACCOUNT", // $PaymentType
+    "", // $words
+    date("Y-m-d H:i:s"), // $requestDateTime
+    "IDR", // $currency
+    "IDR", // $purchaseCurrency
+    "", // $sessionId
+    "T_" . $timestamp, // $name
+    "test.bnc." . $timestamp . "@test.com", // $email
+    "", // $additionalData
+    "", // $basket
+    "", // $shippingAddress
+    "", // $shippingCity
+    "", // $shippingState
+    "", // $shippingCountry
+    "", // $shippingZipcode
+    "VIRTUAL_ACCOUNT_BANK_CIMB", // $paymentChannel
+    "", // $address
+    "", // $city
+    "", // $state
+    "", // $country
+    "", // $zipcode
+    "", // $homephone
+    "00000062" . $timestamp, // $mobilephone
+    "", // $workphone
+    "", // $birthday
+    "    1899", // $partnerServiceId
+    "2024-06-24T15:54:04+07:00" // $expiredDate
+);
+
+$createVaRequestDTO = $createVaRequestDtoV1->convertToCreateVaRequestDTO();
 
 
 
@@ -187,7 +213,8 @@ function validateTokenB2B($Snap, $requestTokenB2B) {
 
 function convertV1toSnap($Snap, $dtov1) {
     echo "Convert V1 to Snap: " . PHP_EOL;
-    echo $Snap->createVaV1($dtov1);
+    $virtualAccount = $Snap->createVaV1($dtov1);
+    echo json_encode($virtualAccount, JSON_PRETTY_PRINT);
 }
 
 // getToken($Snap);
@@ -195,14 +222,14 @@ function convertV1toSnap($Snap, $dtov1) {
 $requestSignature = "LtMvncYrtpqDR41PDQLGXaeznzf0/R1mkUZ6KfWslwEDyRTv/Vb2oQlEhrCxIbmLTPxyajTUF96kmDQ4m3ScCCZlDefcI3ovrm3sTBybk2ZfkwgLy9cIkNLVvoZu4jxkA/nYidCVA3BBglc0HqMd/SDE0YI0/tPMl6kOSBQVUz7RAc4oJQ2XQy91k6wzYVUW0S34AQXu+1hPc6f2Dam8kpHFPg8w7LyLTLEoZehRG6uMAi9dj9Y/oMw4i0xu2ZCfxtOPsWMqPHqszjGTk3jPL9wSihbwLYSxdbpYZ2BkbNjHcWbcdnI6ksUotYe+tLPfOTLfAMcjzeOqwBrMorOwpw==";
 $requestTimestamp = "2024-06-06T11:44:15+07:00";
 
-createVA($Snap, $createVaRequestDTO);
+// createVA($Snap, $createVaRequestDTO);
 // validateSignature($Snap, $requestSignature, $requestTimestamp);
 // generateTokenB2BResponse($snap, $requestSignature, $requestTimestamp);
 // validateSignatureAndGenerateToken($snap, $requestSignature, $requestTimestamp);
 // generateInvalidSignatureResponse($snap);
 // validateTokenB2B($snap, $requestTokenB2B);
 
-// onvertV1toSnap($Snap, $dtov1);
+convertV1toSnap($Snap, $createVaRequestDtoV1);
 
 
 

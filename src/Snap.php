@@ -293,7 +293,7 @@ class DokuSnap
         }
 
         $vaController = new VaController();
-        $updateVaResponseDto = $vaController->doUpdateVa($updateVaRequestDto, $this->privateKey, $this->clientId, $this->tokenB2B, $this->secretKey);
+        $updateVaResponseDto = $vaController->doUpdateVa($updateVaRequestDto, $this->privateKey, $this->clientId, $this->tokenB2B, $this->secretKey, $this->isProduction);
 
         return $updateVaResponseDto;
     }
