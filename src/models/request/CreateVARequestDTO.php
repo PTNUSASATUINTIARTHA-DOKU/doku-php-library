@@ -49,25 +49,25 @@ class CreateVaRequestDTO
     {
         // TODO check if the Validate trailing null value in front of string already correct or not
         $status = true;
-        print("PartnerServiceId: " . ($this->validatePartnerServiceId()) . "\n");
-        print("CustomerNo: " . ($this->validateCustomerNo()) . "\n");
-        print("VirtualAccountName: " . ($this->validateVirtualAccountName()) . "\n");
-        print("VirtualAccountEmail: " . ($this->validateVirtualAccountEmail()) . "\n");
-        print("VirtualAccountPhone: " . ($this->validateVirtualAccountPhone()) . "\n");
-        print("TrxId: " . ($this->validateTrxId()) . "\n");
-        print("Value: " . ($this->validateValue()) . "\n");
-        print("Currency: " . ($this->validateCurrency()) . "\n");
-        print("Channel: " . ($this->validateChannel()) . "\n");
-        print("ReusableStatus: " . ($this->validateReusableStatus()) . "\n");
-        print("VirtualAccountTrxType: " . ($this->validateVirtualAccountTrxType()) . "\n");
-        print("ExpiredDate: " . ($this->validateExpiredDate()) . "\n");
+        $status &= $this->validatePartnerServiceId();
+        $status &= $this->validateCustomerNo();
+        $status &= $this->validateVirtualAccountName();
+        $status &= $this->validateVirtualAccountEmail();
+        $status &= $this->validateVirtualAccountPhone();
+        $status &= $this->validateTrxId();
+        $status &= $this->validateValue();
+        $status &= $this->validateCurrency();
+        $status &= $this->validateChannel();
+        $status &= $this->validateReusableStatus();
+        $status &= $this->validateVirtualAccountTrxType();
+        $status &= $this->validateExpiredDate();
 
         return true;
     }
 
     public function validatePartnerServiceId(): bool
     {
-        if (is_null($this->partnerServiceId) || !is_string($this->partnerServiceId) || strlen($this->partnerServiceId) > 20 || !preg_match('/^0*\d+$/', $this->partnerServiceId)) {
+        if (is_null($this->partnerServiceId) || !is_string($this->partnerServiceId) || strlen($this->partnerServiceId) > 20 || !preg_match('/^ *\d+$/', $this->partnerServiceId)) {
             return false;
         }
         return true;
@@ -75,7 +75,10 @@ class CreateVaRequestDTO
     
     public function validateCustomerNo(): bool
     {
-        if (is_null($this->customerNo) || !is_string($this->customerNo) || strlen($this->customerNo) !== 8 || !preg_match('/^\s{0,7}\d{1,8}$/', $this->customerNo)) {
+        if(is_null($this->customerNo)) {
+            return true;
+        }
+        if (!is_string($this->customerNo) || strlen($this->customerNo) !== 8 || !preg_match('/^\s{0,7}\d{1,8}$/', $this->customerNo)) {
             return false;
         }
         return $this->validateVirtualAccountNo();
