@@ -18,41 +18,8 @@ class VaServices
     {
         $baseUrl = getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . CREATE_VA;
-        $header = array(
-            "Content-Type: application/json",
-            'X-PARTNER-ID: ' . $requestHeaderDTO->xPartnerId,
-            'X-EXTERNAL-ID: ' . $requestHeaderDTO->xRequestId,
-            'X-TIMESTAMP: ' . $requestHeaderDTO->xTimestamp,
-            'X-SIGNATURE: ' . $requestHeaderDTO->xSignature,
-            'Authorization:Bearer ' . $requestHeaderDTO->authorization,
-            'CHANNEL-ID: ' . $requestHeaderDTO->channelId
-        );
-        $totalAmountArr = array(
-            'value' => $requestDTO->totalAmount->value,
-            'currency' => $requestDTO->totalAmount->currency
-        );
-        $virtualAccountConfigArr = array(
-            'reusableStatus' => $requestDTO->additionalInfo->virtualAccountConfig->reusableStatus
-        );
-        $additionalInfoArr = array(
-            'channel' => $requestDTO->additionalInfo->channel,
-            'virtualAccountConfig' => $virtualAccountConfigArr
-        );
-        $payload = array(
-            'partnerServiceId' => $requestDTO->partnerServiceId,
-            'customerNo' => $requestDTO->customerNo,
-            'virtualAccountNo' => $requestDTO->virtualAccountNo,
-            'virtualAccountName' => $requestDTO->virtualAccountName,
-            'virtualAccountEmail' => $requestDTO->virtualAccountEmail,
-            'virtualAccountPhone' => $requestDTO->virtualAccountPhone,
-            'trxId' => $requestDTO->trxId,
-            'totalAmount' => $totalAmountArr,
-            'additionalInfo' => $additionalInfoArr,
-            'virtualAccountTrxType' => $requestDTO->virtualAccountTrxType,
-            'expiredDate' => $requestDTO->expiredDate
-        );
-
-        $payload = json_encode($payload);
+        $headers = $this->prepareHeaders($requestHeaderDTO);
+        $payload = json_encode($this->preparePayload($requestDTO));
 
         $ch = curl_init();
 
@@ -60,7 +27,7 @@ class VaServices
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         $response = curl_exec($ch);
 
@@ -72,6 +39,79 @@ class VaServices
         curl_close($ch);
 
         $responseObject = json_decode($response, true);
+
+        return $this->constructVAResponseDTO($responseObject);
+    }
+
+    public function doUpdateVa(RequestHeaderDTO $requestHeaderDto, UpdateVaDTO $updateVaDto, bool $isProduction = false): UpdateVaResponseDto
+    {
+        $baseUrl = getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . UPDATE_VA_URL;
+        $headers = $this->prepareHeaders($requestHeaderDto);
+        $payload = json_encode($this->preparePayload($updateVaDto));
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $apiEndpoint);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if (curl_errno($ch)) {
+            curl_close($ch);
+            return new UpdateVaResponseDto('500', 'Curl error: ' . curl_error($ch), null);
+        }
+
+        curl_close($ch);
+
+        $responseBody = json_decode($response, true);
+        return $this->constructVAResponseDTO($responseBody); // TODO 
+    }
+
+    private function prepareHeaders(RequestHeaderDTO $requestHeaderDto): array
+    {
+        return [
+            'Content-Type' => 'application/json',
+            'X-TIMESTAMP' => $requestHeaderDto->xTimestamp,
+            'X-SIGNATURE' => $requestHeaderDto->xSignature,
+            'X-PARTNER-ID' => $requestHeaderDto->xPartnerId,
+            'X-REQUEST-ID' => $requestHeaderDto->xRequestId,
+            'CHANNEL-ID' => $requestHeaderDto->channelId,
+            'Authorization' => $requestHeaderDto->authorization,
+        ];
+    }
+
+    private function preparePayload( $updateVaDto): array
+    {
+        return [
+            'partnerServiceId' => $updateVaDto->partnerServiceId,
+            'customerNo' => $updateVaDto->customerNo,
+            'virtualAccountNo' => $updateVaDto->virtualAccountNo,
+            'virtualAccountName' => $updateVaDto->virtualAccountName,
+            'virtualAccountEmail' => $updateVaDto->virtualAccountEmail,
+            'virtualAccountPhone' => $updateVaDto->virtualAccountPhone,
+            'trxId' => $updateVaDto->trxId,
+            'totalAmount' => [
+                'value' => $updateVaDto->totalAmount->value,
+                'currency' => $updateVaDto->totalAmount->currency,
+            ],
+            'additionalInfo' => [
+                'channel' => $updateVaDto->additionalInfo->channel,
+                'virtualAccountConfig' => [
+                    'status' => $updateVaDto->additionalInfo->virtualAccountConfig->status,
+                ],
+            ],
+            'virtualAccountTrxType' => $updateVaDto->virtualAccountTrxType,
+            'expiredDate' => $updateVaDto->expiredDate,
+        ];
+    }
+
+    private function constructVAResponseDTO($responseObject): CreateVaResponseDTO
+    {
         if (isset($responseObject['responseCode']) && $responseObject['responseCode'] === '2002700') {
             $responseData = $responseObject["virtualAccountData"];
             $totalAmount = new TotalAmount(

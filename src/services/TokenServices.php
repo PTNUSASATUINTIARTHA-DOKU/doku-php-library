@@ -292,4 +292,105 @@ class TokenServices
         return $jwt;
     }
 
+    /**
+     * Generates a symmetric signature for a given HTTP method, endpoint URL, token, request DTO, timestamp, and secret key.
+     *
+     * @param string $httpMethod The HTTP method used for the request.
+     * @param string $endPointUrl The URL of the endpoint.
+     * @param string $tokenB2B The B2B token.
+     * @param UpdateVaDTO $UpdateVaDTO The request DTO.
+     * @param string $timestamp The timestamp of the request.
+     * @param string $secretKey The secret key used for signing.
+     * @return string The base64 encoded signature.
+     */
+    public function generateSymmetricSignature(
+        string $httpMethod,
+        string $endPointUrl,
+        string $tokenB2B,
+        UpdateVaDTO $UpdateVaDTO,
+        string $timestamp,
+        string $secretKey
+    ): string {
+        // Minify and hash the request DTO
+        $minifiedDto = $this->minifyDto($UpdateVaDTO);
+        $hashedDto = strtolower(bin2hex(hash('sha256', $minifiedDto, true)));
+
+        $strToSign = implode(':', [
+            $httpMethod,
+            $endPointUrl,
+            $tokenB2B,
+            $hashedDto,
+            $timestamp
+        ]);
+
+        $signature = hash_hmac('sha512', $strToSign, $secretKey, true);
+        return base64_encode($signature);
+    }
+
+    /**
+     * Minifies the UpdateVaDTO object to a JSON string with no whitespace.
+     *
+     * @param UpdateVaDTO $dto The UpdateVaDTO object to minify.
+     * @return string The minified JSON string.
+     */
+    private function minifyDto(UpdateVaDTO $dto): string
+    {
+        $array = $this->dtoToArray($dto);
+        // Encode to JSON with no whitespace
+        return json_encode($array, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * Converts an UpdateVaDTO object to an associative array.
+     *
+     * @param UpdateVaDTO $dto The UpdateVaDTO object to convert.
+     * @return array The associative array representation of the UpdateVaDTO object.
+     */
+    private function dtoToArray(UpdateVaDTO $dto): array
+    {
+        return [
+            'partnerServiceId' => $dto->partnerServiceId,
+            'customerNo' => $dto->customerNo,
+            'virtualAccountNo' => $dto->virtualAccountNo,
+            'virtualAccountName' => $dto->virtualAccountName,
+            'virtualAccountEmail' => $dto->virtualAccountEmail,
+            'virtualAccountPhone' => $dto->virtualAccountPhone,
+            'trxId' => $dto->trxId,
+            'totalAmount' => $this->totalAmountToArray($dto->totalAmount),
+            'additionalInfo' => $this->additionalInfoToArray($dto->additionalInfo),
+            'virtualAccountTrxType' => $dto->virtualAccountTrxType,
+            'expiredDate' => $dto->expiredDate,
+        ];
+    }
+
+    /**
+     * Converts a TotalAmount object to an associative array.
+     *
+     * @param TotalAmount $totalAmount The TotalAmount object to convert.
+     * @return array The associative array representation of the TotalAmount object.
+     */
+    private function totalAmountToArray(TotalAmount $totalAmount): array
+    {
+        return [
+            'value' => $totalAmount->value,
+            'currency' => $totalAmount->currency,
+        ];
+    }
+
+    /**
+     * Converts an UpdateVaAdditionalInfoDto object to an associative array.
+     *
+     * @param UpdateVaAdditionalInfoDTO $additionalInfo The UpdateVaAdditionalInfoDto object to convert.
+     * @return array The associative array representation of the UpdateVaAdditionalInfoDto object.
+     */
+    private function additionalInfoToArray(UpdateVaAdditionalInfoDTO $additionalInfo): array
+    {
+        return [
+            'channel' => $additionalInfo->channel,
+            'virtualAccountConfig' => [
+                'status' => $additionalInfo->virtualAccountConfig->status,
+            ],
+        ];
+    }
+
 }

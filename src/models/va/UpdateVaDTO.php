@@ -3,61 +3,8 @@
  * Class UpdateVaDTO
  * Represents the data for updating a virtual account.
  */
-class UpdateVaDTO
+class UpdateVaDTO extends CreateVaRequestDTO
 {
-    public string $partnerServiceId;
-    public string $customerNo;
-    public string $virtualAccountNo;
-    public string $virtualAccountName;
-    public string $virtualAccountEmail;
-    public string $virtualAccountPhone;
-    public string $trxId;
-    public TotalAmount $totalAmount;
-    public UpdateVaAdditionalInfoDto $additionalInfo;
-    public string $virtualAccountTrxType;
-    public string $expiredDate;
-
-    /**
-     * UpdateVaDTO constructor.
-     * @param string $partnerServiceId The partner service ID.
-     * @param string $customerNo The customer number.
-     * @param string $virtualAccountNo The virtual account number.
-     * @param string $virtualAccountName The virtual account name.
-     * @param string $virtualAccountEmail The virtual account email.
-     * @param string $virtualAccountPhone The virtual account phone number.
-     * @param string $trxId The transaction ID.
-     * @param TotalAmount $totalAmount The total amount for the transaction.
-     * @param UpdateVaAdditionalInfoDto $additionalInfo Additional information for the virtual account update.
-     * @param string $virtualAccountTrxType The virtual account transaction type.
-     * @param string $expiredDate The expiration date for the virtual account (ISO 8601 format).
-     */
-
-    public function __construct(
-        string $partnerServiceId,
-        string $customerNo,
-        string $virtualAccountNo,
-        string $virtualAccountName,
-        string $virtualAccountEmail,
-        string $virtualAccountPhone,
-        string $trxId,
-        TotalAmount $totalAmount,
-        UpdateVaAdditionalInfoDTO $additionalInfo,
-        string $virtualAccountTrxType,
-        string $expiredDate
-    ) {
-        $this->partnerServiceId = $partnerServiceId;
-        $this->customerNo = $customerNo;
-        $this->virtualAccountNo = $virtualAccountNo;
-        $this->virtualAccountName = $virtualAccountName;
-        $this->virtualAccountEmail = $virtualAccountEmail;
-        $this->virtualAccountPhone = $virtualAccountPhone;
-        $this->trxId = $trxId;
-        $this->totalAmount = $totalAmount;
-        $this->additionalInfo = $additionalInfo;
-        $this->virtualAccountTrxType = $virtualAccountTrxType;
-        $this->expiredDate = $expiredDate;
-    }
-
     public function validateUpdateVaRequestDto(): bool
     {
         $status = true;
