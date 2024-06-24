@@ -47,21 +47,19 @@ class CreateVaRequestDTO
 
     public function validateVaRequestDTO(): bool
     {
-        // TODO check if the Validate trailing null value in front of string already correct or not
         $status = true;
-        $status &= $this->validatePartnerServiceId();
-        $status &= $this->validateCustomerNo();
-        $status &= $this->validateVirtualAccountName();
-        $status &= $this->validateVirtualAccountEmail();
-        $status &= $this->validateVirtualAccountPhone();
-        $status &= $this->validateTrxId();
-        $status &= $this->validateValue();
-        $status &= $this->validateCurrency();
-        $status &= $this->validateChannel();
-        $status &= $this->validateReusableStatus();
-        $status &= $this->validateVirtualAccountTrxType();
-        $status &= $this->validateExpiredDate();
-
+        print("PartnerServiceId: " . ($this->validatePartnerServiceId()) . "\n");
+        print("CustomerNo: " . ($this->validateCustomerNo()) . "\n");
+        print("VirtualAccountName: " . ($this->validateVirtualAccountName()) . "\n");
+        print("VirtualAccountEmail: " . ($this->validateVirtualAccountEmail()) . "\n");
+        print("VirtualAccountPhone: " . ($this->validateVirtualAccountPhone()) . "\n");
+        print("TrxId: " . ($this->validateTrxId()) . "\n");
+        print("Value: " . ($this->validateValue()) . "\n");
+        print("Currency: " . ($this->validateCurrency()) . "\n");
+        print("Channel: " . ($this->validateChannel()) . "\n");
+        print("ReusableStatus: " . ($this->validateReusableStatus()) . "\n");
+        print("VirtualAccountTrxType: " . ($this->validateVirtualAccountTrxType()) . "\n");
+        print("ExpiredDate: " . ($this->validateExpiredDate()) . "\n");
         return true;
     }
 
@@ -117,8 +115,7 @@ class CreateVaRequestDTO
         if (!is_null($this->virtualAccountPhone) && (
             !is_string($this->virtualAccountPhone) ||
             strlen($this->virtualAccountPhone) < 9 ||
-            strlen($this->virtualAccountPhone) > 30 ||
-            !preg_match('/^62/', $this->virtualAccountPhone)
+            strlen($this->virtualAccountPhone) > 30
         )) {
             return false;
         }

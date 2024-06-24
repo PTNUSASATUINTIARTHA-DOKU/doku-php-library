@@ -112,7 +112,7 @@ $createVaRequestDTO = new CreateVARequestDTO(
    null, // $virtualAccountNo
    "T_" . $timestamp, // $virtualAccountName
    "test.bnc." . $timestamp . "@test.com", // $virtualAccountEmail
-   "00000062" . $timestamp, // $virtualAccountPhone
+   "00000062798", // $virtualAccountPhone
    "INV_CIMB_" . $timestamp, // $trxId
    new TotalAmount("12500.00", "IDR"), // $totalAmount
    new AdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB", new VirtualAccountConfig(false)), // $additionalInfo
@@ -149,7 +149,7 @@ $createVaRequestDtoV1 = new CreateVaRequestDTOV1(
     "", // $country
     "", // $zipcode
     "", // $homephone
-    "00000062" . $timestamp, // $mobilephone
+    "00000062798", // $mobilephone
     "", // $workphone
     "", // $birthday
     "    1899", // $partnerServiceId
@@ -166,7 +166,7 @@ echo Helper::getTimestamp(500) . "\n";
 $clientId = $clientId1;
 $privateKey = $privateKey1;
 $secretKey = "";
-$Snap = new DokuSnap($privateKey, $publicKey, $clientId, $issuer, $isProduction, $secretKey);
+$Snap = new Snap($privateKey, $publicKey, $clientId, $issuer, $isProduction, $secretKey);
     
 
 function getToken($Snap) {

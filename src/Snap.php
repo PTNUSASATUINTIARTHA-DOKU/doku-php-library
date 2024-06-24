@@ -2,7 +2,7 @@
 require_once "src/controllers/TokenController.php";
 require_once "src/controllers/NotificationController.php";
 require_once "src/controllers/VaController.php";
-class DokuSnap
+class Snap
 {
     private string $privateKey;
     private string $clientId;
@@ -85,6 +85,18 @@ class DokuSnap
         $string = $this->tokenB2B . PHP_EOL;
         $string = $string . "Generated timestamp: " . $this->tokenB2BGeneratedTimestamp . PHP_EOL;
         return $string  . "Expired In: " . $this->tokenB2BExpiresIn . PHP_EOL;
+    }
+
+    /**
+     * Retrieves the value of the new generated tokenB2B property.
+     *
+     * @return string The value of the tokenB2B property.
+     */
+    public function getTokenB2B(): string
+    {
+        $tokenB2BResponseDTO = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
+        $this->setTokenB2B($tokenB2BResponseDTO);
+        return $this->tokenB2B;
     }
 
 
