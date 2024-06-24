@@ -101,6 +101,17 @@ class Snap
 
 
     /**
+     * Retrieves the value of the current tokenB2B property.
+     *
+     * @return string The value of the tokenB2B property.
+     */
+    public function getCurrentTokenB2B(): string
+    {
+        return $this->tokenB2B;
+    }
+
+
+    /**
      * create Virtual Account based on the request
      *
      * @param CreateVaRequestDTO $createVaRequestDTO The DTO containing the create virtual account request
