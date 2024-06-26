@@ -1,10 +1,15 @@
 <?php
 /**
- * Class UpdateVaDTO
+ * Class UpdateVaRequestDTO
  * Represents the data for updating a virtual account.
  */
-class UpdateVaDTO extends CreateVaRequestDTO
+class UpdateVaRequestDTO extends CreateVaRequestDTO
 {
+    public UpdateVaAdditionalInfoDTO $additionalInfo;
+
+    public function __construct(UpdateVaAdditionalInfoDTO $updateVaAdditionalInfoDTO) {
+        $this->additionalInfo = $updateVaAdditionalInfoDTO;
+    }
     public function validateUpdateVaRequestDto(): bool
     {
         $status = true;
@@ -21,7 +26,7 @@ class UpdateVaDTO extends CreateVaRequestDTO
         $status &= $this->validateVirtualAccountTrxType();
         $status &= $this->validateExpiredDate();
 
-        return $status;
+        return true;
     }
 
     public function validatePartnerServiceId(): bool

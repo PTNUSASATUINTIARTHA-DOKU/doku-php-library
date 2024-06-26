@@ -298,7 +298,7 @@ class TokenServices
      * @param string $httpMethod The HTTP method used for the request.
      * @param string $endPointUrl The URL of the endpoint.
      * @param string $tokenB2B The B2B token.
-     * @param UpdateVaDTO $UpdateVaDTO The request DTO.
+     * @param UpdateVaRequestDTO $UpdateVaRequestDTO The request DTO.
      * @param string $timestamp The timestamp of the request.
      * @param string $secretKey The secret key used for signing.
      * @return string The base64 encoded signature.
@@ -307,12 +307,12 @@ class TokenServices
         string $httpMethod,
         string $endPointUrl,
         string $tokenB2B,
-        UpdateVaDTO $UpdateVaDTO,
+        UpdateVaRequestDTO $UpdateVaRequestDTO,
         string $timestamp,
         string $secretKey
     ): string {
         // Minify and hash the request DTO
-        $minifiedDto = $this->minifyDto($UpdateVaDTO);
+        $minifiedDto = $this->minifyDto($UpdateVaRequestDTO);
         $hashedDto = strtolower(bin2hex(hash('sha256', $minifiedDto, true)));
 
         $strToSign = implode(':', [
@@ -328,12 +328,12 @@ class TokenServices
     }
 
     /**
-     * Minifies the UpdateVaDTO object to a JSON string with no whitespace.
+     * Minifies the UpdateVaRequestDTO object to a JSON string with no whitespace.
      *
-     * @param UpdateVaDTO $dto The UpdateVaDTO object to minify.
+     * @param UpdateVaRequestDTO $dto The UpdateVaRequestDTO object to minify.
      * @return string The minified JSON string.
      */
-    private function minifyDto(UpdateVaDTO $dto): string
+    private function minifyDto(UpdateVaRequestDTO $dto): string
     {
         $array = $this->dtoToArray($dto);
         // Encode to JSON with no whitespace
@@ -341,12 +341,12 @@ class TokenServices
     }
 
     /**
-     * Converts an UpdateVaDTO object to an associative array.
+     * Converts an UpdateVaRequestDTO object to an associative array.
      *
-     * @param UpdateVaDTO $dto The UpdateVaDTO object to convert.
-     * @return array The associative array representation of the UpdateVaDTO object.
+     * @param UpdateVaRequestDTO $dto The UpdateVaRequestDTO object to convert.
+     * @return array The associative array representation of the UpdateVaRequestDTO object.
      */
-    private function dtoToArray(UpdateVaDTO $dto): array
+    private function dtoToArray(UpdateVaRequestDTO $dto): array
     {
         return [
             'partnerServiceId' => $dto->partnerServiceId,

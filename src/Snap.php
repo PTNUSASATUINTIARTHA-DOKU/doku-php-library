@@ -297,11 +297,11 @@ class Snap
      /**
      * Updates a virtual account based on the provided request DTO.
      *
-     * @param UpdateVaDTO $updateVaRequestDto The DTO containing the update virtual account request.
+     * @param UpdateVaRequestDTO $updateVaRequestDto The DTO containing the update virtual account request.
      * @return UpdateVaResponseDTO The DTO containing the update virtual account response.
      * @throws Exception If the request DTO is invalid.
      */
-    public function updateVa(UpdateVaDTO $updateVaRequestDto): UpdateVaResponseDTO
+    public function updateVa(UpdateVaRequestDTO $updateVaRequestDto): UpdateVaResponseDTO
     {
         if (!$updateVaRequestDto->validateUpdateVaRequestDto()) {
             return new UpdateVaResponseDTO('400', 'Invalid request data', null);

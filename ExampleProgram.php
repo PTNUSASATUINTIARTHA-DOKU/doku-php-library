@@ -6,6 +6,7 @@ require "src/models/va/AdditionalInfo.php";
 require "src/models/va/VirtualAccountConfig.php";
 require "src/models/va/TotalAmount.php";
 require "src/models/request/CreateVARequestDTOV1.php";
+require "src/models/va/UpdateVaDTO.php";
 
 $privateKey1 = "-----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCvuA0S+R8RGEoT
@@ -156,7 +157,21 @@ $createVaRequestDtoV1 = new CreateVaRequestDTOV1(
     "2024-06-24T15:54:04+07:00" // $expiredDate
 );
 
-$createVaRequestDTO = $createVaRequestDtoV1->convertToCreateVaRequestDTO();
+$createVaRequestDTOConverted = $createVaRequestDtoV1->convertToCreateVaRequestDTO();
+
+$updateVaRequestDTO = new UpdateVaRequestDTO(
+   "    1899", // $partnerServiceId
+   null, // $customerNo
+   null, // $virtualAccountNo
+   "T_" . $timestamp, // $virtualAccountName
+   "test.bnc." . $timestamp . "@test.com", // $virtualAccountEmail
+   "00000062666", // $virtualAccountPhone
+   "INV_CIMB_" . $timestamp, // $trxId
+   new TotalAmount("12500.00", "IDR"), // $totalAmount
+   new AdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB", new VirtualAccountConfig(false)), // $additionalInfo
+   "1", // $virtualAccountTrxType
+   "2024-07-31T15:54:04+07:00" // $expiredDate
+);
 
 
 
@@ -174,7 +189,13 @@ function getToken($Snap) {
     echo $Snap->getTokenAndTime();
 }
 
-function createVA($Snap, $createVaRequestDTO) {
+function createVA($Snap, $updateVaRequestDTO) {
+    echo "Updating VA B2B: " . PHP_EOL;
+    $virtualAccount = $Snap->createVa($updateVaRequestDTO);
+    echo json_encode($virtualAccount, JSON_PRETTY_PRINT);
+}
+
+function updateVA($Snap, $createVaRequestDTO) {
     echo "Creating VA B2B: " . PHP_EOL;
     $virtualAccount = $Snap->createVa($createVaRequestDTO);
     echo json_encode($virtualAccount, JSON_PRETTY_PRINT);
@@ -223,13 +244,14 @@ $requestSignature = "LtMvncYrtpqDR41PDQLGXaeznzf0/R1mkUZ6KfWslwEDyRTv/Vb2oQlEhrC
 $requestTimestamp = "2024-06-06T11:44:15+07:00";
 
 // createVA($Snap, $createVaRequestDTO);
+updateVA($Snap, $updateVaRequestDTO);
 // validateSignature($Snap, $requestSignature, $requestTimestamp);
 // generateTokenB2BResponse($snap, $requestSignature, $requestTimestamp);
 // validateSignatureAndGenerateToken($snap, $requestSignature, $requestTimestamp);
 // generateInvalidSignatureResponse($snap);
 // validateTokenB2B($snap, $requestTokenB2B);
 
-convertV1toSnap($Snap, $createVaRequestDtoV1);
+//convertV1toSnap($Snap, $createVaRequestDtoV1);
 
 
 

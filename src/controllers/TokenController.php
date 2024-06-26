@@ -125,7 +125,7 @@ class TokenController
         $timestamp = $this->tokenServices->getTimestamp();
         $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
 
-        return $this->vaServices->createVaRequestHeaderDto(
+        return $this->vaServices->generateRequestHeaderDTO(
             $timestamp,
             $signature,
             $clientId,

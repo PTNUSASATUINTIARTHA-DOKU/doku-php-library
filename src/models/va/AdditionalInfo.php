@@ -13,9 +13,9 @@ class AdditionalInfo
      * @param string $channel The channel for the request
      * @param VirtualAccountConfig $reusableStatus The reusable status configuration
      */
-    public function __construct(?string $channel, VirtualAccountConfig $reusableStatus)
+    public function __construct(?string $channel, VirtualAccountConfig $virtualAccountConfig)
     {
         $this->channel = $channel;
-        $this->virtualAccountConfig = $reusableStatus;
+        $this->virtualAccountConfig = $virtualAccountConfig;
     }
 }
