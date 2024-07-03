@@ -3,12 +3,36 @@
  * Class UpdateVaRequestDTO
  * Represents the data for updating a virtual account.
  */
-class UpdateVaRequestDTO extends CreateVaRequestDTO
+class UpdateVaRequestDTO extends VaRequestDTO
 {
-    public UpdateVaAdditionalInfoDTO $additionalInfo;
+    public UpdateVaRequestAdditionalInfoDTO $additionalInfo;
 
-    public function __construct(UpdateVaAdditionalInfoDTO $updateVaAdditionalInfoDTO) {
-        $this->additionalInfo = $updateVaAdditionalInfoDTO;
+    public function __construct(
+        ?string $partnerServiceId,
+        ?string $customerNo,
+        ?string $virtualAccountNo,
+        ?string $virtualAccountName,
+        ?string $virtualAccountEmail,
+        ?string $virtualAccountPhone,
+        ?string $trxId,
+        TotalAmount $totalAmount,
+        UpdateVaRequestAdditionalInfoDTO $updateVaAdditionalInfoDTO,
+        ?string $virtualAccountTrxType,
+        ?string $expiredDate
+    ) {
+        parent::__construct(
+            $partnerServiceId,
+            $customerNo,
+            $virtualAccountNo,
+            $virtualAccountName,
+            $virtualAccountEmail,
+            $virtualAccountPhone,
+            $trxId,
+            $totalAmount,
+            $updateVaAdditionalInfoDTO,
+            $virtualAccountTrxType,
+            $expiredDate
+        );
     }
     public function validateUpdateVaRequestDto(): bool
     {

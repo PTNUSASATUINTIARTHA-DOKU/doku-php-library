@@ -1,9 +1,9 @@
 <?php
 /**
- * Class AdditionalInfo
- * Represents additional information for the virtual account request
+ * Class UpdateVaAdditionalInfoDto
+ * Represents additional information for updating a virtual account.
  */
-class AdditionalInfo
+class UpdateVaRequestAdditionalInfoDTO extends AdditionalInfo
 {
     public ?string $channel;
     public VirtualAccountConfig $virtualAccountConfig;

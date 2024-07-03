@@ -1,6 +1,6 @@
 <?php
 require "src/models/request/RequestHeaderDTO.php";
-require "src/models/va/VirtualAccountData.php";
+require "src/models/va/utility/VaResponseVirtualAccountData.php";
 require "src/models/response/CreateVAResponseDTO.php";
 class VaServices
 {
@@ -14,63 +14,30 @@ class VaServices
      * @throws Exception If there is an error creating the virtual account
      */
 
-    public function createVa(RequestHeaderDTO $requestHeaderDTO, CreateVaRequestDTO $requestDTO, bool $isProduction): CreateVaResponseDTO
+    public function createVa(RequestHeaderDTO $requestHeaderDTO, VaRequestDTO $createRequestDTO, bool $isProduction): CreateVaResponseDTO
     {
         $baseUrl = getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . CREATE_VA;
         $headers = $this->prepareHeaders($requestHeaderDTO);
-        $payload = json_encode($this->preparePayload($requestDTO, true));
-
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $apiEndpoint);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-        $response = curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            $error = curl_error($ch); 
-            curl_close($ch);
-            throw new Exception('cURL error: ' . $error);
-        }
-        curl_close($ch);
-
+        $payload = json_encode($this->preparePayload($createRequestDTO, true));
+        $response = $this->doHitAPI($apiEndpoint, $payload, "POST");
         $responseObject = json_decode($response, true);
 
         return $this->constructVAResponseDTO($responseObject);
     }
 
-    public function doUpdateVa(RequestHeaderDTO $requestHeaderDto, UpdateVaRequestDTO $updateVaRequestDTO, bool $isProduction = false): UpdateVaResponseDto
+    public function doUpdateVa(RequestHeaderDTO $requestHeaderDto, VaRequestDTO $updateVaRequestDTO, bool $isProduction = false): UpdateVaResponseDto
     {
         $baseUrl = getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . UPDATE_VA_URL;
         $headers = $this->prepareHeaders($requestHeaderDto);
         $payload = json_encode($this->preparePayload($updateVaRequestDTO, false));
-
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $apiEndpoint);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        if (curl_errno($ch)) {
-            curl_close($ch);
-            return new UpdateVaResponseDto('500', 'Curl error: ' . curl_error($ch), null);
-        }
-
-        curl_close($ch);
-
+        $response = $this->doHitAPI($apiEndpoint, $payload, "PUT");
         $responseBody = json_decode($response, true);
         return $this->constructVAResponseDTO($responseBody);
     }
+
+
 
     private function prepareHeaders(RequestHeaderDTO $requestHeaderDTO): array
     {
@@ -85,14 +52,21 @@ class VaServices
         );
     }
 
-    private function preparePayload(CreateVaRequestDTO $requestDTO, bool $isCreateVa = true): array
+    /**
+     * Prepare the payload for creating or updating a virtual account.
+     *
+     * @param VaRequestDTO $requestDTO The request data transfer object.
+     * @param int $requestFlag Flag indicating whether it's for creating (0) or updating (1) a virtual account.
+     * @return array The prepared payload array.
+     */
+    private function preparePayload(VaRequestDTO $requestDTO, int $requestFlag = 0): array
     {
         $totalAmountArr = array(
             'value' => $requestDTO->totalAmount->value,
             'currency' => $requestDTO->totalAmount->currency
         );
         $virtualAccountConfigArr = null;
-        if($isCreateVa) {
+        if($requestFlag === 0) {
             $virtualAccountConfigArr = array(
                 'reusableStatus' => $requestDTO->additionalInfo->virtualAccountConfig->reusableStatus
             );
@@ -118,6 +92,23 @@ class VaServices
             'virtualAccountTrxType' => $requestDTO->virtualAccountTrxType,
             'expiredDate' => $requestDTO->expiredDate,
         );
+    }
+
+    private function doHitAPI(string $apiEndpoint, string $payload, string $customRequest = "POST"): string
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $apiEndpoint);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $customRequest);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch);
+        if (curl_errno($ch)) {
+            $error = curl_error($ch); 
+            curl_close($ch);
+            throw new Exception('cURL error: ' . $error);
+        }
+        curl_close($ch);
+        return $response;
     }
 
     private function constructVAResponseDTO($responseObject): CreateVaResponseDTO

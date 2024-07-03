@@ -244,11 +244,11 @@ $requestSignature = "LtMvncYrtpqDR41PDQLGXaeznzf0/R1mkUZ6KfWslwEDyRTv/Vb2oQlEhrC
 $requestTimestamp = "2024-06-06T11:44:15+07:00";
 
 // createVA($Snap, $createVaRequestDTO);
-updateVA($Snap, $updateVaRequestDTO);
+// updateVA($Snap, $updateVaRequestDTO);
 // validateSignature($Snap, $requestSignature, $requestTimestamp);
 // generateTokenB2BResponse($snap, $requestSignature, $requestTimestamp);
 // validateSignatureAndGenerateToken($snap, $requestSignature, $requestTimestamp);
-// generateInvalidSignatureResponse($snap);
+generateInvalidSignatureResponse($snap);
 // validateTokenB2B($snap, $requestTokenB2B);
 
 //convertV1toSnap($Snap, $createVaRequestDtoV1);

@@ -1,12 +1,19 @@
 <?php
-/**
- * Class CreateVaRequestDTO
- * Represents the data transfer object for creating a virtual account request
- */
 
 require "src/commons/VaChannels.php";
-class CreateVaRequestDTO extends VaRequestDTO
+class VaRequestDTO
 {
+    public ?string $partnerServiceId;
+    public ?string $customerNo;
+    public ?string $virtualAccountNo;
+    public ?string $virtualAccountName;
+    public ?string $virtualAccountEmail;
+    public ?string $virtualAccountPhone;
+    public ?string $trxId;
+    public TotalAmount $totalAmount;
+    public AdditionalInfo $additionalInfo;
+    public ?string $virtualAccountTrxType;
+    public ?string $expiredDate;
 
     public function __construct(
         ?string $partnerServiceId,
@@ -17,23 +24,21 @@ class CreateVaRequestDTO extends VaRequestDTO
         ?string $virtualAccountPhone,
         ?string $trxId,
         TotalAmount $totalAmount,
-        CreateVaRequestAdditionalInfo $createVaAdditionalInfoDTO,
+        AdditionalInfo $additionalInfo,
         ?string $virtualAccountTrxType,
         ?string $expiredDate
     ) {
-        parent::__construct(
-            $partnerServiceId,
-            $customerNo,
-            $virtualAccountNo,
-            $virtualAccountName,
-            $virtualAccountEmail,
-            $virtualAccountPhone,
-            $trxId,
-            $totalAmount,
-            $createVaAdditionalInfoDTO,
-            $virtualAccountTrxType,
-            $expiredDate
-        );
+        $this->partnerServiceId = $partnerServiceId;
+        $this->customerNo = $customerNo;
+        $this->virtualAccountNo = $virtualAccountNo;
+        $this->virtualAccountName = $virtualAccountName;
+        $this->virtualAccountEmail = $virtualAccountEmail;
+        $this->virtualAccountPhone = $virtualAccountPhone;
+        $this->trxId = $trxId;
+        $this->totalAmount = $totalAmount;
+        $this->additionalInfo = $additionalInfo;
+        $this->virtualAccountTrxType = $virtualAccountTrxType;
+        $this->expiredDate = $expiredDate;
     }
 
     public function validateVaRequestDTO(): bool

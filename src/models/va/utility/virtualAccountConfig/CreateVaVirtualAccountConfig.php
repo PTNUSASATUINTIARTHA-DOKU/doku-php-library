@@ -3,7 +3,7 @@
  * Class VirtualAccountConfig
  * Represents the configuration for the virtual account
  */
-class VirtualAccountConfig
+class CreateVaVirtualAccountConfig extends VirtualAccountConfig
 {
     public ?bool $reusableStatus;
     public ?string $minAmount;
