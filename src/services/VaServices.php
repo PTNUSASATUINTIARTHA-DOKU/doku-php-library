@@ -192,11 +192,11 @@ class VaServices
                 )
             );
         } else {
-            throw new Exception('Error deleting virtual account: ' . $responseData['responseMessage']);
+            throw new Exception('Error deleting virtual account: ' . $responseData['responseMessage'] ?? $responseData['error']);
         }
     }
 
-        public function doCheckStatusVa(RequestHeaderDTO $requestHeader, CheckStatusVaRequestDTO $checkStatusVaRequest, bool $isProduction = false): CheckStatusVaResponseDTO
+    public function doCheckStatusVa(RequestHeaderDTO $requestHeader, CheckStatusVaRequestDTO $checkStatusVaRequest, bool $isProduction = false): CheckStatusVaResponseDTO
     {
         $baseUrl = getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . CHECK_VA;
@@ -211,7 +211,8 @@ class VaServices
             'additionalInfo' => $checkStatusVaRequest->additionalInfo
         ]);
 
-        $response = Helper::doHitApi($apiEndpoint, $headers, $payload, "POST");
+        print_r($payload);
+        $response = Helper::doHitApi($apiEndpoint, $headers, $payload, "GET");
         $responseData = json_decode($response, true);
 
         print_r($response);

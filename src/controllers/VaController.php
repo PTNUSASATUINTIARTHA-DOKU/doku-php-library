@@ -52,7 +52,6 @@ class VaController
         $timestamp = $this->tokenServices->getTimestamp();
         $baseUrl = getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . ACCESS_TOKEN;
-        $httpMethod = 'POST';
         $signature = $this->tokenServices->generateSymmetricSignature(
             'POST',
             $apiEndpoint,

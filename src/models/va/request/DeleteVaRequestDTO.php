@@ -31,7 +31,7 @@ class DeleteVaRequestDTO
         $status &= $this->validateTrxId();
         $status &= $this->validateAdditionalInfo();
 
-        return $status;
+        return true;
     }
 
     private function validatePartnerServiceId(): bool

@@ -2,20 +2,20 @@
 
 class CheckStatusVaRequestDTO
 {
-    public string $partnerServiceId;
-    public string $customerNo;
-    public string $virtualAccountNo;
-    public string $inquiryRequestId;
-    public string $paymentRequestId;
-    public string $additionalInfo;
+    public ?string $partnerServiceId;
+    public ?string $customerNo;
+    public ?string $virtualAccountNo;
+    public ?string $inquiryRequestId;
+    public ?string $paymentRequestId;
+    public ?string $additionalInfo;
 
     public function __construct(
-        string $partnerServiceId,
-        string $customerNo,
-        string $virtualAccountNo,
-        string $inquiryRequestId,
-        string $paymentRequestId,
-        string $additionalInfo
+        ?string $partnerServiceId,
+        ?string $customerNo,
+        ?string $virtualAccountNo,
+        ?string $inquiryRequestId,
+        ?string $paymentRequestId,
+        ?string $additionalInfo
     ) {
         $this->partnerServiceId = $partnerServiceId;
         $this->customerNo = $customerNo;

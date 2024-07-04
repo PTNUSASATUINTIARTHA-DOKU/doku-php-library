@@ -14,7 +14,7 @@ class Snap
     private string $issuer;
     private TokenController $tokenB2BController;
     private NotificationController $notificationController;
-    private string $secretKey;
+    private ?string $secretKey;
 
     /**
      * Constructor
@@ -30,6 +30,7 @@ class Snap
         $this->issuer = $issuer;
         $this->clientId =$clientId;
         $this->isProduction = $isProduction;
+        $this->secretKey = $secretKey;
 
         $this->tokenB2BController = new TokenController();
         $this->notificationController = new NotificationController();
