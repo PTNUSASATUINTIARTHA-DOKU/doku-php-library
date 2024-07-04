@@ -1,5 +1,5 @@
 <?php
-require "src/services/VaServices.php";
+require  "src/services/VaServices.php";
 class VaController
 {
     private VaServices $vaServices;
@@ -72,5 +72,40 @@ class VaController
         );
 
         return $this->vaServices->doUpdateVa($header, $UpdateVaRequestDTO);
+    }
+    public function doDeletePaymentCode(DeleteVaRequestDto $deleteVaRequestDto, string $privateKey, string $clientId, string $tokenB2B)
+    {
+        $timestamp = $this->tokenServices->getTimestamp();
+        $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
+        $externalId = $this->vaServices->generateExternalId();
+        $requestHeaderDto = $this->vaServices->generateRequestHeaderDTO(
+            $timestamp, 
+            $signature,
+            $clientId, 
+            $externalId,
+            $deleteVaRequestDto->additionalInfo->channel, 
+            $tokenB2B, 
+        );
+
+        $response = $this->vaServices->doDeletePaymentCode($requestHeaderDto, $deleteVaRequestDto);
+
+        return $response;
+    }
+
+
+    public function doCheckStatusVa(CheckStatusVaRequestDTO $checkVARequestDTO, string $privateKey, string $clientId, string $tokenB2B): CheckStatusVAResponseDTO
+    {
+        $timestamp = $this->tokenServices->getTimestamp();
+        $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
+        $externalId = $this->vaServices->generateExternalId();
+        $header = $this->vaServices->generateRequestHeaderDTO(
+            $timestamp, 
+            $signature,
+            $clientId, 
+            $externalId,
+            null,
+            $tokenB2B, 
+        );
+        return $this->vaServices->doCheckStatusVa($header, $checkVARequestDTO);
     }
 }

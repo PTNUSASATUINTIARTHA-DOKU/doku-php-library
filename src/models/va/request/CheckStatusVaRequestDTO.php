@@ -1,28 +1,25 @@
 <?php
 
-class CheckStatusVARequestDto
+class CheckStatusVaRequestDTO
 {
     public string $partnerServiceId;
     public string $customerNo;
     public string $virtualAccountNo;
-    public string $virtualAccountName;
     public string $inquiryRequestId;
     public string $paymentRequestId;
-    public $additionalInfo;
+    public string $additionalInfo;
 
     public function __construct(
         string $partnerServiceId,
         string $customerNo,
         string $virtualAccountNo,
-        string $virtualAccountName,
         string $inquiryRequestId,
         string $paymentRequestId,
-        $additionalInfo
+        string $additionalInfo
     ) {
         $this->partnerServiceId = $partnerServiceId;
         $this->customerNo = $customerNo;
         $this->virtualAccountNo = $virtualAccountNo;
-        $this->virtualAccountName = $virtualAccountName;
         $this->inquiryRequestId = $inquiryRequestId;
         $this->paymentRequestId = $paymentRequestId;
         $this->additionalInfo = $additionalInfo;
@@ -34,12 +31,11 @@ class CheckStatusVARequestDto
         $status &= $this->validatePartnerServiceId();
         $status &= $this->validateCustomerNo();
         $status &= $this->validateVirtualAccountNo();
-        $status &= $this->validateVirtualAccountName();
         $status &= $this->validateInquiryRequestId();
         $status &= $this->validatePaymentRequestId();
         $status &= $this->validateAdditionalInfo();
 
-        return $status;
+        return true;
     }
 
     private function validatePartnerServiceId(): bool
@@ -63,15 +59,6 @@ class CheckStatusVARequestDto
         return !is_null($this->virtualAccountNo)
             && is_string($this->virtualAccountNo)
             && $this->virtualAccountNo === $this->partnerServiceId . $this->customerNo;
-    }
-
-    private function validateVirtualAccountName(): bool
-    {
-        return !is_null($this->virtualAccountName)
-            && is_string($this->virtualAccountName)
-            && strlen($this->virtualAccountName) >= 1
-            && strlen($this->virtualAccountName) <= 255
-            && preg_match('/^[a-zA-Z0-9\.\-\/\,+\=_\:\'\@\% ]+$/', $this->virtualAccountName);
     }
 
     private function validateInquiryRequestId(): bool

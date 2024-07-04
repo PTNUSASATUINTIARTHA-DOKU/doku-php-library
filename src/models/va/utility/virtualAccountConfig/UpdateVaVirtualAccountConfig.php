@@ -1,13 +1,7 @@
 <?php
-
-/**
- * Class UpdateVaVirtualAccountConfig
- * Represents the configuration for a virtual account.
- */
-class UpdateVaVirtualAccountConfig extends VirtualAccountConfig
+class UpdateVaVirtualAccountConfig
 {
-    public ?string $status;
-
+    public string $status;
     /**
      * UpdateVaVirtualAccountConfig constructor.
      * @param string $status The status of the virtual account.

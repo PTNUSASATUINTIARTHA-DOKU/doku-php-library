@@ -1,10 +1,10 @@
 <?php
 
-class DeleteVaRequestAdditionalInfo extends AdditionalInfo
+class DeleteVaRequestAdditionalInfo
 {
-    public string $channel;
+    public ?string $channel;
 
-    public function __construct(string $channel)
+    public function __construct(?string $channel)
     {
         $this->channel = $channel;
     }

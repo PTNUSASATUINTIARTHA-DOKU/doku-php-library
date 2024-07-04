@@ -3,17 +3,17 @@
  * Class AdditionalInfo
  * Represents additional information for the virtual account request
  */
-class CreateVaRequestAdditionalInfo extends AdditionalInfo
+class CreateVaRequestAdditionalInfo
 {
     public ?string $channel;
-    public VirtualAccountConfig $virtualAccountConfig;
+    public ?CreateVaVirtualAccountConfig $virtualAccountConfig;
 
     /**
      * AdditionalInfo constructor
      * @param string $channel The channel for the request
-     * @param VirtualAccountConfig $reusableStatus The reusable status configuration
+     * @param CreateVaVirtualAccountConfig $reusableStatus The reusable status configuration
      */
-    public function __construct(?string $channel, VirtualAccountConfig $virtualAccountConfig)
+    public function __construct(?string $channel, CreateVaVirtualAccountConfig $virtualAccountConfig)
     {
         $this->channel = $channel;
         $this->virtualAccountConfig = $virtualAccountConfig;

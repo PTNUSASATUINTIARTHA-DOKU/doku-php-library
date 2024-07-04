@@ -3,7 +3,7 @@
  * Class VirtualAccountData
  * Represents the virtual account data
  */
-class VirtualAccountData
+class CreateVaResponseVirtualAccountData
 {
     public ?string $partnerServiceId;
     public ?string $customerNo;
@@ -11,8 +11,8 @@ class VirtualAccountData
     public ?string $virtualAccountName;
     public ?string $virtualAccountEmail;
     public ?string $trxId;
-    public TotalAmount $totalAmount;
-    public AdditionalInfo $additionalInfo;
+    public ?TotalAmount $totalAmount;
+    public ?CreateVaRequestAdditionalInfo $additionalInfo;
 
     public function __construct(
         ?string $partnerServiceId,
@@ -21,8 +21,8 @@ class VirtualAccountData
         ?string $virtualAccountName,
         ?string $virtualAccountEmail,
         ?string $trxId,
-        TotalAmount $totalAmount,
-        AdditionalInfo $additionalInfo
+        ?TotalAmount $totalAmount,
+        ?CreateVaRequestAdditionalInfo $additionalInfo
     ) {
         $this->partnerServiceId = $partnerServiceId;
         $this->customerNo = $customerNo;

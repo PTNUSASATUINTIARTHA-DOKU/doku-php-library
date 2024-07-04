@@ -2,18 +2,18 @@
 
 class DeleteVaResponseVirtualAccountData
 {
-    public string $partnerServiceId;
-    public string $customerNo;
-    public string $virtualAccountNo;
-    public string $trxId;
-    public DeleteVaResponseAdditionalInfo $additionalInfo;
+    public ?string $partnerServiceId;
+    public ?string $customerNo;
+    public ?string $virtualAccountNo;
+    public ?string $trxId;
+    public ?DeleteVaResponseAdditionalInfo $additionalInfo;
 
     public function __construct(
-        string $partnerServiceId,
-        string $customerNo,
-        string $virtualAccountNo,
-        string $trxId,
-        DeleteVaResponseAdditionalInfo $additionalInfo
+        ?string $partnerServiceId,
+        ?string $customerNo,
+        ?string $virtualAccountNo,
+        ?string $trxId,
+        ?DeleteVaResponseAdditionalInfo $additionalInfo
     ) {
         $this->partnerServiceId = $partnerServiceId;
         $this->customerNo = $customerNo;

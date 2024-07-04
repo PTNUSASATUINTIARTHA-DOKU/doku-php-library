@@ -1,5 +1,5 @@
 <?php
-require "src/services/TokenServices.php";
+require  "src/services/TokenServices.php";
 class TokenController
 {
     private TokenServices $tokenServices;
@@ -24,8 +24,6 @@ class TokenController
     {
         $timestamp = $this->tokenServices->getTimestamp();
         $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
-        echo "Generated Signature: " . "\n\n" . $signature . "\n\n";
-        echo "Generated Timestamp: " . $timestamp . "\n\n";
         $tokenB2BRequestDTO = $this->tokenServices->createTokenB2BRequestDTO($signature, $timestamp, $clientId);
         $tokenB2BResponseDTO = $this->tokenServices->createTokenB2B($tokenB2BRequestDTO, $isProduction);
         return $tokenB2BResponseDTO;

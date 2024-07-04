@@ -4,9 +4,22 @@
  * Represents the data transfer object for creating a virtual account request
  */
 
-require "src/commons/VaChannels.php";
-class CreateVaRequestDTO extends VaRequestDTO
+require  "src/commons/VaChannels.php";
+class CreateVaRequestDTO
 {
+
+    public ?string $partnerServiceId;
+    public ?string $customerNo;
+    public ?string $virtualAccountNo;
+    public ?string $virtualAccountName;
+    public ?string $virtualAccountEmail;
+    public ?string $virtualAccountPhone;
+    public ?string $trxId;
+    public TotalAmount $totalAmount;
+    public CreateVaRequestAdditionalInfo $additionalInfo;
+    public ?string $virtualAccountTrxType;
+    public ?string $expiredDate;
+    
 
     public function __construct(
         ?string $partnerServiceId,
@@ -17,23 +30,21 @@ class CreateVaRequestDTO extends VaRequestDTO
         ?string $virtualAccountPhone,
         ?string $trxId,
         TotalAmount $totalAmount,
-        CreateVaRequestAdditionalInfo $createVaAdditionalInfoDTO,
+        CreateVaRequestAdditionalInfo $updateVaAdditionalInfoDTO,
         ?string $virtualAccountTrxType,
         ?string $expiredDate
     ) {
-        parent::__construct(
-            $partnerServiceId,
-            $customerNo,
-            $virtualAccountNo,
-            $virtualAccountName,
-            $virtualAccountEmail,
-            $virtualAccountPhone,
-            $trxId,
-            $totalAmount,
-            $createVaAdditionalInfoDTO,
-            $virtualAccountTrxType,
-            $expiredDate
-        );
+        $this->partnerServiceId = $partnerServiceId;
+        $this->customerNo = $customerNo;
+        $this->virtualAccountNo = $virtualAccountNo;
+        $this->virtualAccountName = $virtualAccountName;
+        $this->virtualAccountEmail = $virtualAccountEmail;
+        $this->virtualAccountPhone = $virtualAccountPhone;
+        $this->trxId = $trxId;
+        $this->totalAmount = $totalAmount;
+        $this->additionalInfo = $updateVaAdditionalInfoDTO;
+        $this->virtualAccountTrxType = $virtualAccountTrxType;
+        $this->expiredDate = $expiredDate;
     }
 
     public function validateVaRequestDTO(): bool

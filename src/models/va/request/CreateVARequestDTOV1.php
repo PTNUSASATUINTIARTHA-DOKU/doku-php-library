@@ -112,7 +112,7 @@
      public function convertToCreateVaRequestDTO(): CreateVaRequestDTO
      {
          $totalAmount = new TotalAmount($this->amount, $this->currency);
-         $additionalInfo = new AdditionalInfo($this->paymentChannel, new VirtualAccountConfig(false));
+         $additionalInfo = new CreateVaRequestAdditionalInfo($this->paymentChannel, new CreateVaVirtualAccountConfig(false));
  
          return new CreateVaRequestDTO(
              $this->partnerServiceId,

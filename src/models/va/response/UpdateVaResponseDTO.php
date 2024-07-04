@@ -15,8 +15,11 @@ class UpdateVaResponseDTO extends CreateVAResponseDTO
      * @param string $responseMessage The response message.
      * @param UpdateVaRequestDTO $virtualAccountData The virtual account data.
      */
-    public function __construct(?string $responseCode, ?string $responseMessage, ?UpdateVaRequestDTO $virtualAccountData)
-    {
+    public function __construct(
+        ?string $responseCode, 
+        ?string $responseMessage, 
+        ?UpdateVaRequestDTO $virtualAccountData
+    ) {
         $this->responseCode = $responseCode;
         $this->responseMessage = $responseMessage;
         $this->virtualAccountData = $virtualAccountData;

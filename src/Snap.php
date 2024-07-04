@@ -320,4 +320,63 @@ class Snap
 
         return $updateVaResponseDto;
     }
+
+    public function deletePaymentCode(DeleteVaRequestDto $deleteVaRequestDto)
+    {
+        $isTokenInvalid = $this->tokenB2BController->isTokenInvalid(
+            $this->tokenB2B,
+            $this->tokenB2BExpiresIn,
+            $this->tokenB2BGeneratedTimestamp
+        );
+
+        if ($isTokenInvalid) {
+            $tokenB2BResponse = $this->tokenB2BController->getTokenB2B(
+                $this->privateKey,
+                $this->clientId,
+                $this->isProduction
+            );
+
+            $this->setTokenB2B($tokenB2BResponse);
+        }
+
+        $vaController = new VaController();
+        return $vaController->doDeletePaymentCode(
+            $deleteVaRequestDto,
+            $this->privateKey,
+            $this->clientId,
+            $this->tokenB2B
+        );
+    }
+
+    public function checkStatusVa(CheckStatusVaRequestDto $checkStatusVaRequestDto): CheckStatusVaResponseDto
+    {
+        if (!$checkStatusVaRequestDto->validateCheckStatusVaRequestDto()) {
+            throw new InvalidArgumentException("Invalid CheckStatusVaRequestDto");
+        }
+
+        $isTokenInvalid = $this->tokenB2BController->isTokenInvalid(
+            $this->tokenB2B,
+            $this->tokenB2BExpiresIn,
+            $this->tokenB2BGeneratedTimestamp
+        );
+
+        if ($isTokenInvalid) {
+            $tokenB2BResponse = $this->tokenB2BController->getTokenB2B(
+                $this->privateKey,
+                $this->clientId,
+                $this->isProduction
+            );
+            $this->setTokenB2B($tokenB2BResponse);
+        }
+
+        $vaController = new VaController();
+        $checkStatusVaResponseDto = $vaController->doCheckStatusVa(
+            $checkStatusVaRequestDto,
+            $this->privateKey,
+            $this->clientId,
+            $this->tokenB2B
+        );
+
+        return $checkStatusVaResponseDto;
+    }
 }

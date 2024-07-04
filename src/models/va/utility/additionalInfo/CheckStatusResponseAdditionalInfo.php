@@ -1,10 +1,10 @@
 <?php
 
-class CheckStatusResponseAdditionalInfo extends AdditionalInfo
+class CheckStatusResponseAdditionalInfo
 {
-    public string $acquirer;
+    public $acquirer;
 
-    public function __construct(string $acquirer)
+    public function __construct($acquirer = null)
     {
         $this->acquirer = $acquirer;
     }

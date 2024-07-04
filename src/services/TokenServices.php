@@ -2,17 +2,16 @@
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-require "src/commons/Helper.php";
-require "src/commons/config.php";
-require "src/models/request/TokenB2BRequestDTO.php";
-require "src/models/response/TokenB2BResponseDTO.php";
+require  "src/commons/config.php";
+require  "src/models/request/TokenB2BRequestDTO.php";
+require  "src/models/response/TokenB2BResponseDTO.php";
 class TokenServices
 {
     private string $tokenB2B;
     private string $tokenExpiresIn;
 
     /**
-     * Generate the timestamp in the required format for the DOKU SNAP API.
+     * Generate the timestamp in the included format for the DOKU SNAP API.
      *
      * @return string The timestamp in the format 'yyyyMMddTHH:mm:ss.SSSSZ'
      */
@@ -112,7 +111,7 @@ class TokenServices
         $responseData = json_decode($response, true);
 
         if ($responseData === null) {
-            throw new Exception('Failed to decode JSON response');
+            throw new Exception('Null Response Data: Failed to decode JSON response');
         }
 
         if (isset($responseData['error'])) {
@@ -335,20 +334,7 @@ class TokenServices
      */
     private function minifyDto(UpdateVaRequestDTO $dto): string
     {
-        $array = $this->dtoToArray($dto);
-        // Encode to JSON with no whitespace
-        return json_encode($array, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-    }
-
-    /**
-     * Converts an UpdateVaRequestDTO object to an associative array.
-     *
-     * @param UpdateVaRequestDTO $dto The UpdateVaRequestDTO object to convert.
-     * @return array The associative array representation of the UpdateVaRequestDTO object.
-     */
-    private function dtoToArray(UpdateVaRequestDTO $dto): array
-    {
-        return [
+        $array = [
             'partnerServiceId' => $dto->partnerServiceId,
             'customerNo' => $dto->customerNo,
             'virtualAccountNo' => $dto->virtualAccountNo,
@@ -356,41 +342,19 @@ class TokenServices
             'virtualAccountEmail' => $dto->virtualAccountEmail,
             'virtualAccountPhone' => $dto->virtualAccountPhone,
             'trxId' => $dto->trxId,
-            'totalAmount' => $this->totalAmountToArray($dto->totalAmount),
-            'additionalInfo' => $this->additionalInfoToArray($dto->additionalInfo),
+            'totalAmount' => [
+                'value' => $dto->totalAmount->value,
+                'currency' => $dto->totalAmount->currency,
+            ],
+            'additionalInfo' => [
+                'channel' => $dto->additionalInfo->channel,
+                'virtualAccountConfig' => [
+                    'status' => $dto->additionalInfo->virtualAccountConfig->status,
+                ],
+            ],
             'virtualAccountTrxType' => $dto->virtualAccountTrxType,
             'expiredDate' => $dto->expiredDate,
         ];
+        return json_encode($array, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
-
-    /**
-     * Converts a TotalAmount object to an associative array.
-     *
-     * @param TotalAmount $totalAmount The TotalAmount object to convert.
-     * @return array The associative array representation of the TotalAmount object.
-     */
-    private function totalAmountToArray(TotalAmount $totalAmount): array
-    {
-        return [
-            'value' => $totalAmount->value,
-            'currency' => $totalAmount->currency,
-        ];
-    }
-
-    /**
-     * Converts an UpdateVaAdditionalInfoDto object to an associative array.
-     *
-     * @param UpdateVaAdditionalInfoDTO $additionalInfo The UpdateVaAdditionalInfoDto object to convert.
-     * @return array The associative array representation of the UpdateVaAdditionalInfoDto object.
-     */
-    private function additionalInfoToArray(UpdateVaAdditionalInfoDTO $additionalInfo): array
-    {
-        return [
-            'channel' => $additionalInfo->channel,
-            'virtualAccountConfig' => [
-                'status' => $additionalInfo->virtualAccountConfig->status,
-            ],
-        ];
-    }
-
 }

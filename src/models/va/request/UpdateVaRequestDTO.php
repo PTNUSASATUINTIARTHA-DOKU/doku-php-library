@@ -3,9 +3,20 @@
  * Class UpdateVaRequestDTO
  * Represents the data for updating a virtual account.
  */
-class UpdateVaRequestDTO extends VaRequestDTO
+class UpdateVaRequestDTO
 {
-    public UpdateVaRequestAdditionalInfoDTO $additionalInfo;
+    public ?string $partnerServiceId;
+    public ?string $customerNo;
+    public ?string $virtualAccountNo;
+    public ?string $virtualAccountName;
+    public ?string $virtualAccountEmail;
+    public ?string $virtualAccountPhone;
+    public ?string $trxId;
+    public TotalAmount $totalAmount;
+    public UpdateVaRequestAdditionalInfo $additionalInfo;
+    public ?string $virtualAccountTrxType;
+    public ?string $expiredDate;
+    
 
     public function __construct(
         ?string $partnerServiceId,
@@ -16,23 +27,21 @@ class UpdateVaRequestDTO extends VaRequestDTO
         ?string $virtualAccountPhone,
         ?string $trxId,
         TotalAmount $totalAmount,
-        UpdateVaRequestAdditionalInfoDTO $updateVaAdditionalInfoDTO,
+        UpdateVaRequestAdditionalInfo $updateVaAdditionalInfo,
         ?string $virtualAccountTrxType,
         ?string $expiredDate
     ) {
-        parent::__construct(
-            $partnerServiceId,
-            $customerNo,
-            $virtualAccountNo,
-            $virtualAccountName,
-            $virtualAccountEmail,
-            $virtualAccountPhone,
-            $trxId,
-            $totalAmount,
-            $updateVaAdditionalInfoDTO,
-            $virtualAccountTrxType,
-            $expiredDate
-        );
+        $this->partnerServiceId = $partnerServiceId;
+        $this->customerNo = $customerNo;
+        $this->virtualAccountNo = $virtualAccountNo;
+        $this->virtualAccountName = $virtualAccountName;
+        $this->virtualAccountEmail = $virtualAccountEmail;
+        $this->virtualAccountPhone = $virtualAccountPhone;
+        $this->trxId = $trxId;
+        $this->totalAmount = $totalAmount;
+        $this->additionalInfo = $updateVaAdditionalInfo;
+        $this->virtualAccountTrxType = $virtualAccountTrxType;
+        $this->expiredDate = $expiredDate;
     }
     public function validateUpdateVaRequestDto(): bool
     {

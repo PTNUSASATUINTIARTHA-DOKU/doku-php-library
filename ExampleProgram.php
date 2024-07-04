@@ -1,12 +1,22 @@
 <?php
 
-require "src/Snap.php";
-require "src/models/request/CreateVaRequestDTO.php";
-require "src/models/va/AdditionalInfo.php";
-require "src/models/va/VirtualAccountConfig.php";
-require "src/models/va/TotalAmount.php";
-require "src/models/request/CreateVARequestDTOV1.php";
-require "src/models/va/UpdateVaDTO.php";
+require  "src/Snap.php";
+require  "src/models/va/request/CreateVaRequestDTO.php";
+require  "src/models/va/request/UpdateVaRequestDTO.php";
+require  "src/models/va/request/DeleteVaRequestDTO.php";
+require  "src/models/va/request/CheckStatusVaRequestDTO.php";
+require  "src/models/va/utility/additionalInfo/CreateVaRequestAdditionalInfo.php";
+require  "src/models/va/utility/additionalInfo/UpdateVaRequestAdditionalInfo.php";
+require  "src/models/va/utility/additionalInfo/DeleteVaRequestAdditionalInfo.php";
+require  "src/models/va/utility/virtualAccountConfig/CreateVaVirtualAccountConfig.php";
+require  "src/models/va/utility/virtualAccountConfig/UpdateVaVirtualAccountConfig.php";
+require  "src/models/va/utility/totalAmount/TotalAmount.php";
+require  "src/models/va/request/CreateVARequestDTOV1.php";
+
+
+/*
+* Authentication Stuff
+*/
 
 $privateKey1 = "-----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCvuA0S+R8RGEoT
@@ -107,6 +117,10 @@ $isProduction = false;
 $issuer = "";
 $publicKey = "";
 $timestamp = time();
+
+/**
+ * Mock Object
+ */ 
 $createVaRequestDTO = new CreateVARequestDTO(
    "    1899", // $partnerServiceId
    null, // $customerNo
@@ -116,12 +130,11 @@ $createVaRequestDTO = new CreateVARequestDTO(
    "00000062798", // $virtualAccountPhone
    "INV_CIMB_" . $timestamp, // $trxId
    new TotalAmount("12500.00", "IDR"), // $totalAmount
-   new AdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB", new VirtualAccountConfig(false)), // $additionalInfo
+   new CreateVaRequestAdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB", new CreateVaVirtualAccountConfig(false)), // $additionalInfo
    "1", // $virtualAccountTrxType
-   "2024-06-24T15:54:04+07:00" // $expiredDate
+   "2024-07-24T15:54:04+07:00" // $expiredDate
 );
 
-$timestamp = time();
 $createVaRequestDtoV1 = new CreateVaRequestDTOV1(
     "1899", // $mallId
     "CHAIN_MERCHANT", // $chainMerchant
@@ -167,22 +180,39 @@ $updateVaRequestDTO = new UpdateVaRequestDTO(
    "test.bnc." . $timestamp . "@test.com", // $virtualAccountEmail
    "00000062666", // $virtualAccountPhone
    "INV_CIMB_" . $timestamp, // $trxId
-   new TotalAmount("12500.00", "IDR"), // $totalAmount
-   new AdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB", new VirtualAccountConfig(false)), // $additionalInfo
+   new TotalAmount("14000.00", "IDR"), // $totalAmount
+   new UpdateVaRequestAdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB", new UpdateVaVirtualAccountConfig(false)), // $additionalInfo
    "1", // $virtualAccountTrxType
    "2024-07-31T15:54:04+07:00" // $expiredDate
 );
 
+$deleteVaRequestDTO = new DeleteVaRequestDTO(
+    "    1899", // $partnerServiceId
+    "00000001", // $customerNo
+    "    189900000001", // $virtualAccountNo
+    "DEL_" . $timestamp, // $trxId
+    new DeleteVaRequestAdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB") // $additionalInfo
+);
+
+$checkStatusVaRequestDTO = new CheckStatusVaRequestDTO(
+    "    1899", // $partnerServiceId
+    "00000001", // $customerNo
+    "    189900000001", // $virtualAccountNo
+    "INQ_" . $timestamp, // $inquiryRequestId
+    "PAY_" . $timestamp, // $paymentRequestId
+    "" // $additionalInfo
+);
 
 
-echo Helper::getTimestamp(500) . "\n";
-
-// main
+/**
+ * Entry Point
+ */
 $clientId = $clientId1;
 $privateKey = $privateKey1;
 $secretKey = "";
 $Snap = new Snap($privateKey, $publicKey, $clientId, $issuer, $isProduction, $secretKey);
-    
+$requestSignature = "LtMvncYrtpqDR41PDQLGXaeznzf0/R1mkUZ6KfWslwEDyRTv/Vb2oQlEhrCxIbmLTPxyajTUF96kmDQ4m3ScCCZlDefcI3ovrm3sTBybk2ZfkwgLy9cIkNLVvoZu4jxkA/nYidCVA3BBglc0HqMd/SDE0YI0/tPMl6kOSBQVUz7RAc4oJQ2XQy91k6wzYVUW0S34AQXu+1hPc6f2Dam8kpHFPg8w7LyLTLEoZehRG6uMAi9dj9Y/oMw4i0xu2ZCfxtOPsWMqPHqszjGTk3jPL9wSihbwLYSxdbpYZ2BkbNjHcWbcdnI6ksUotYe+tLPfOTLfAMcjzeOqwBrMorOwpw==";
+$requestTimestamp = "2024-06-06T11:44:15+07:00";
 
 function getToken($Snap) {
     echo "Getting Token B2B: " . PHP_EOL;
@@ -190,14 +220,26 @@ function getToken($Snap) {
 }
 
 function createVA($Snap, $updateVaRequestDTO) {
-    echo "Updating VA B2B: " . PHP_EOL;
+    echo "Create VA B2B: " . PHP_EOL;
     $virtualAccount = $Snap->createVa($updateVaRequestDTO);
     echo json_encode($virtualAccount, JSON_PRETTY_PRINT);
 }
 
 function updateVA($Snap, $createVaRequestDTO) {
-    echo "Creating VA B2B: " . PHP_EOL;
-    $virtualAccount = $Snap->createVa($createVaRequestDTO);
+    echo "Updating VA B2B: " . PHP_EOL;
+    $virtualAccount = $Snap->updateVa($createVaRequestDTO);
+    echo json_encode($virtualAccount, JSON_PRETTY_PRINT);
+}
+
+function deleteVA($Snap, $createVaRequestDTO) {
+    echo "Deleting VA B2B: " . PHP_EOL;
+    $virtualAccount = $Snap->deletePaymentCode($createVaRequestDTO);
+    echo json_encode($virtualAccount, JSON_PRETTY_PRINT);
+}
+
+function checkVA($Snap, $createVaRequestDTO) {
+    echo "Checking Status VA B2B: " . PHP_EOL;
+    $virtualAccount = $Snap->checkStatusVa($createVaRequestDTO);
     echo json_encode($virtualAccount, JSON_PRETTY_PRINT);
 }
 
@@ -240,18 +282,23 @@ function convertV1toSnap($Snap, $dtov1) {
 
 // getToken($Snap);
 
-$requestSignature = "LtMvncYrtpqDR41PDQLGXaeznzf0/R1mkUZ6KfWslwEDyRTv/Vb2oQlEhrCxIbmLTPxyajTUF96kmDQ4m3ScCCZlDefcI3ovrm3sTBybk2ZfkwgLy9cIkNLVvoZu4jxkA/nYidCVA3BBglc0HqMd/SDE0YI0/tPMl6kOSBQVUz7RAc4oJQ2XQy91k6wzYVUW0S34AQXu+1hPc6f2Dam8kpHFPg8w7LyLTLEoZehRG6uMAi9dj9Y/oMw4i0xu2ZCfxtOPsWMqPHqszjGTk3jPL9wSihbwLYSxdbpYZ2BkbNjHcWbcdnI6ksUotYe+tLPfOTLfAMcjzeOqwBrMorOwpw==";
-$requestTimestamp = "2024-06-06T11:44:15+07:00";
-
-// createVA($Snap, $createVaRequestDTO);
+createVA($Snap, $createVaRequestDTO);
 // updateVA($Snap, $updateVaRequestDTO);
+// deleteVA($Snap, $deleteVaRequestDTO);
+// checkVA($Snap, $checkVaRequestDTO);
+// createVAV1($Snap, $createVaRequestDTOV1);
+//convertV1toSnap($Snap, $createVaRequestDtoV1);
+
 // validateSignature($Snap, $requestSignature, $requestTimestamp);
 // generateTokenB2BResponse($snap, $requestSignature, $requestTimestamp);
 // validateSignatureAndGenerateToken($snap, $requestSignature, $requestTimestamp);
-generateInvalidSignatureResponse($snap);
+// generateInvalidSignatureResponse($snap);
 // validateTokenB2B($snap, $requestTokenB2B);
 
-//convertV1toSnap($Snap, $createVaRequestDtoV1);
+
+
+
+
 
 
 
