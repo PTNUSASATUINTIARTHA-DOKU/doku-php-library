@@ -2,17 +2,16 @@
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-require "src/commons/Helper.php";
-require "src/commons/config.php";
-require "src/models/request/TokenB2BRequestDTO.php";
-require "src/models/response/TokenB2BResponseDTO.php";
+require  "src/commons/config.php";
+require  "src/models/request/TokenB2BRequestDTO.php";
+require  "src/models/response/TokenB2BResponseDTO.php";
 class TokenServices
 {
     private string $tokenB2B;
     private string $tokenExpiresIn;
 
     /**
-     * Generate the timestamp in the required format for the DOKU SNAP API.
+     * Generate the timestamp in the included format for the DOKU SNAP API.
      *
      * @return string The timestamp in the format 'yyyyMMddTHH:mm:ss.SSSSZ'
      */
@@ -111,14 +110,26 @@ class TokenServices
 
         $responseData = json_decode($response, true);
 
-        return new TokenB2BResponseDTO(
-            $responseData['responseCode'],
-            $responseData['responseMessage'],
-            $responseData['accessToken'],
-            $responseData['tokenType'],
-            $responseData['expiresIn'],
-            $responseData['additionalInfo'] ?? ''
-        );
+        if ($responseData === null) {
+            throw new Exception('Null Response Data: Failed to decode JSON response');
+        }
+
+        if (isset($responseData['error'])) {
+            throw new Exception($responseData['error']['message'] ?? 'Missing error in response data');
+        }
+
+        try {
+            return new TokenB2BResponseDTO(
+                $responseData['responseCode'] ?? '',
+                $responseData['responseMessage'] ?? '',
+                $responseData['accessToken'] ?? '',
+                $responseData['tokenType'] ?? '',
+                $responseData['expiresIn'] ?? '',
+                $responseData['additionalInfo'] ?? ''
+            );
+        } catch (Error $e) {
+            throw new Exception('Failed to create TokenB2BResponseDTO: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -244,6 +255,7 @@ class TokenServices
     public function validateTokenB2B(string $jwtToken, string $publicKey): bool
     {
         try {
+            // object, not boolean
             $decodedToken = JWT::decode($jwtToken, new Key($publicKey, 'RS256'));
             // access decoded token if needed: decodedToken->iss, $decodedToken->exp, etc.
             return true;
@@ -279,4 +291,32 @@ class TokenServices
         return $jwt;
     }
 
+    /**
+     * Generates a symmetric signature for a given HTTP method, endpoint URL, token, request DTO, timestamp, and secret key.
+     *
+     * @param string $httpMethod The HTTP method used for the request.
+     * @param string $endPointUrl The URL of the endpoint.
+     * @param string $tokenB2B The B2B token.
+     * @param UpdateVaRequestDTO $UpdateVaRequestDTO The request DTO.
+     * @param string $timestamp The timestamp of the request.
+     * @param string $secretKey The secret key used for signing.
+     * @return string The base64 encoded signature.
+     */
+    public function generateSymmetricSignature(
+        string $httpMethod,
+        string $endpointUrl,
+        string $tokenB2B,
+        string $requestBody,
+        string $timestamp,
+        string $secretKey
+    ): string {
+        // Minify and hash the request DTO
+        $minifiedBody = json_encode(json_decode($requestBody), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $bodyHash = hash('sha256', $minifiedBody);
+        $bodyHashHex = strtolower($bodyHash);
+        $stringToSign = $httpMethod . ":" . $endpointUrl . ":" . $tokenB2B . ":" . $bodyHashHex . ":" . $timestamp;
+        $signature = hash_hmac('sha512', $stringToSign, $secretKey, true);
+        echo "Signature: " . base64_encode($signature) . "\n";
+        return base64_encode($signature);
+    }
 }

@@ -1,12 +1,14 @@
 <?php
-require "src/services/TokenServices.php";
+require  "src/services/TokenServices.php";
 class TokenController
 {
     private TokenServices $tokenServices;
+    private VaServices $vaServices;
 
     public function __construct()
     {
         $this->tokenServices = new TokenServices();
+        $this->vaServices = new VaServices();
     }
 
     /**
@@ -22,8 +24,6 @@ class TokenController
     {
         $timestamp = $this->tokenServices->getTimestamp();
         $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
-        echo "Generated Signature: " . "\n\n" . $signature . "\n\n";
-        echo "Generated Timestamp: " . $timestamp . "\n\n";
         $tokenB2BRequestDTO = $this->tokenServices->createTokenB2BRequestDTO($signature, $timestamp, $clientId);
         $tokenB2BResponseDTO = $this->tokenServices->createTokenB2B($tokenB2BRequestDTO, $isProduction);
         return $tokenB2BResponseDTO;
@@ -107,5 +107,31 @@ class TokenController
         $notificationTokenDTO = $this->tokenServices->generateNotificationTokenDTO($token, $timestamp, $clientId, $expiredIn);
         return $notificationTokenDTO;
     }
+
+    /**
+     * Generates a request header DTO with the given private key, client ID, token B2B, and channel ID.
+     *
+     * @param string $privateKey The private key used for signing the request header.
+     * @param string $clientId The client ID to include in the request header.
+     * @param string $tokenB2B The token B2B to include in the request header.
+     * @param string $channelId The channel ID to include in the request header.
+     * @return RequestHeaderDTO The generated request header DTO.
+     */
+    public function doGenerateRequestHeader(string $privateKey, string $clientId, string $tokenB2B, string $channelId = "SDK"): RequestHeaderDTO
+    {
+        $externalId = $this->vaServices->generateExternalId();
+        $timestamp = $this->tokenServices->getTimestamp();
+        $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
+
+        return $this->vaServices->generateRequestHeaderDTO(
+            $timestamp,
+            $signature,
+            $clientId,
+            $externalId,
+            $channelId,
+            $tokenB2B
+        );
+    }
+
 }
 

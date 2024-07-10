@@ -1,10 +1,22 @@
 <?php
 
-require "src/Snap.php";
-require "src/models/request/CreateVaRequestDTO.php";
-require "src/models/va/AdditionalInfo.php";
-require "src/models/va/VirtualAccountConfig.php";
-require "src/models/va/TotalAmount.php";
+require  "src/Snap.php";
+require  "src/models/va/request/CreateVaRequestDTO.php";
+require  "src/models/va/request/UpdateVaRequestDTO.php";
+require  "src/models/va/request/DeleteVaRequestDTO.php";
+require  "src/models/va/request/CheckStatusVaRequestDTO.php";
+require  "src/models/va/utility/additionalInfo/CreateVaRequestAdditionalInfo.php";
+require  "src/models/va/utility/additionalInfo/UpdateVaRequestAdditionalInfo.php";
+require  "src/models/va/utility/additionalInfo/DeleteVaRequestAdditionalInfo.php";
+require  "src/models/va/utility/virtualAccountConfig/CreateVaVirtualAccountConfig.php";
+require  "src/models/va/utility/virtualAccountConfig/UpdateVaVirtualAccountConfig.php";
+require  "src/models/va/utility/totalAmount/TotalAmount.php";
+require  "src/models/va/request/CreateVARequestDTOV1.php";
+
+
+/*
+* Authentication Stuff
+*/
 
 $privateKey1 = "-----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCvuA0S+R8RGEoT
@@ -34,7 +46,7 @@ r4GK50j9BoPSJhiM6k236LSc5+iZRKRVUCFEfyMPx6AY+jD2flfGxUv2iULp92XG
 2eE1H6V1gDZ4JJw3s5847z4MNW3dj9nIi2bpFssnmoS5qP2IpmJW0QQmRmJZ8j2j
 OrzKGlO90/6sNzIDd2DbRSM=
 -----END PRIVATE KEY-----";
-$privateKey2 = "-----BEGIN  PRIVATE KEY-----
+$privateKey2 = "-----BEGIN PRIVATE KEY-----
 b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABlwAAAAdzc2gtcn
 NhAAAAAwEAAQAAAYEArw0HYdhC7CTHBzSTrS4pS3esDgiQS2+fy1n3milnHwmRGnCzN5MX
 dqlqhsY8stzPF10vSWkOONj6uKuRzs8tp9WaCNl8VTnwD3B+okKc0zCBulNwN4Rph6UNj3
@@ -71,7 +83,7 @@ qPSAs+IKzPFq0E3BFAtuHLq2FOQXpXdTU4IMniQKCVwCAkGqP11lMrvTE3g3KUoibtvvsH
 81WtNx46DansVRPPH+hLJM4rEi4U3UA+lISqrVQP+0FGaU3sTgecywurVHFLKAd0bIRgrB
 hNPXUym37lcxYS0UV/NclBHXMop7dip5I3VKGdHBb7M34xPRI8bnVaBwgCRrcVy0eYcqDR
 10EFLOdE+6iF7/AAAAIHp1bGZpa2FyQERPS1VzLU1hY0Jvb2stUHJvLmxvY2FsAQI=
------END  PRIVATE KEY-----";
+-----END PRIVATE KEY-----";
 $privateKey3 = "-----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCH2013jxHy1agi5nueS2D8pH5y
 CHplzIj93xWYhxeNDIguBN6XZRuauHG3rfRRGH/ALohIY5b9lonUQBTwvgfGO4tnwai6VsdetH5a
@@ -97,47 +109,89 @@ PIlKe0aPF/zgMzRJoi2vnfNzG8Lo6kd6ACP9UGs763VZ96M2b3fqahpZIcui6FaF+6XdK41Kls8t
 Mxz+iuYBDeqRKo3q9Du8lzaaEzXu
 -----END PRIVATE KEY-----
 ";
-$clientId1 = "BRN-0221-1693209567392";
+$clientId4 = "BRN-0221-1693209567392";
 $clientId2 = "BRN-0201-1708598315618";
 $cliendId3 = "BRN-0248-1674717085445";
+$clientId1 = "BRN-0221-1693209567392";
+
+$privateKey4 = "-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCvuA0S+R8RGEoT
+xZYfksdNam3/iNrKzY/RqGbN4Gf0juIN8XnUM8dGv4DVqmXQwRMMeQ3N/Y26pMDJ
+1v/i6E5BwWasBAveSk7bmUBQYMURzxrvBbvfRNvIwtYDa+cx39HamfiYYOHq4hZV
+S6G2m8SqDEhONxhHQmEP9FPHSOjPQWKSlgxrT3BKI9ESpQofcxKRX3hyfh6MedWT
+lZpXUJrI9bd6Azg3Fd5wpfHQlLcKSR8Xr2ErH7dNS4I21DTHR+6qx02Tocv5D30O
+DamA6yG9hxnFERLVE+8GnJE52Yjjsm5otGRwjHS4ngSShc/Ak1ZyksaCTFl0xEwT
+J1oeESffAgMBAAECggEAHv9fxw4NTe2z+6LqZa113RE+UEqrFgWHLlv/rqe8jua5
+t+32KNnteGyF5KtHhLjajGO6bLEi1F8F51U3FKcYTv84BnY8Rb1kBdcWAlffy9F2
+Fd40EyHJh7PfHwFk6mZqVZ69vNuyXsX9XJSX9WerHLhH9QxBCykJiE/4i3owH4dF
+Cd/7ervsP32ukGY3rs/mdcO8ThAWffF5QyGd/A3NMf8jRCZ3FwYfEPrgaj9IHV2f
+UrwgVc7JqQaCJTvvjrm4Epjp+1mca036eoDj40H+ImF9qQ80jZee/vvqRXjfU5Qx
+ys/MHD6S2aGEG5N5VnEuHLHvT51ytTpKA+mAY/armQKBgQDrQVtS8dlfyfnPLRHy
+p8snF/hpqQQF2k1CDBJTaHfNXG37HlccGzo0vreFapyyeSakCdA3owW7ET8DBiO5
+WN2Qgb7Vab/7vEiGltK4YU/62+g4F0LjWPp25wnbVj81XXW95QrWKjytjU/tgO2p
+h47qr8C+3HqMPj1pQ5tcKpJXCwKBgQC/Nrkn0kT+u4KOxXix5RkRDxwfdylCvuKc
+3EfMHFs4vELi1kOhwXEbVTIsbFpTmsXclofqZvjkhepeu9CM6PN2T852hOaI+1Wo
+4v57UTW/nkpyo8FZ09PtBvOau5B6FpQU0uaKWrZ0dX/f0aGbQKUxJnFOq++7e7mi
+IBfX1QCm/QKBgHtVWkFT1XgodTSuFji2ywSFxo/uMdO3rMUxevILVLNu/6GlOFnd
+1FgOnDvvtpLCfQWGt4hTiQ+XbQdy0ou7EP1PZ/KObD3XadZVf8d2DO4hF89AMqrp
+3PU1Dq/UuXKKus2BJHs+zWzXJs4Gx5IXJU/YMB5fjEe14ZAsB2j8UJgdAoGANjuz
+MFQ3NXjBgvUHUo2EGo6Kj3IgxcmWRJ9FzeKNDP54ihXzgMF47yOu42KoC+ZuEC6x
+xg4Gseo5mzzx3cWEqB3ilUMEj/2ZQhl/zEIwWHTw8Kr5gBzQkv3RwiVIyRf2UCGx
+ObSY41cgOb8fcwVW1SXuJT4m9KoW8KDholnLoZECgYEAiNpTvvIGOoP/QT8iGQkk
+r4GK50j9BoPSJhiM6k236LSc5+iZRKRVUCFEfyMPx6AY+jD2flfGxUv2iULp92XG
+2eE1H6V1gDZ4JJw3s5847z4MNW3dj9nIi2bpFssnmoS5qP2IpmJW0QQmRmJZ8j2j
+OrzKGlO90/6sNzIDd2DbRSM=
+-----END PRIVATE KEY-----";
 
 $isProduction = false;
 $issuer = "";
 $publicKey = "";
 $timestamp = time();
-$totalAmount = new TotalAmount("12500.00", "IDR");
-$virtualAccountConfig = new VirtualAccountConfig(false);
-$additionalInfo = new AdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB", $virtualAccountConfig);
-$createVaRequestDTO = new CreateVARequestDTO(
-   "    1899",
-   null,
-   null,
-   "T_" . $timestamp,
-   "test.bnc." . $timestamp . "@test.com",
-   "00000062" . $timestamp,
-   "INV_CIMB_" . $timestamp,
-   $totalAmount,
-   $additionalInfo,
-   "1",
-   "2024-06-24T15:54:04+07:00"
-);
 
-echo Helper::getTimestamp(500) . "\n";
-
-// main
+/**
+ * Entry Point
+ */
 $clientId = $clientId1;
-$privateKey = $privateKey1;
-$Snap = new DokuSnap($privateKey, $publicKey, $clientId, $issuer, $isProduction);
-    
+$privateKey = $privateKey4;
+$secretKey = "SK-tDzY6MSLBWlNXy3qCsUU";
+$Snap = new Snap($privateKey, $publicKey, $clientId, $issuer, $isProduction, $secretKey);
+$requestSignature = "LtMvncYrtpqDR41PDQLGXaeznzf0/R1mkUZ6KfWslwEDyRTv/Vb2oQlEhrCxIbmLTPxyajTUF96kmDQ4m3ScCCZlDefcI3ovrm3sTBybk2ZfkwgLy9cIkNLVvoZu4jxkA/nYidCVA3BBglc0HqMd/SDE0YI0/tPMl6kOSBQVUz7RAc4oJQ2XQy91k6wzYVUW0S34AQXu+1hPc6f2Dam8kpHFPg8w7LyLTLEoZehRG6uMAi9dj9Y/oMw4i0xu2ZCfxtOPsWMqPHqszjGTk3jPL9wSihbwLYSxdbpYZ2BkbNjHcWbcdnI6ksUotYe+tLPfOTLfAMcjzeOqwBrMorOwpw==";
+$requestTimestamp = "2024-06-06T11:44:15+07:00";
+$virtualAccountMock;
 
 function getToken($Snap) {
     echo "Getting Token B2B: " . PHP_EOL;
     echo $Snap->getTokenAndTime();
 }
 
-function createVA($Snap, $createVaRequestDTO) {
-    echo "Creating VA B2B: " . PHP_EOL;
-    $virtualAccount = $Snap->createVa($createVaRequestDTO);
+function createVA($Snap, $updateVaRequestDTO) {
+    echo "Create VA B2B: " . PHP_EOL;
+    $virtualAccount = $Snap->createVa($updateVaRequestDTO);
+    echo json_encode($virtualAccount, JSON_PRETTY_PRINT);
+    return $virtualAccount;
+}
+
+function updateVA($Snap, $createVaRequestDTO) {
+    echo "Updating VA B2B: " . PHP_EOL;
+    $virtualAccount = $Snap->updateVa($createVaRequestDTO);
+    echo json_encode($virtualAccount, JSON_PRETTY_PRINT);
+}
+
+function deleteVA($Snap, $createVaRequestDTO) {
+    echo "Deleting VA B2B: " . PHP_EOL;
+    $virtualAccount = $Snap->deletePaymentCode($createVaRequestDTO);
+    echo json_encode($virtualAccount, JSON_PRETTY_PRINT);
+}
+
+function checkVA($Snap, $createVaRequestDTO) {
+    echo "Checking Status VA B2B: " . PHP_EOL;
+    $virtualAccount = $Snap->checkStatusVa($createVaRequestDTO);
+    echo json_encode($virtualAccount, JSON_PRETTY_PRINT);
+}
+
+function createVAV1($Snap, $createVaRequestDTOV1) {
+    echo "Creating VA B2B V1: " . PHP_EOL;
+    $virtualAccount = $Snap->createVaV1($createVaRequestDTOV1);
     echo json_encode($virtualAccount, JSON_PRETTY_PRINT);
 }
 
@@ -166,18 +220,136 @@ function validateTokenB2B($Snap, $requestTokenB2B) {
     echo $Snap->validateTokenB2B($requestTokenB2B);
 }
 
+function convertV1toSnap($Snap, $dtov1) {
+    echo "Convert V1 to Snap: " . PHP_EOL;
+    $virtualAccount = $Snap->createVaV1($dtov1);
+    echo json_encode($virtualAccount, JSON_PRETTY_PRINT);
+}
+
+
+/**
+ * Mock Object
+ */ 
+$createVaRequestDtoV1 = new CreateVaRequestDTOV1(
+    "1899", // $mallId
+    "CHAIN_MERCHANT", // $chainMerchant
+    "12500.00", // $amount
+    "12500.00", // $purchaseAmount
+    "INV_CIMB_" . $timestamp, // $transIdMerchant
+    "VIRTUAL_ACCOUNT", // $PaymentType
+    "", // $words
+    date("Y-m-d H:i:s"), // $requestDateTime
+    "IDR", // $currency
+    "IDR", // $purchaseCurrency
+    "", // $sessionId
+    "T_" . $timestamp, // $name
+    "test.bnc." . $timestamp . "@test.com", // $email
+    "", // $additionalData
+    "", // $basket
+    "", // $shippingAddress
+    "", // $shippingCity
+    "", // $shippingState
+    "", // $shippingCountry
+    "", // $shippingZipcode
+    "VIRTUAL_ACCOUNT_BANK_CIMB", // $paymentChannel
+    "", // $address
+    "", // $city
+    "", // $state
+    "", // $country
+    "", // $zipcode
+    "", // $homephone
+    "00000062798", // $mobilephone
+    "", // $workphone
+    "", // $birthday
+    "    1899", // $partnerServiceId
+    "2024-06-24T15:54:04+07:00" // $expiredDate
+);
+
+$createVaRequestDTOConverted = $createVaRequestDtoV1->convertToCreateVaRequestDTO();
+
+$createVaRequestDTO = new CreateVARequestDTO(
+   "    1899", // $partnerServiceId
+   null, // $customerNo
+   null, // $virtualAccountNo
+   "T_" . $timestamp, // $virtualAccountName
+   "test.bnc." . $timestamp . "@test.com", // $virtualAccountEmail
+   "00000062798", // $virtualAccountPhone
+   "INV_CIMB_" . $timestamp, // $trxId
+   new TotalAmount("12500.00", "IDR"), // $totalAmount
+   new CreateVaRequestAdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB", new CreateVaVirtualAccountConfig(false)), // $additionalInfo
+   "1", // $virtualAccountTrxType
+   "2024-07-24T15:54:04+07:00" // $expiredDate
+);
+
+$updateVaRequestDTO = new UpdateVaRequestDTO(
+   "    1899", // $partnerServiceId
+   "000000000461", // $customerNo
+   "    1899000000000461", // $virtualAccountNo
+   "T_" . $timestamp, // $virtualAccountName
+   "test.bnc." . $timestamp . "@test.com", // $virtualAccountEmail
+   "00000062798", // $virtualAccountPhone
+   "INV_CIMB_" . $timestamp, // $trxId
+   new TotalAmount("14000.00", "IDR"), // $totalAmount
+   new UpdateVaRequestAdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB", new UpdateVaVirtualAccountConfig("ACTIVE")), // $additionalInfo
+   "1", // $virtualAccountTrxType
+   "2024-07-24T15:54:04+07:00" // $expiredDate
+);
+
 // getToken($Snap);
 
-$requestSignature = "LtMvncYrtpqDR41PDQLGXaeznzf0/R1mkUZ6KfWslwEDyRTv/Vb2oQlEhrCxIbmLTPxyajTUF96kmDQ4m3ScCCZlDefcI3ovrm3sTBybk2ZfkwgLy9cIkNLVvoZu4jxkA/nYidCVA3BBglc0HqMd/SDE0YI0/tPMl6kOSBQVUz7RAc4oJQ2XQy91k6wzYVUW0S34AQXu+1hPc6f2Dam8kpHFPg8w7LyLTLEoZehRG6uMAi9dj9Y/oMw4i0xu2ZCfxtOPsWMqPHqszjGTk3jPL9wSihbwLYSxdbpYZ2BkbNjHcWbcdnI6ksUotYe+tLPfOTLfAMcjzeOqwBrMorOwpw==";
-$requestTimestamp = "2024-06-06T11:44:15+07:00";
+// $virtualAccountMock = createVA($Snap, $createVaRequestDTO);
+// sleep(2);
 
-createVA($Snap, $createVaRequestDTO);
+// echo "Virtual Account: " . $virtualAccountMock->virtualAccountData->virtualAccountNo . PHP_EOL;
+
+// sleep(1);
+// $updateVaRequestDTO = new UpdateVaRequestDTO(
+//    $virtualAccountMock->virtualAccountData->partnerServiceId, // $partnerServiceId
+//    $virtualAccountMock->virtualAccountData->customerNo, // $customerNo
+//    $virtualAccountMock->virtualAccountData->virtualAccountNo, // $virtualAccountNo
+//    $virtualAccountMock->virtualAccountData->virtualAccountName, // $virtualAccountName
+//    $virtualAccountMock->virtualAccountData->virtualAccountEmail, // $virtualAccountEmail
+//    "081208120812", // $virtualAccountPhone
+//    $virtualAccountMock->virtualAccountData->trxId, // $trxId
+//    new TotalAmount("14000.00", "IDR"), // $totalAmount
+//    new UpdateVaRequestAdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB", new UpdateVaVirtualAccountConfig("ACTIVE")), // $additionalInfo
+//    "1", // $virtualAccountTrxType
+//    "2024-07-24T15:54:04+07:00" // $expiredDate
+// );
+updateVA($Snap, $updateVaRequestDTO);
+
+$deleteVaRequestDTO = new DeleteVaRequestDTO(
+   $virtualAccountMock->virtualAccountData->partnerServiceId, // $partnerServiceId
+   $virtualAccountMock->virtualAccountData->customerNo, // $customerNo
+   $virtualAccountMock->virtualAccountData->virtualAccountNo, // $virtualAccountNo
+    $virtualAccountMock->virtualAccountData->trxId, // $trxId
+    new DeleteVaRequestAdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB") // $additionalInfo
+);
+//deleteVA($Snap, $deleteVaRequestDTO);
+//sleep(1);
+
+$checkStatusVaRequestDTO = new CheckStatusVaRequestDTO(
+   $virtualAccountMock->virtualAccountData->partnerServiceId, // $partnerServiceId
+   $virtualAccountMock->virtualAccountData->customerNo, // $customerNo
+   $virtualAccountMock->virtualAccountData->virtualAccountNo, // $virtualAccountNo
+    null,
+    null,
+    null
+);
+//checkVA($Snap, $checkStatusVaRequestDTO);
+// createVAV1($Snap, $createVaRequestDTOV1);
+//convertV1toSnap($Snap, $createVaRequestDtoV1);
+
 // validateSignature($Snap, $requestSignature, $requestTimestamp);
 // generateTokenB2BResponse($snap, $requestSignature, $requestTimestamp);
 // validateSignatureAndGenerateToken($snap, $requestSignature, $requestTimestamp);
 // generateInvalidSignatureResponse($snap);
 // validateTokenB2B($snap, $requestTokenB2B);
-    
+
+
+
+
+
 
 
 

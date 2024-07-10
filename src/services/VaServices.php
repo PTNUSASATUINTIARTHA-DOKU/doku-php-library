@@ -1,7 +1,17 @@
 <?php
-require "src/models/request/RequestHeaderDTO.php";
-require "src/models/va/VirtualAccountData.php";
-require "src/models/response/CreateVAResponseDTO.php";
+require  "src/models/request/RequestHeaderDTO.php";
+require  "src/models/va/response/CreateVaResponseDTO.php";
+require  "src/models/va/response/UpdateVaResponseDTO.php";
+require  "src/models/va/response/DeleteVaResponseDTO.php";
+require  "src/models/va/response/CheckStatusVaResponseDTO.php";
+require  "src/models/va/utility/virtualAccountData/CreateVaResponseVirtualAccountData.php";
+require "src/models/va/utility/virtualAccountData/CheckStatusVirtualAccountData.php";
+require "src/models/va/utility/virtualAccountData/CheckStatusResponsePaymentFlagReason.php";
+require "src/models/va/utility/additionalInfo/CheckStatusResponseAdditionalInfo.php";
+require "src/models/va/utility/virtualAccountData/DeleteVaResponseVirtualAccountData.php";
+require "src/models/va/utility/additionalInfo/DeleteVaResponseAdditionalInfo.php";
+
+require  "src/commons/Helper.php";
 class VaServices
 {
     /**
@@ -18,15 +28,8 @@ class VaServices
     {
         $baseUrl = getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . CREATE_VA;
-        $header = array(
-            "Content-Type: application/json",
-            'X-PARTNER-ID: ' . $requestHeaderDTO->xPartnerId,
-            'X-EXTERNAL-ID: ' . $requestHeaderDTO->xRequestId,
-            'X-TIMESTAMP: ' . $requestHeaderDTO->xTimestamp,
-            'X-SIGNATURE: ' . $requestHeaderDTO->xSignature,
-            'Authorization:Bearer ' . $requestHeaderDTO->authorization,
-            'CHANNEL-ID: ' . $requestHeaderDTO->channelId
-        );
+        $headers = Helper::prepareHeaders($requestHeaderDTO);
+        
         $totalAmountArr = array(
             'value' => $requestDTO->totalAmount->value,
             'currency' => $requestDTO->totalAmount->currency
@@ -49,45 +52,27 @@ class VaServices
             'totalAmount' => $totalAmountArr,
             'additionalInfo' => $additionalInfoArr,
             'virtualAccountTrxType' => $requestDTO->virtualAccountTrxType,
-            'expiredDate' => $requestDTO->expiredDate
+            'expiredDate' => $requestDTO->expiredDate,
         );
-
+        
         $payload = json_encode($payload);
-
-        print_r($payload);
-
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $apiEndpoint);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-
-        $response = curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            $error = curl_error($ch); 
-            curl_close($ch);
-            throw new Exception('cURL error: ' . $error);
-        }
-        curl_close($ch);
-
+        $response = Helper::doHitApi($apiEndpoint, $headers, $payload, "POST");
         $responseObject = json_decode($response, true);
+
         if (isset($responseObject['responseCode']) && $responseObject['responseCode'] === '2002700') {
             $responseData = $responseObject["virtualAccountData"];
             $totalAmount = new TotalAmount(
                 $responseData['totalAmount']['value'] ?? null, 
                 $responseData['totalAmount']['currency'] ?? null
             );
-            $virtualAccountConfig = new VirtualAccountConfig(
+            $virtualAccountConfig = new CreateVaVirtualAccountConfig(
                 $responseData['additionalInfo']['virtualAccountConfig']['reusableStatus'] ?? null
             );
-            $additionalInfo = new AdditionalInfo(
+            $additionalInfo = new CreateVaRequestAdditionalInfo(
                 $responseData['additionalInfo']['channel'] ?? null,
                 $virtualAccountConfig
             );
-            $virtualAccountData = new VirtualAccountData(
+            $virtualAccountData = new CreateVaResponseVirtualAccountData(
                 $responseData['partnerServiceId'],
                 $responseData['customerNo'],
                 $responseData['virtualAccountNo'],
@@ -104,6 +89,152 @@ class VaServices
             );
         } else {
             throw new Exception('Error creating virtual account: ' . $responseObject['responseMessage']);
+        }
+    }
+
+    public function doUpdateVa(RequestHeaderDTO $requestHeaderDto, UpdateVaRequestDTO $requestDTO, bool $isProduction = false): UpdateVaResponseDto
+    {
+        $baseUrl = getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . UPDATE_VA_URL;
+        $headers = Helper::prepareHeaders($requestHeaderDto);
+        $payload = $requestDTO->getJSONRequestBody();
+        $response = Helper::doHitApi($apiEndpoint, $headers, $payload, "PUT");
+        $responseObject = json_decode($response, true);
+
+        if (isset($responseObject['responseCode']) && $responseObject['responseCode'] === '2002800') {
+            $responseData = $responseObject["virtualAccountData"];
+            $totalAmount = new TotalAmount(
+                $responseData['totalAmount']['value'] ?? null, 
+                $responseData['totalAmount']['currency'] ?? null
+            );
+            $virtualAccountConfig = new UpdateVaVirtualAccountConfig(
+                $responseData['additionalInfo']['virtualAccountConfig']['reusableStatus'] ?? null
+            );
+            $additionalInfo = new UpdateVaRequestAdditionalInfo(
+                $responseData['additionalInfo']['channel'] ?? null,
+                $virtualAccountConfig
+            );
+            $virtualAccountData = new UpdateVaRequestDTO(
+                $responseData['partnerServiceId'],
+                $responseData['customerNo'],
+                $responseData['virtualAccountNo'],
+                $responseData['virtualAccountName'],
+                $responseData['virtualAccountEmail'],
+                $responseData['virtualAccountPhone'],
+                $responseData['trxId'],
+                $totalAmount,
+                $additionalInfo,
+                $responseData['virtualAccountTrxType'],
+                $responseData['expiredDate'],
+            );
+            return new UpdateVaResponseDto(
+                $responseObject['responseCode'],
+                $responseObject['responseMessage'],
+                $virtualAccountData
+            );
+        } else {
+            throw new Exception('Error updating virtual account: ' . $responseObject['responseMessage']);
+        }
+    }
+
+    public function doDeletePaymentCode(RequestHeaderDTO $requestHeader, DeleteVaRequestDTO $deleteVaRequest, bool $isProduction = false): DeleteVaResponseDTO
+    {
+        $baseUrl = getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . DELETE_VA_URL;
+        $headers = Helper::prepareHeaders($requestHeader);
+
+        $payload = json_encode([
+            'partnerServiceId' => $deleteVaRequest->partnerServiceId,
+            'customerNo' => $deleteVaRequest->customerNo,
+            'virtualAccountNo' => $deleteVaRequest->virtualAccountNo,
+            'trxId' => $deleteVaRequest->trxId,
+            'additionalInfo' => [
+                'channel' => $deleteVaRequest->additionalInfo->channel
+            ]
+        ]);
+
+        
+        print_r($headers);
+        echo "\n\n";
+        print_r ($payload);
+        echo "\n\n";
+
+        $response = Helper::doHitApi($apiEndpoint, $headers, $payload, "DELETE");
+        $responseData = json_decode($response, true);
+
+        print_r($response);
+
+        if (isset($responseData['responseCode']) && $responseData['responseCode'] === '2003100') {
+            return new DeleteVaResponseDto(
+                $responseData['responseCode'],
+                $responseData['responseMessage'] ?? '',
+                new DeleteVaResponseVirtualAccountData(
+                    $responseData['virtualAccountData']['partnerServiceId'] ?? '',
+                    $responseData['virtualAccountData']['customerNo'] ?? '',
+                    $responseData['virtualAccountData']['virtualAccountNo'] ?? '',
+                    $responseData['virtualAccountData']['trxId'] ?? '',
+                    new DeleteVaResponseAdditionalInfo(
+                        $responseData['virtualAccountData']['additionalInfo']['channel'] ?? '',
+                        $responseData['virtualAccountData']['additionalInfo']['virtualAccountConfig'] ?? ''
+                    )
+                )
+            );
+        } else {
+            throw new Exception('Error deleting virtual account: ' . $responseData['responseMessage'] ?? $responseData['error']);
+        }
+    }
+
+    public function doCheckStatusVa(RequestHeaderDTO $requestHeader, CheckStatusVaRequestDTO $checkStatusVaRequest, bool $isProduction = false): CheckStatusVaResponseDTO
+    {
+        $baseUrl = getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . CHECK_VA;
+        $headers = Helper::prepareHeaders($requestHeader);
+
+        $payload = json_encode([
+            'partnerServiceId' => $checkStatusVaRequest->partnerServiceId,
+            'customerNo' => $checkStatusVaRequest->customerNo,
+            'virtualAccountNo' => $checkStatusVaRequest->virtualAccountNo,
+            'inquiryRequestId' => $checkStatusVaRequest->inquiryRequestId,
+            'paymentRequestId' => $checkStatusVaRequest->paymentRequestId,
+            'additionalInfo' => $checkStatusVaRequest->additionalInfo
+        ]);
+
+        $response = Helper::doHitApi($apiEndpoint, $headers, $payload, "POST");
+        $responseData = json_decode($response, true);
+
+        print_r($response);
+        echo "\n\n";
+        if (isset($responseData['responseCode']) && $responseData['responseCode'] === '2002600') {
+            return new CheckStatusVaResponseDTO(
+                $responseData['responseCode'],
+                $responseData['responseMessage'] ?? '',
+                new CheckStatusVirtualAccountData(
+                    isset($responseData['virtualAccountData']['paymentFlagReason']) ? 
+                        new CheckStatusResponsePaymentFlagReason(
+                            $responseData['virtualAccountData']['paymentFlagReason']['english'] ?? '',
+                            $responseData['virtualAccountData']['paymentFlagReason']['indonesia'] ?? ''
+                        ) : null,
+                    $responseData['virtualAccountData']['partnerServiceId'] ?? '',
+                    $responseData['virtualAccountData']['customerNo'] ?? '',
+                    $responseData['virtualAccountData']['virtualAccountNo'] ?? '',
+                    $responseData['virtualAccountData']['inquiryRequestId'] ?? '',
+                    $responseData['virtualAccountData']['paymentRequestId'] ?? '',
+                    $responseData['virtualAccountData']['trxId'] ?? '',
+                    new TotalAmount(
+                        $responseData['virtualAccountData']['paidAmount']['value'] ?? 0,
+                        $responseData['virtualAccountData']['paidAmount']['currency'] ?? ''
+                    ),
+                    new TotalAmount(
+                        $responseData['virtualAccountData']['billAmount']['value'] ?? 0,
+                        $responseData['virtualAccountData']['billAmount']['currency'] ?? ''
+                    ),
+                    new CheckStatusResponseAdditionalInfo(
+                        $responseData['virtualAccountData']['additionalInfo']['acquirer'] ?? ''
+                    )
+                )
+            );
+        } else {
+            throw new Exception('Error checking status of virtual account: ' . $responseData['responseMessage']);
         }
     }
 
@@ -125,7 +256,6 @@ class VaServices
     /**
      * Create the request header DTO for the create virtual account request.
      *
-     * @param CreateVaRequestDTO $createVaRequestDTO The create virtual account request DTO
      * @param string $privateKey The private key for authentication
      * @param string $clientId The client ID for authentication
      * @param string $tokenB2B The B2B token
@@ -133,21 +263,20 @@ class VaServices
      * @param string $externalId The external ID
      * @return RequestHeaderDTO The request header DTO
      */
-    public function createVaRequestHeaderDTO(
-        CreateVaRequestDTO $createVaRequestDTO,
-        string $privateKey,
-        string $clientId,
-        string $tokenB2B,
+    public function generateRequestHeaderDTO(
         string $timestamp,
+        string $signature,
+        string $clientId,
         string $externalId,
-        string $signature
+        ?string $channelId,
+        string $tokenB2B
     ): RequestHeaderDTO {
         $requestHeaderDTO = new RequestHeaderDTO(
             $timestamp,
             $signature,
             $clientId,
             $externalId,
-            $createVaRequestDTO->additionalInfo->channel,
+            $channelId,
             $tokenB2B
         );
         return $requestHeaderDTO;

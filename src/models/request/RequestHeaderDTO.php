@@ -9,21 +9,21 @@ class RequestHeaderDTO
     public string $xSignature;
     public string $xPartnerId;
     public string $xRequestId;
-    public string $channelId;
+    public ?string $channelId;
     public string $authorization;
     public function __construct(
         string $xTimestamp,
         string $xSignature,
         string $xPartnerId,
         string $xRequestId,
-        string $channelId,
+        ?string $channelId,
         string $authorization
     ) {
         $this->xTimestamp = $xTimestamp;
         $this->xSignature = $xSignature;
         $this->xPartnerId = $xPartnerId;
         $this->xRequestId = $xRequestId;
-        $this->channelId = $channelId;
+        $this->channelId = "SDK";
         $this->authorization = $authorization;
     }
 }

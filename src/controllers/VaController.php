@@ -1,5 +1,5 @@
 <?php
-require "src/services/VaServices.php";
+require  "src/services/VaServices.php";
 class VaController
 {
     private VaServices $vaServices;
@@ -24,8 +24,98 @@ class VaController
         $externalId = $this->vaServices->generateExternalId();
         $timestamp = $this->tokenServices->getTimestamp();
         $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
-        $requestHeaderDTO = $this->vaServices->createVaRequestHeaderDTO($createVaRequestDTO, $privateKey, $clientId, $tokenB2B, $timestamp, $externalId, $signature);
+        $requestHeaderDTO = $this->vaServices->generateRequestHeaderDTO($timestamp, $signature, $clientId, $externalId, $createVaRequestDTO->additionalInfo->channel, $tokenB2B);
         $createVaResponseDTO = $this->vaServices->createVa($requestHeaderDTO, $createVaRequestDTO, $isProduction);
         return $createVaResponseDTO;
+    }
+
+    /**
+     * Updates a virtual account using the provided UpdateVaRequestDTO and other parameters.
+     *
+     * @param UpdateVaRequestDTO $UpdateVaRequestDTO The DTO containing the request data.
+     * @param string $privateKey The private key for authentication.
+     * @param string $clientId The client ID for authentication.
+     * @param string $tokenB2B The B2B token.
+     * @param string $secretKey The secret key for signing the request.
+     * @param bool $isProduction Whether to use the production or sandbox environment.
+     * @return UpdateVaResponseDTO The DTO containing the response data.
+     */
+    public function doUpdateVa(
+        UpdateVaRequestDTO $UpdateVaRequestDTO,
+        string $privateKey,
+        string $clientId,
+        string $tokenB2B,
+        string $secretKey,
+        string $isProduction
+    ): UpdateVaResponseDTO
+    {
+        $timestamp = $this->tokenServices->getTimestamp();
+        $baseUrl = getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . UPDATE_VA_URL;
+        $signature = $this->tokenServices->generateSymmetricSignature(
+            'POST',
+            $apiEndpoint,
+            $tokenB2B,
+            $UpdateVaRequestDTO->getJSONRequestBody(),
+            $timestamp,
+            $secretKey
+        );
+        $externalId = $this->vaServices->generateExternalId();
+        $header = $this->vaServices->generateRequestHeaderDTO(
+            $UpdateVaRequestDTO->additionalInfo->channel,
+            $clientId,
+            $tokenB2B,
+            $timestamp,
+            $signature,
+            $externalId
+        );
+
+        return $this->vaServices->doUpdateVa($header, $UpdateVaRequestDTO);
+    }
+    public function doDeletePaymentCode(DeleteVaRequestDto $deleteVaRequestDto, string $privateKey, string $clientId, string $secretKey, string $tokenB2B, string $isProduction)
+    {
+        $timestamp = $this->tokenServices->getTimestamp();
+        $baseUrl = getBaseURL(false);
+        $apiEndpoint = $baseUrl . DELETE_VA_URL;
+        $signature = $this->tokenServices->generateSymmetricSignature(
+            "DELETE",
+            $apiEndpoint,
+            $tokenB2B,
+            $deleteVaRequestDto->getJSONRequestBody(),
+            $timestamp,
+            $secretKey
+        );
+        $externalId = $this->vaServices->generateExternalId();
+        $requestHeaderDto = $this->vaServices->generateRequestHeaderDTO(
+            $timestamp, 
+            $signature,
+            $clientId, 
+            $externalId,
+            $deleteVaRequestDto->additionalInfo->channel, 
+            $tokenB2B, 
+        );
+
+        $response = $this->vaServices->doDeletePaymentCode($requestHeaderDto, $deleteVaRequestDto);
+
+        return $response;
+    }
+
+
+    public function doCheckStatusVa(CheckStatusVaRequestDTO $checkVARequestDTO, string $privateKey, string $clientId, string $tokenB2B, bool $isProduction): CheckStatusVAResponseDTO
+    {
+        $timestamp = $this->tokenServices->getTimestamp();
+        $baseUrl = getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . UPDATE_VA_URL;
+        $signature = $this->tokenServices->generateSymmetricSignature("POST", $apiEndpoint, $tokenB2B, $checkVARequestDTO->getJSONRequestBody(), $timestamp, $privateKey);
+        $externalId = $this->vaServices->generateExternalId();
+        $header = $this->vaServices->generateRequestHeaderDTO(
+            $timestamp, 
+            $signature,
+            $clientId, 
+            $externalId,
+            "SDK",
+            $tokenB2B, 
+        );
+        return $this->vaServices->doCheckStatusVa($header, $checkVARequestDTO);
     }
 }

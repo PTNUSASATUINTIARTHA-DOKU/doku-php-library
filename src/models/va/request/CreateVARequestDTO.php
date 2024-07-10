@@ -4,9 +4,10 @@
  * Represents the data transfer object for creating a virtual account request
  */
 
-require "src/commons/VaChannels.php";
+require  "src/commons/VaChannels.php";
 class CreateVaRequestDTO
 {
+
     public ?string $partnerServiceId;
     public ?string $customerNo;
     public ?string $virtualAccountNo;
@@ -15,9 +16,10 @@ class CreateVaRequestDTO
     public ?string $virtualAccountPhone;
     public ?string $trxId;
     public TotalAmount $totalAmount;
-    public AdditionalInfo $additionalInfo;
+    public CreateVaRequestAdditionalInfo $additionalInfo;
     public ?string $virtualAccountTrxType;
     public ?string $expiredDate;
+    
 
     public function __construct(
         ?string $partnerServiceId,
@@ -28,7 +30,7 @@ class CreateVaRequestDTO
         ?string $virtualAccountPhone,
         ?string $trxId,
         TotalAmount $totalAmount,
-        AdditionalInfo $additionalInfo,
+        CreateVaRequestAdditionalInfo $updateVaAdditionalInfoDTO,
         ?string $virtualAccountTrxType,
         ?string $expiredDate
     ) {
@@ -40,7 +42,7 @@ class CreateVaRequestDTO
         $this->virtualAccountPhone = $virtualAccountPhone;
         $this->trxId = $trxId;
         $this->totalAmount = $totalAmount;
-        $this->additionalInfo = $additionalInfo;
+        $this->additionalInfo = $updateVaAdditionalInfoDTO;
         $this->virtualAccountTrxType = $virtualAccountTrxType;
         $this->expiredDate = $expiredDate;
     }
@@ -48,37 +50,24 @@ class CreateVaRequestDTO
     public function validateVaRequestDTO(): bool
     {
         $status = true;
-        $status &= $this->validatePartnerServiceId();
-        // echo $status . " validatePartnerServiceId\n";
-        $status &= $this->validateCustomerNo();
-        // echo $status . " validateCustomerNo\n";
-        $status &= $this->validateVirtualAccountName();
-        // echo $status . " validateVirtualAccountName\n";
-        $status &= $this->validateVirtualAccountEmail();
-        // echo $status . " validateVirtualAccountEmail\n";
-        $status &= $this->validateVirtualAccountPhone();
-        // echo $status . " validateVirtualAccountPhone\n";
-        $status &= $this->validateTrxId();
-        // echo $status . " validateTrxId\n";
-        $status &= $this->validateValue();
-        // echo $status . " validateValue\n";
-        $status &= $this->validateCurrency();
-        // echo $status . " validateCurrency\n";
-        $status &= $this->validateChannel();
-        // echo $status . " validateChannel\n";
-        $status &= $this->validateReusableStatus();
-        // echo $status . " validateReusableStatus\n";
-        $status &= $this->validateVirtualAccountTrxType();
-        // echo $status . " validateVirtualAccountTrxType\n";
-        $status &= $this->validateExpiredDate();
-        // echo $status . " validateExpiredDate\n";
-        // CHANGE HERE
+        print("PartnerServiceId: " . ($this->validatePartnerServiceId()) . "\n");
+        print("CustomerNo: " . ($this->validateCustomerNo()) . "\n");
+        print("VirtualAccountName: " . ($this->validateVirtualAccountName()) . "\n");
+        print("VirtualAccountEmail: " . ($this->validateVirtualAccountEmail()) . "\n");
+        print("VirtualAccountPhone: " . ($this->validateVirtualAccountPhone()) . "\n");
+        print("TrxId: " . ($this->validateTrxId()) . "\n");
+        print("Value: " . ($this->validateValue()) . "\n");
+        print("Currency: " . ($this->validateCurrency()) . "\n");
+        print("Channel: " . ($this->validateChannel()) . "\n");
+        print("ReusableStatus: " . ($this->validateReusableStatus()) . "\n");
+        print("VirtualAccountTrxType: " . ($this->validateVirtualAccountTrxType()) . "\n");
+        print("ExpiredDate: " . ($this->validateExpiredDate()) . "\n");
         return true;
     }
 
     public function validatePartnerServiceId(): bool
     {
-        if (is_null($this->partnerServiceId) || !is_string($this->partnerServiceId) || strlen($this->partnerServiceId) > 20 || !preg_match('/^\d+$/', $this->partnerServiceId)) {
+        if (is_null($this->partnerServiceId) || !is_string($this->partnerServiceId) || strlen($this->partnerServiceId) > 20 || !preg_match('/^ *\d+$/', $this->partnerServiceId)) {
             return false;
         }
         return true;
@@ -86,7 +75,10 @@ class CreateVaRequestDTO
     
     public function validateCustomerNo(): bool
     {
-        if (is_null($this->customerNo) || !is_string($this->customerNo) || strlen($this->customerNo) !== 8 || !preg_match('/^\s{0,7}\d{1,8}$/', $this->customerNo)) {
+        if(is_null($this->customerNo)) {
+            return true;
+        }
+        if (!is_string($this->customerNo) || strlen($this->customerNo) !== 8 || !preg_match('/^\s{0,7}\d{1,8}$/', $this->customerNo)) {
             return false;
         }
         return $this->validateVirtualAccountNo();
@@ -125,8 +117,7 @@ class CreateVaRequestDTO
         if (!is_null($this->virtualAccountPhone) && (
             !is_string($this->virtualAccountPhone) ||
             strlen($this->virtualAccountPhone) < 9 ||
-            strlen($this->virtualAccountPhone) > 30 ||
-            !preg_match('/^62/', $this->virtualAccountPhone)
+            strlen($this->virtualAccountPhone) > 30
         )) {
             return false;
         }

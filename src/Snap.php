@@ -2,7 +2,7 @@
 require_once "src/controllers/TokenController.php";
 require_once "src/controllers/NotificationController.php";
 require_once "src/controllers/VaController.php";
-class DokuSnap
+class Snap
 {
     private string $privateKey;
     private string $clientId;
@@ -14,6 +14,7 @@ class DokuSnap
     private string $issuer;
     private TokenController $tokenB2BController;
     private NotificationController $notificationController;
+    private ?string $secretKey;
 
     /**
      * Constructor
@@ -22,13 +23,14 @@ class DokuSnap
      * @param string $clientId The client ID for authentication
      * @param bool $isProduction Flag indicating whether to use production or sandbox environment
      */
-    public function __construct(string $privateKey, string $publicKey, string $clientId, string $issuer, bool $isProduction)
+    public function __construct(string $privateKey, string $publicKey, string $clientId, string $issuer, bool $isProduction, string $secretKey)
     {
         $this->privateKey = $privateKey;
         $this->publicKey = $publicKey;
         $this->issuer = $issuer;
         $this->clientId =$clientId;
         $this->isProduction = $isProduction;
+        $this->secretKey = $secretKey;
 
         $this->tokenB2BController = new TokenController();
         $this->notificationController = new NotificationController();
@@ -86,6 +88,29 @@ class DokuSnap
         return $string  . "Expired In: " . $this->tokenB2BExpiresIn . PHP_EOL;
     }
 
+    /**
+     * Retrieves the value of the new generated tokenB2B property.
+     *
+     * @return string The value of the tokenB2B property.
+     */
+    public function getTokenB2B(): string
+    {
+        $tokenB2BResponseDTO = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
+        $this->setTokenB2B($tokenB2BResponseDTO);
+        return $this->tokenB2B;
+    }
+
+
+    /**
+     * Retrieves the value of the current tokenB2B property.
+     *
+     * @return string The value of the tokenB2B property.
+     */
+    public function getCurrentTokenB2B(): string
+    {
+        return $this->tokenB2B;
+    }
+
 
     /**
      * create Virtual Account based on the request
@@ -108,7 +133,7 @@ class DokuSnap
             $tokenB2BResponseDTO = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
             $this->setTokenB2B($tokenB2BResponseDTO);
         }	
-        $vaController = new VaController();
+        $vaController = new VaController(); // TODO move or not
         $createVAResponseDTO = $vaController->createVa($createVaRequestDTO, $this->privateKey, $this->clientId, $this->tokenB2B, $this->isProduction);
         return $createVAResponseDTO;
     }
@@ -212,5 +237,150 @@ class DokuSnap
             }else{
                     return $this->tokenB2BController->generateInvalidSignatureResponse();
             }
+    }
+
+    /**
+     * Create a virtual account using CreateVaRequestDtoV1
+     *
+     * @param CreateVaRequestDTOV1 $createVaRequestDtoV1
+     * @return CreateVaResponseDto
+     * @throws Exception If there is an error creating the virtual account
+     */
+    public function createVaV1(CreateVaRequestDTOV1 $createVaRequestDTOV1): CreateVaResponseDTO
+    {
+        try {
+            $createVaRequestDTO = $createVaRequestDTOV1->convertToCreateVaRequestDTO();
+            $status = $createVaRequestDTO->validateVaRequestDTO();
+            if(!$status){
+                throw new Error();
+            }
+            return $this->createVa($createVaRequestDTO);
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     * Generates a request header DTO.
+     *
+     * This function checks if the current token is invalid and generates a new one if necessary.
+     * Then, it generates a request header DTO using the token obtained from the token B2B controller.
+     *
+     * @return RequestHeaderDTO The generated request header DTO.
+     */
+    public function generateRequestHeader(string $channelId = "SDK"): RequestHeaderDTO
+    {
+        $isTokenInvalid = $this->tokenB2BController->isTokenInvalid(
+            $this->tokenB2B,
+            $this->tokenB2BExpiresIn,
+            $this->tokenB2BGeneratedTimestamp
+        );
+
+        if ($isTokenInvalid) {
+            $tokenB2BResponseDTO = $this->tokenB2BController->getTokenB2B(
+                $this->privateKey,
+                $this->clientId,
+                $this->isProduction
+            );
+            $this->setTokenB2B($tokenB2BResponseDTO);
+        }
+
+        $requestHeaderDTO = $this->tokenB2BController->doGenerateRequestHeader(
+            $this->privateKey,
+            $this->clientId,
+            $this->tokenB2B,
+            $channelId
+        );
+
+        return $requestHeaderDTO;
+    }
+
+     /**
+     * Updates a virtual account based on the provided request DTO.
+     *
+     * @param UpdateVaRequestDTO $updateVaRequestDto The DTO containing the update virtual account request.
+     * @return UpdateVaResponseDTO The DTO containing the update virtual account response.
+     * @throws Exception If the request DTO is invalid.
+     */
+    public function updateVa(UpdateVaRequestDTO $updateVaRequestDto): UpdateVaResponseDTO
+    {
+        if (!$updateVaRequestDto->validateUpdateVaRequestDto()) {
+            return new UpdateVaResponseDTO('400', 'Invalid request data', null);
+        }
+
+        $isTokenInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
+
+        if ($isTokenInvalid) {
+            $tokenController = new TokenController();
+            $tokenB2BResponseDto = $tokenController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
+            $this->setTokenB2B($tokenB2BResponseDto);
+        }
+
+        $vaController = new VaController();
+        $updateVaResponseDto = $vaController->doUpdateVa($updateVaRequestDto, $this->privateKey, $this->clientId, $this->tokenB2B, $this->secretKey, $this->isProduction);
+
+        return $updateVaResponseDto;
+    }
+
+    public function deletePaymentCode(DeleteVaRequestDto $deleteVaRequestDto)
+    {
+        $isTokenInvalid = $this->tokenB2BController->isTokenInvalid(
+            $this->tokenB2B,
+            $this->tokenB2BExpiresIn,
+            $this->tokenB2BGeneratedTimestamp
+        );
+
+        if ($isTokenInvalid) {
+            $tokenB2BResponse = $this->tokenB2BController->getTokenB2B(
+                $this->privateKey,
+                $this->clientId,
+                $this->isProduction
+            );
+
+            $this->setTokenB2B($tokenB2BResponse);
+        }
+
+        $vaController = new VaController();
+        return $vaController->doDeletePaymentCode(
+            $deleteVaRequestDto,
+            $this->privateKey,
+            $this->clientId,
+            $this->secretKey,
+            $this->tokenB2B,
+            $this->isProduction
+        );
+    }
+
+    public function checkStatusVa(CheckStatusVaRequestDto $checkStatusVaRequestDto): CheckStatusVaResponseDto
+    {
+        if (!$checkStatusVaRequestDto->validateCheckStatusVaRequestDto()) {
+            throw new InvalidArgumentException("Invalid CheckStatusVaRequestDto");
+        }
+
+        $isTokenInvalid = $this->tokenB2BController->isTokenInvalid(
+            $this->tokenB2B,
+            $this->tokenB2BExpiresIn,
+            $this->tokenB2BGeneratedTimestamp
+        );
+
+        if ($isTokenInvalid) {
+            $tokenB2BResponse = $this->tokenB2BController->getTokenB2B(
+                $this->privateKey,
+                $this->clientId,
+                $this->isProduction
+            );
+            $this->setTokenB2B($tokenB2BResponse);
+        }
+
+        $vaController = new VaController();
+        $checkStatusVaResponseDto = $vaController->doCheckStatusVa(
+            $checkStatusVaRequestDto,
+            $this->privateKey,
+            $this->clientId,
+            $this->tokenB2B,
+            $this->isProduction
+        );
+
+        return $checkStatusVaResponseDto;
     }
 }

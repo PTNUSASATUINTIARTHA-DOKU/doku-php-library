@@ -5,15 +5,15 @@
  */
 class CreateVaResponseDTO
 {
-    public string $responseCode;
-    public string $responseMessage;
-    public VirtualAccountData $virtualAccountData;
+    public ?string $responseCode;
+    public ?string $responseMessage;
+    public ?CreateVaResponseVirtualAccountData $virtualAccountData;
 
 
     public function __construct(
-        string $responseCode,
-        string $responseMessage,
-        VirtualAccountData $virtualAccountData
+        ?string $responseCode,
+        ?string $responseMessage,
+        ?CreateVaResponseVirtualAccountData $virtualAccountData
     ) {
         $this->responseCode = $responseCode;
         $this->responseMessage = $responseMessage;
