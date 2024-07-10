@@ -12,7 +12,7 @@ class CreateVaResponseVirtualAccountData
     public ?string $virtualAccountEmail;
     public ?string $trxId;
     public ?TotalAmount $totalAmount;
-    public ?CreateVaRequestAdditionalInfo $additionalInfo;
+    public ?CreateVaResponseAdditionalInfo $additionalInfo;
 
     public function __construct(
         ?string $partnerServiceId,
@@ -22,7 +22,7 @@ class CreateVaResponseVirtualAccountData
         ?string $virtualAccountEmail,
         ?string $trxId,
         ?TotalAmount $totalAmount,
-        ?CreateVaRequestAdditionalInfo $additionalInfo
+        ?CreateVaResponseAdditionalInfo $additionalInfo
     ) {
         $this->partnerServiceId = $partnerServiceId;
         $this->customerNo = $customerNo;

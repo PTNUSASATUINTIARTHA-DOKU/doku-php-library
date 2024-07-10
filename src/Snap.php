@@ -125,6 +125,7 @@ class Snap
         if(!$status){
             throw new Error();
         }
+        $createVaRequestDTO->additionalInfo->origin = new Origin();
         // TODO review is it referring to the same token or not
         // what if there are 2 merchant in same time hitting API
         // async or not
