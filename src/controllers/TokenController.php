@@ -117,7 +117,7 @@ class TokenController
      * @param string $channelId The channel ID to include in the request header.
      * @return RequestHeaderDTO The generated request header DTO.
      */
-    public function doGenerateRequestHeader(string $privateKey, string $clientId, string $tokenB2B, string $channelId): RequestHeaderDTO
+    public function doGenerateRequestHeader(string $privateKey, string $clientId, string $tokenB2B, string $channelId = "SDK"): RequestHeaderDTO
     {
         $externalId = $this->vaServices->generateExternalId();
         $timestamp = $this->tokenServices->getTimestamp();

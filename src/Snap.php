@@ -268,7 +268,7 @@ class Snap
      *
      * @return RequestHeaderDTO The generated request header DTO.
      */
-    public function generateRequestHeader(string $channelId): RequestHeaderDTO
+    public function generateRequestHeader(string $channelId = "SDK"): RequestHeaderDTO
     {
         $isTokenInvalid = $this->tokenB2BController->isTokenInvalid(
             $this->tokenB2B,
@@ -345,7 +345,9 @@ class Snap
             $deleteVaRequestDto,
             $this->privateKey,
             $this->clientId,
-            $this->tokenB2B
+            $this->secretKey,
+            $this->tokenB2B,
+            $this->isProduction
         );
     }
 
@@ -375,7 +377,8 @@ class Snap
             $checkStatusVaRequestDto,
             $this->privateKey,
             $this->clientId,
-            $this->tokenB2B
+            $this->tokenB2B,
+            $this->isProduction
         );
 
         return $checkStatusVaResponseDto;

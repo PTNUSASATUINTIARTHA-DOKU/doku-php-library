@@ -25,6 +25,19 @@ class CheckStatusVaRequestDTO
         $this->additionalInfo = $additionalInfo;
     }
 
+    public function getJSONRequestBody(): string
+    {
+        $payload = array(
+            'partnerServiceId' => $this->partnerServiceId,
+            'customerNo' => $this->customerNo,
+            'virtualAccountNo' => $this->virtualAccountNo,
+            'inquiryRequestId' => $this->inquiryRequestId,
+            'paymentRequestId' => $this->paymentRequestId,
+            'additionalInfo' => $this->additionalInfo
+        );
+        return json_encode($payload);
+    }
+
     public function validateCheckStatusVaRequestDto(): bool
     {
         $status = true;

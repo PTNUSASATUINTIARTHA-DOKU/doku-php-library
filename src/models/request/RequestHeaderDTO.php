@@ -23,7 +23,7 @@ class RequestHeaderDTO
         $this->xSignature = $xSignature;
         $this->xPartnerId = $xPartnerId;
         $this->xRequestId = $xRequestId;
-        $this->channelId = $channelId;
+        $this->channelId = "SDK";
         $this->authorization = $authorization;
     }
 }

@@ -3,7 +3,7 @@
  * Class UpdateVaResponseDto
  * Represents the response data for updating a virtual account.
  */
-class UpdateVaResponseDTO extends CreateVAResponseDTO
+class UpdateVaResponseDTO
 {
     public ?string $responseCode;
     public ?string $responseMessage;

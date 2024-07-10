@@ -43,6 +43,36 @@ class UpdateVaRequestDTO
         $this->virtualAccountTrxType = $virtualAccountTrxType;
         $this->expiredDate = $expiredDate;
     }
+
+    public function getJSONRequestBody(): string
+    {
+        $totalAmountArr = array(
+            'value' => $this->totalAmount->value,
+            'currency' => $this->totalAmount->currency
+        );
+        $virtualAccountConfigArr = array(
+            'status' => $this->additionalInfo->virtualAccountConfig->status
+        );  
+        $additionalInfoArr = array(
+            'channel' => $this->additionalInfo->channel,
+            'virtualAccountConfig' => $virtualAccountConfigArr
+        );
+        $payload = array(
+            'partnerServiceId' => $this->partnerServiceId,
+            'customerNo' => $this->customerNo,
+            'virtualAccountNo' => $this->virtualAccountNo,
+            'virtualAccountName' => $this->virtualAccountName,
+            'virtualAccountEmail' => $this->virtualAccountEmail,
+            'virtualAccountPhone' => $this->virtualAccountPhone,
+            'trxId' => $this->trxId,
+            'totalAmount' => $totalAmountArr,
+            'additionalInfo' => $additionalInfoArr,
+            'virtualAccountTrxType' => $this->virtualAccountTrxType,
+            'expiredDate' => $this->expiredDate,
+        );
+        return json_encode($payload);
+    }
+
     public function validateUpdateVaRequestDto(): bool
     {
         $status = true;

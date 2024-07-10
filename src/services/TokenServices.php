@@ -304,57 +304,19 @@ class TokenServices
      */
     public function generateSymmetricSignature(
         string $httpMethod,
-        string $endPointUrl,
+        string $endpointUrl,
         string $tokenB2B,
-        UpdateVaRequestDTO $UpdateVaRequestDTO,
+        string $requestBody,
         string $timestamp,
         string $secretKey
     ): string {
         // Minify and hash the request DTO
-        $minifiedDto = $this->minifyDto($UpdateVaRequestDTO);
-        $hashedDto = strtolower(bin2hex(hash('sha256', $minifiedDto, true)));
-
-        $strToSign = implode(':', [
-            $httpMethod,
-            $endPointUrl,
-            $tokenB2B,
-            $hashedDto,
-            $timestamp
-        ]);
-
-        $signature = hash_hmac('sha512', $strToSign, $secretKey, true);
+        $minifiedBody = json_encode(json_decode($requestBody), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $bodyHash = hash('sha256', $minifiedBody);
+        $bodyHashHex = strtolower($bodyHash);
+        $stringToSign = $httpMethod . ":" . $endpointUrl . ":" . $tokenB2B . ":" . $bodyHashHex . ":" . $timestamp;
+        $signature = hash_hmac('sha512', $stringToSign, $secretKey, true);
+        echo "Signature: " . base64_encode($signature) . "\n";
         return base64_encode($signature);
-    }
-
-    /**
-     * Minifies the UpdateVaRequestDTO object to a JSON string with no whitespace.
-     *
-     * @param UpdateVaRequestDTO $dto The UpdateVaRequestDTO object to minify.
-     * @return string The minified JSON string.
-     */
-    private function minifyDto(UpdateVaRequestDTO $dto): string
-    {
-        $array = [
-            'partnerServiceId' => $dto->partnerServiceId,
-            'customerNo' => $dto->customerNo,
-            'virtualAccountNo' => $dto->virtualAccountNo,
-            'virtualAccountName' => $dto->virtualAccountName,
-            'virtualAccountEmail' => $dto->virtualAccountEmail,
-            'virtualAccountPhone' => $dto->virtualAccountPhone,
-            'trxId' => $dto->trxId,
-            'totalAmount' => [
-                'value' => $dto->totalAmount->value,
-                'currency' => $dto->totalAmount->currency,
-            ],
-            'additionalInfo' => [
-                'channel' => $dto->additionalInfo->channel,
-                'virtualAccountConfig' => [
-                    'status' => $dto->additionalInfo->virtualAccountConfig->status,
-                ],
-            ],
-            'virtualAccountTrxType' => $dto->virtualAccountTrxType,
-            'expiredDate' => $dto->expiredDate,
-        ];
-        return json_encode($array, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 }

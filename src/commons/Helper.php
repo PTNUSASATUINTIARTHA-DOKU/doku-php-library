@@ -30,7 +30,7 @@ class Helper
             'Authorization: Bearer ' . $requestHeaderDTO->authorization
         );
         if($requestHeaderDTO->channelId != null) {
-            array_push($result, 'X-CHANNEL-ID: ' . $requestHeaderDTO->channelId);
+            array_push($result, 'CHANNEL-ID: ' . $requestHeaderDTO->channelId);
         }
         return $result;
     }

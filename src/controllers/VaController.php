@@ -51,12 +51,12 @@ class VaController
     {
         $timestamp = $this->tokenServices->getTimestamp();
         $baseUrl = getBaseURL($isProduction);
-        $apiEndpoint = $baseUrl . ACCESS_TOKEN;
+        $apiEndpoint = $baseUrl . UPDATE_VA_URL;
         $signature = $this->tokenServices->generateSymmetricSignature(
             'POST',
             $apiEndpoint,
             $tokenB2B,
-            $UpdateVaRequestDTO,
+            $UpdateVaRequestDTO->getJSONRequestBody(),
             $timestamp,
             $secretKey
         );
@@ -72,10 +72,19 @@ class VaController
 
         return $this->vaServices->doUpdateVa($header, $UpdateVaRequestDTO);
     }
-    public function doDeletePaymentCode(DeleteVaRequestDto $deleteVaRequestDto, string $privateKey, string $clientId, string $tokenB2B)
+    public function doDeletePaymentCode(DeleteVaRequestDto $deleteVaRequestDto, string $privateKey, string $clientId, string $secretKey, string $tokenB2B, string $isProduction)
     {
         $timestamp = $this->tokenServices->getTimestamp();
-        $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
+        $baseUrl = getBaseURL(false);
+        $apiEndpoint = $baseUrl . DELETE_VA_URL;
+        $signature = $this->tokenServices->generateSymmetricSignature(
+            "DELETE",
+            $apiEndpoint,
+            $tokenB2B,
+            $deleteVaRequestDto->getJSONRequestBody(),
+            $timestamp,
+            $secretKey
+        );
         $externalId = $this->vaServices->generateExternalId();
         $requestHeaderDto = $this->vaServices->generateRequestHeaderDTO(
             $timestamp, 
@@ -92,17 +101,19 @@ class VaController
     }
 
 
-    public function doCheckStatusVa(CheckStatusVaRequestDTO $checkVARequestDTO, string $privateKey, string $clientId, string $tokenB2B): CheckStatusVAResponseDTO
+    public function doCheckStatusVa(CheckStatusVaRequestDTO $checkVARequestDTO, string $privateKey, string $clientId, string $tokenB2B, bool $isProduction): CheckStatusVAResponseDTO
     {
         $timestamp = $this->tokenServices->getTimestamp();
-        $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
+        $baseUrl = getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . UPDATE_VA_URL;
+        $signature = $this->tokenServices->generateSymmetricSignature("POST", $apiEndpoint, $tokenB2B, $checkVARequestDTO->getJSONRequestBody(), $timestamp, $privateKey);
         $externalId = $this->vaServices->generateExternalId();
         $header = $this->vaServices->generateRequestHeaderDTO(
             $timestamp, 
             $signature,
             $clientId, 
             $externalId,
-            null,
+            "SDK",
             $tokenB2B, 
         );
         return $this->vaServices->doCheckStatusVa($header, $checkVARequestDTO);

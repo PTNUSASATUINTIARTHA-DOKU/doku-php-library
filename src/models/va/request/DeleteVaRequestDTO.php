@@ -22,6 +22,20 @@ class DeleteVaRequestDTO
         $this->additionalInfo = $additionalInfo;
     }
 
+    public function getJSONRequestBody(): string
+    {
+        $payload = array(
+            'partnerServiceId' => $this->partnerServiceId,
+            'customerNo' => $this->customerNo,
+            'virtualAccountNo' => $this->virtualAccountNo,
+            'trxId' => $this->trxId,
+            'additionalInfo' => array(
+                'channel'=> $this->additionalInfo->channel
+            )
+        );
+        return json_encode($payload);
+    }
+
     public function validateDeleteVaRequest(): bool
     {
         $status = true;
