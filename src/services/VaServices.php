@@ -8,6 +8,7 @@ require  "src/models/va/utility/virtualAccountData/CreateVaResponseVirtualAccoun
 require "src/models/va/utility/virtualAccountData/CheckStatusVirtualAccountData.php";
 require "src/models/va/utility/virtualAccountData/CheckStatusResponsePaymentFlagReason.php";
 require "src/models/va/utility/additionalInfo/CheckStatusResponseAdditionalInfo.php";
+require "src/models/va/utility/additionalInfo/CreateVaResponseAdditionalInfo.php";
 require "src/models/va/utility/virtualAccountData/DeleteVaResponseVirtualAccountData.php";
 require "src/models/va/utility/additionalInfo/DeleteVaResponseAdditionalInfo.php";
 
@@ -39,7 +40,8 @@ class VaServices
         );
         $additionalInfoArr = array(
             'channel' => $requestDTO->additionalInfo->channel,
-            'virtualAccountConfig' => $virtualAccountConfigArr
+            'virtualAccountConfig' => $virtualAccountConfigArr,
+            'origin' => $requestDTO->additionalInfo->origin->toArray()
         );
         $payload = array(
             'partnerServiceId' => $requestDTO->partnerServiceId,
@@ -65,12 +67,10 @@ class VaServices
                 $responseData['totalAmount']['value'] ?? null, 
                 $responseData['totalAmount']['currency'] ?? null
             );
-            $virtualAccountConfig = new CreateVaVirtualAccountConfig(
-                $responseData['additionalInfo']['virtualAccountConfig']['reusableStatus'] ?? null
-            );
-            $additionalInfo = new CreateVaRequestAdditionalInfo(
+            $additionalInfo = new CreateVaResponseAdditionalInfo(
                 $responseData['additionalInfo']['channel'] ?? null,
-                $virtualAccountConfig
+                $responseData['additionalInfo']['howToPayPage'] ?? null,
+                $responseData['additionalInfo']['howToPayApi'] ?? null,
             );
             $virtualAccountData = new CreateVaResponseVirtualAccountData(
                 $responseData['partnerServiceId'],

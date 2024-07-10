@@ -297,7 +297,7 @@ $updateVaRequestDTO = new UpdateVaRequestDTO(
 
 // getToken($Snap);
 
-// $virtualAccountMock = createVA($Snap, $createVaRequestDTO);
+$virtualAccountMock = createVA($Snap, $createVaRequestDTO);
 // sleep(2);
 
 // echo "Virtual Account: " . $virtualAccountMock->virtualAccountData->virtualAccountNo . PHP_EOL;
@@ -316,7 +316,7 @@ $updateVaRequestDTO = new UpdateVaRequestDTO(
 //    "1", // $virtualAccountTrxType
 //    "2024-07-24T15:54:04+07:00" // $expiredDate
 // );
-updateVA($Snap, $updateVaRequestDTO);
+//updateVA($Snap, $updateVaRequestDTO);
 
 $deleteVaRequestDTO = new DeleteVaRequestDTO(
    $virtualAccountMock->virtualAccountData->partnerServiceId, // $partnerServiceId

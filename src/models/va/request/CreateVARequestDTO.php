@@ -30,7 +30,7 @@ class CreateVaRequestDTO
         ?string $virtualAccountPhone,
         ?string $trxId,
         TotalAmount $totalAmount,
-        CreateVaRequestAdditionalInfo $updateVaAdditionalInfoDTO,
+        CreateVaRequestAdditionalInfo $createVaAdditionalInfoDTO,
         ?string $virtualAccountTrxType,
         ?string $expiredDate
     ) {
@@ -42,7 +42,7 @@ class CreateVaRequestDTO
         $this->virtualAccountPhone = $virtualAccountPhone;
         $this->trxId = $trxId;
         $this->totalAmount = $totalAmount;
-        $this->additionalInfo = $updateVaAdditionalInfoDTO;
+        $this->additionalInfo = $createVaAdditionalInfoDTO;
         $this->virtualAccountTrxType = $virtualAccountTrxType;
         $this->expiredDate = $expiredDate;
     }
