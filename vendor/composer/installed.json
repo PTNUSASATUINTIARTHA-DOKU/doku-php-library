@@ -68,17 +68,17 @@
         },
         {
             "name": "paragonie/sodium_compat",
-            "version": "v2.0.1",
-            "version_normalized": "2.0.1.0",
+            "version": "dev-master",
+            "version_normalized": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/sodium_compat.git",
-                "reference": "f65c82939ab17aeff538f9bf6d582f65cc7f255e"
+                "reference": "baa4424a484c5307dee3dcf40073668ffe485720"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/f65c82939ab17aeff538f9bf6d582f65cc7f255e",
-                "reference": "f65c82939ab17aeff538f9bf6d582f65cc7f255e",
+                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/baa4424a484c5307dee3dcf40073668ffe485720",
+                "reference": "baa4424a484c5307dee3dcf40073668ffe485720",
                 "shasum": ""
             },
             "require": {
@@ -92,8 +92,14 @@
             "suggest": {
                 "ext-sodium": "Better performance, password hashing (Argon2i), secure memory management (memzero), and better security."
             },
-            "time": "2024-04-24T12:06:31+00:00",
+            "time": "2024-07-15T19:09:09+00:00",
+            "default-branch": true,
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
             "installation-source": "dist",
             "autoload": {
                 "files": [
@@ -151,7 +157,7 @@
             ],
             "support": {
                 "issues": "https://github.com/paragonie/sodium_compat/issues",
-                "source": "https://github.com/paragonie/sodium_compat/tree/v2.0.1"
+                "source": "https://github.com/paragonie/sodium_compat/tree/master"
             },
             "install-path": "../paragonie/sodium_compat"
         }

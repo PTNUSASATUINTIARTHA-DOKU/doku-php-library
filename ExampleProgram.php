@@ -155,8 +155,8 @@ $clientId = $clientId1;
 $privateKey = $privateKey4;
 $secretKey = "SK-tDzY6MSLBWlNXy3qCsUU";
 $Snap = new Snap($privateKey, $publicKey, $clientId, $issuer, $isProduction, $secretKey);
-$requestSignature = "LtMvncYrtpqDR41PDQLGXaeznzf0/R1mkUZ6KfWslwEDyRTv/Vb2oQlEhrCxIbmLTPxyajTUF96kmDQ4m3ScCCZlDefcI3ovrm3sTBybk2ZfkwgLy9cIkNLVvoZu4jxkA/nYidCVA3BBglc0HqMd/SDE0YI0/tPMl6kOSBQVUz7RAc4oJQ2XQy91k6wzYVUW0S34AQXu+1hPc6f2Dam8kpHFPg8w7LyLTLEoZehRG6uMAi9dj9Y/oMw4i0xu2ZCfxtOPsWMqPHqszjGTk3jPL9wSihbwLYSxdbpYZ2BkbNjHcWbcdnI6ksUotYe+tLPfOTLfAMcjzeOqwBrMorOwpw==";
-$requestTimestamp = "2024-06-06T11:44:15+07:00";
+// $requestSignature = "LtMvncYrtpqDR41PDQLGXaeznzf0/R1mkUZ6KfWslwEDyRTv/Vb2oQlEhrCxIbmLTPxyajTUF96kmDQ4m3ScCCZlDefcI3ovrm3sTBybk2ZfkwgLy9cIkNLVvoZu4jxkA/nYidCVA3BBglc0HqMd/SDE0YI0/tPMl6kOSBQVUz7RAc4oJQ2XQy91k6wzYVUW0S34AQXu+1hPc6f2Dam8kpHFPg8w7LyLTLEoZehRG6uMAi9dj9Y/oMw4i0xu2ZCfxtOPsWMqPHqszjGTk3jPL9wSihbwLYSxdbpYZ2BkbNjHcWbcdnI6ksUotYe+tLPfOTLfAMcjzeOqwBrMorOwpw==";
+// $requestTimestamp = "2024-06-06T11:44:15+07:00";
 $virtualAccountMock;
 
 function getToken($Snap) {
