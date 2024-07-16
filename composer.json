@@ -1,6 +1,6 @@
 {
     "name": "doku/doku-php-library",
-    "description": "Program to handle API Token v1",
+    "description": "Library to handle API SNAP",
     "type": "library",
     "autoload": {
         "psr-4": {
@@ -17,5 +17,6 @@
         "php": ">=8.2",
         "firebase/php-jwt": "^6.10",
         "paragonie/sodium_compat": "^2.0"
-    }
+    },
+    "minimum-stability": "dev"
 }
