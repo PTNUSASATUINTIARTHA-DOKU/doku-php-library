@@ -3,9 +3,9 @@ namespace Doku\Snap\Controllers;
 
 use Doku\Snap\Services\NotificationServices;
 use Doku\Snap\Services\TokenServices;
-use Doku\Snap\Models\NotificationTokenDto;
-use Doku\Snap\Models\PaymentNotificationRequestBodyDTO;
-use Doku\Snap\Models\PaymentNotificationResponseDTO;
+use Doku\Snap\Models\Notification\NotificationTokenDto;
+use Doku\Snap\Models\Notification\PaymentNotificationRequestBodyDTO;
+use Doku\Snap\Models\Notification\PaymentNotificationResponseDTO;
 
 class NotificationController
 {

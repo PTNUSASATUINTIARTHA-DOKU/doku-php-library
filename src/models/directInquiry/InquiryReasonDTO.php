@@ -1,5 +1,5 @@
 <?php
-namespace Doku\Snap\Models;
+namespace Doku\Snap\Models\DirectInquiry;
 class InquiryReasonDTO
 {
     public string $english;

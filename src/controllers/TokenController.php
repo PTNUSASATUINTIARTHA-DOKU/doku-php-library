@@ -5,9 +5,9 @@ use Exception;
 
 use Doku\Snap\Services\TokenServices;
 use Doku\Snap\Services\VaServices;
-use Doku\Snap\Models\TokenB2BResponseDTO;
-use Doku\Snap\Models\RequestHeaderDTO;
-use Doku\Snap\Models\NotificationTokenDTO;
+use Doku\Snap\Models\Token\TokenB2BResponseDTO;
+use Doku\Snap\Models\RequestHeader\RequestHeaderDTO;
+use Doku\Snap\Models\Notification\NotificationTokenDTO;
 
 class TokenController
 {

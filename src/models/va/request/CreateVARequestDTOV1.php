@@ -1,5 +1,8 @@
 <?php
-namespace Doku\Snap\Models;
+namespace Doku\Snap\Models\VA\Request;
+use Doku\Snap\Models\Utilities\TotalAmount\TotalAmount;
+use Doku\Snap\Models\Utilities\AdditionalInfo\CreateVaRequestAdditionalInfo;
+use Doku\Snap\Models\Utilities\VirtualAccountConfig\CreateVaVirtualAccountConfig;
 class CreateVaRequestDtoV1
 {
     public ?string $mallId;

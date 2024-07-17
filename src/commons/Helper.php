@@ -5,7 +5,7 @@ use Exception;
 use DateTime;
 use DateTimeZone;
 
-use Doku\Snap\Models\RequestHeaderDTO;
+use Doku\Snap\Models\RequestHeader\RequestHeaderDTO;
 class Helper
 {
     /**

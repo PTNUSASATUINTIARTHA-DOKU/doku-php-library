@@ -1,5 +1,6 @@
 <?php
-namespace Doku\Snap\Models;
+namespace Doku\Snap\Models\VA\Response;
+use Doku\Snap\Models\Utilities\VirtualAccountData\CreateVaResponseVirtualAccountData;
 class CreateVaResponseDTO
 {
     public ?string $responseCode;

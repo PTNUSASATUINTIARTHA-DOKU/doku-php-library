@@ -10,20 +10,20 @@ use Doku\Snap\Controllers\NotificationController;
 use Doku\Snap\Controllers\TokenController;
 use Doku\Snap\Controllers\VaController;
 
-use Doku\Snap\Models\TokenB2BResponseDTO;
-use Doku\Snap\Models\RequestHeaderDTO;
-use Doku\Snap\Models\CreateVaRequestDTO;
-use Doku\Snap\Models\CreateVaRequestDTOV1;
-use Doku\Snap\Models\CreateVaResponseDTO;
-use Doku\Snap\Models\UpdateVaRequestDTO;
-use Doku\Snap\Models\UpdateVaResponseDTO;
-use Doku\Snap\Models\DeleteVaRequestDTO;
-use Doku\Snap\Models\NotificationTokenDTO;
-use Doku\Snap\Models\PaymentNotificationRequestBodyDTO;
-use Doku\Snap\Models\PaymentNotificationResponseDTO;
-use Doku\Snap\Models\CheckStatusVaRequestDTO;
-use Doku\Snap\Models\CheckStatusVaResponseDTO;
-use Doku\Snap\Models\Origin;
+use Doku\Snap\Models\Token\TokenB2BResponseDTO;
+use Doku\Snap\Models\RequestHeader\RequestHeaderDTO;
+use Doku\Snap\Models\VA\Request\CreateVaRequestDTO;
+use Doku\Snap\Models\VA\Request\CreateVaRequestDTOV1;
+use Doku\Snap\Models\VA\Response\CreateVaResponseDTO;
+use Doku\Snap\Models\VA\Request\UpdateVaRequestDTO;
+use Doku\Snap\Models\VA\Response\UpdateVaResponseDTO;
+use Doku\Snap\Models\VA\Request\DeleteVaRequestDTO;
+use Doku\Snap\Models\Notification\NotificationTokenDTO;
+use Doku\Snap\Models\Notification\PaymentNotificationRequestBodyDTO;
+use Doku\Snap\Models\Notification\PaymentNotificationResponseDTO;
+use Doku\Snap\Models\VA\Request\CheckStatusVaRequestDTO;
+use Doku\Snap\Models\VA\Response\CheckStatusVaResponseDTO;
+use Doku\Snap\Models\Utilities\AdditionalInfo\Origin;
 
 
 class Snap
