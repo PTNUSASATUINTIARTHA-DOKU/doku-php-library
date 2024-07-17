@@ -7,15 +7,13 @@ use Exception;
 use Error;
 
 use Doku\Snap\Commons\Helper;
+use Doku\Snap\Commons\Config;
 use Doku\Snap\Models\Token\TokenB2BRequestDTO;
 use Doku\Snap\Models\Token\TokenB2BResponseDTO;
 use Doku\Snap\Models\VA\Request\UpdateVaRequestDTO;
 use Doku\Snap\Models\Notification\NotificationTokenDTO;
 use Doku\Snap\Models\Notification\NotificationTokenHeaderDTO;
 use Doku\Snap\Models\Notification\NotificationTokenBodyDTO;
-
-
-require "./src/Commons/Config.php";
 
 class TokenServices
 {
@@ -88,8 +86,8 @@ class TokenServices
      */
     public function createTokenB2B(TokenB2BRequestDTO $requestDTO, bool $isProduction): TokenB2BResponseDTO
     {
-        $baseUrl = getBaseURL($isProduction);
-        $apiEndpoint = $baseUrl . ACCESS_TOKEN;
+        $baseUrl = Config::getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . Config::ACCESS_TOKEN;
 
         $headers = array(
             "X-CLIENT-KEY: " . $requestDTO->clientId,

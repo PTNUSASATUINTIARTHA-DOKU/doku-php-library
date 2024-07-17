@@ -2,6 +2,7 @@
 namespace Doku\Snap\Services;
 
 use Doku\Snap\Commons\Helper;
+use Doku\Snap\Commons\Config;
 use Doku\Snap\Models\RequestHeader\RequestHeaderDTO;
 use Doku\Snap\Models\Utilities\TotalAmount\TotalAmount;
 use Doku\Snap\Models\VA\Request\CreateVaRequestDTO;
@@ -37,8 +38,8 @@ class VaServices
 
     public function createVa(RequestHeaderDTO $requestHeaderDTO, CreateVaRequestDTO $requestDTO, bool $isProduction): CreateVaResponseDTO
     {
-        $baseUrl = getBaseURL($isProduction);
-        $apiEndpoint = $baseUrl . CREATE_VA;
+        $baseUrl = Config::getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . Config::CREATE_VA;
         $headers = Helper::prepareHeaders($requestHeaderDTO);
         
         $totalAmountArr = array(
@@ -104,8 +105,8 @@ class VaServices
 
     public function doUpdateVa(RequestHeaderDTO $requestHeaderDto, UpdateVaRequestDTO $requestDTO, bool $isProduction = false): UpdateVaResponseDto
     {
-        $baseUrl = getBaseURL($isProduction);
-        $apiEndpoint = $baseUrl . UPDATE_VA_URL;
+        $baseUrl = Config::getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . Config::UPDATE_VA_URL;
         $headers = Helper::prepareHeaders($requestHeaderDto);
         $payload = $requestDTO->getJSONRequestBody();
         $response = Helper::doHitApi($apiEndpoint, $headers, $payload, "PUT");
@@ -149,8 +150,8 @@ class VaServices
 
     public function doDeletePaymentCode(RequestHeaderDTO $requestHeader, DeleteVaRequestDTO $deleteVaRequest, bool $isProduction = false): DeleteVaResponseDTO
     {
-        $baseUrl = getBaseURL($isProduction);
-        $apiEndpoint = $baseUrl . DELETE_VA_URL;
+        $baseUrl = Config::getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . Config::DELETE_VA_URL;
         $headers = Helper::prepareHeaders($requestHeader);
 
         $payload = json_encode([
@@ -196,8 +197,8 @@ class VaServices
 
     public function doCheckStatusVa(RequestHeaderDTO $requestHeader, CheckStatusVaRequestDTO $checkStatusVaRequest, bool $isProduction = false): CheckStatusVaResponseDTO
     {
-        $baseUrl = getBaseURL($isProduction);
-        $apiEndpoint = $baseUrl . CHECK_VA;
+        $baseUrl = Config::getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . Config::CHECK_VA;
         $headers = Helper::prepareHeaders($requestHeader);
 
         $payload = json_encode([
