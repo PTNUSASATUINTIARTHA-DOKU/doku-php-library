@@ -337,7 +337,7 @@ $checkStatusVaRequestDTO = new CheckStatusVaRequestDTO(
     null,
     null
 );
-//checkVA($Snap, $checkStatusVaRequestDTO);
+checkVA($Snap, $checkStatusVaRequestDTO);
 // createVAV1($Snap, $createVaRequestDTOV1);
 //convertV1toSnap($Snap, $createVaRequestDtoV1);
 

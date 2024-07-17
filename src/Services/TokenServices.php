@@ -326,7 +326,6 @@ class TokenServices
         $bodyHashHex = strtolower($bodyHash);
         $stringToSign = $httpMethod . ":" . $endpointUrl . ":" . $tokenB2B . ":" . $bodyHashHex . ":" . $timestamp;
         $signature = hash_hmac('sha512', $stringToSign, $secretKey, true);
-        echo "Signature: " . base64_encode($signature) . "\n";
         return base64_encode($signature);
     }
 }

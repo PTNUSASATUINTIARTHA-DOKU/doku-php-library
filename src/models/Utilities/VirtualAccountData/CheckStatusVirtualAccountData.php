@@ -1,6 +1,7 @@
 <?php
 namespace Doku\Snap\Models\Utilities\VirtualAccountData;
 use Doku\Snap\Models\Utilities\TotalAmount\TotalAmount;
+use Doku\Snap\Models\Utilities\AdditionalInfo\CheckStatusResponseAdditionalInfo;
 class CheckStatusVirtualAccountData
 {
     public ?CheckStatusResponsePaymentFlagReason $paymentFlagReason;

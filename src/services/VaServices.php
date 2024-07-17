@@ -164,16 +164,8 @@ class VaServices
             ]
         ]);
 
-        
-        print_r($headers);
-        echo "\n\n";
-        print_r ($payload);
-        echo "\n\n";
-
         $response = Helper::doHitApi($apiEndpoint, $headers, $payload, "DELETE");
         $responseData = json_decode($response, true);
-
-        print_r($response);
 
         if (isset($responseData['responseCode']) && $responseData['responseCode'] === '2003100') {
             return new DeleteVaResponseDto(
@@ -213,8 +205,6 @@ class VaServices
         $response = Helper::doHitApi($apiEndpoint, $headers, $payload, "POST");
         $responseData = json_decode($response, true);
 
-        print_r($response);
-        echo "\n\n";
         if (isset($responseData['responseCode']) && $responseData['responseCode'] === '2002600') {
             return new CheckStatusVaResponseDTO(
                 $responseData['responseCode'],
