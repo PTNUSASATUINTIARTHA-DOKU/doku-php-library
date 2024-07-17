@@ -1,8 +1,5 @@
 <?php
-/**
- * Class UpdateVaAdditionalInfoDto
- * Represents additional information for updating a virtual account.
- */
+namespace Doku\Snap\Models;
 class UpdateVaRequestAdditionalInfo
 {
     public ?string $channel;

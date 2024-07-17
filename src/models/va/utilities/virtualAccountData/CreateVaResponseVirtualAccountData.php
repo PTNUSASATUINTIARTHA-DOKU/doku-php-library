@@ -1,8 +1,5 @@
 <?php
-/**
- * Class VirtualAccountData
- * Represents the virtual account data
- */
+namespace Doku\Snap\Models;
 class CreateVaResponseVirtualAccountData
 {
     public ?string $partnerServiceId;

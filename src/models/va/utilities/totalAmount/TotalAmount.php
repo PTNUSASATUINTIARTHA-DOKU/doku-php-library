@@ -1,8 +1,5 @@
 <?php
-/**
- * Class TotalAmount
- * Represents the total amount with currency
- */
+namespace Doku\Snap\Models;
 class TotalAmount
 {
     public ?string $value;

@@ -1,5 +1,5 @@
 <?php
-require 'Origin.php';
+namespace Doku\Snap\Models;
 class CreateVaRequestAdditionalInfo
 {
     public ?string $channel;

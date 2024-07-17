@@ -2,9 +2,10 @@
     "name": "doku/doku-php-library",
     "description": "Library to handle API SNAP",
     "type": "library",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Doku\\DokuPhpLibrary\\": "src/"
+            "Doku\\Snap": "src/"
         }
     },
     "authors": [

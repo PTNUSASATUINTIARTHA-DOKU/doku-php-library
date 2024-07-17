@@ -1,9 +1,6 @@
 <?php
 
-/**
- * Class NotificationVirtualAccountData
- * This class represents the virtual account data for payment notification.
- */
+namespace Doku\Snap\Models;
 class NotificationVirtualAccountData
 {
     public string $partnerServiceId;

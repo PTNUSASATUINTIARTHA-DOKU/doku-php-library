@@ -1,8 +1,5 @@
 <?php
-/**
- * Class RequestHeaderDTO
- * Represents the request header data transfer object
- */
+namespace Doku\Snap\Models;
 class RequestHeaderDTO
 {
     public string $xTimestamp;

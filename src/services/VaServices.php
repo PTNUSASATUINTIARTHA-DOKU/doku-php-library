@@ -1,18 +1,28 @@
 <?php
-require  "src/models/request/RequestHeaderDTO.php";
-require  "src/models/va/response/CreateVaResponseDTO.php";
-require  "src/models/va/response/UpdateVaResponseDTO.php";
-require  "src/models/va/response/DeleteVaResponseDTO.php";
-require  "src/models/va/response/CheckStatusVaResponseDTO.php";
-require  "src/models/va/utility/virtualAccountData/CreateVaResponseVirtualAccountData.php";
-require "src/models/va/utility/virtualAccountData/CheckStatusVirtualAccountData.php";
-require "src/models/va/utility/virtualAccountData/CheckStatusResponsePaymentFlagReason.php";
-require "src/models/va/utility/additionalInfo/CheckStatusResponseAdditionalInfo.php";
-require "src/models/va/utility/additionalInfo/CreateVaResponseAdditionalInfo.php";
-require "src/models/va/utility/virtualAccountData/DeleteVaResponseVirtualAccountData.php";
-require "src/models/va/utility/additionalInfo/DeleteVaResponseAdditionalInfo.php";
+namespace Doku\Snap\Services;
 
-require  "src/commons/Helper.php";
+use Doku\Snap\Commons\Helper;
+use Doku\Snap\Models\RequestHeaderDTO;
+use Doku\Snap\Models\TotalAmount;
+use Doku\Snap\Models\CreateVaRequestDTO;
+use Doku\Snap\Models\CreateVaResponseDTO;
+use Doku\Snap\Models\CreateVaResponseVirtualAccountData;
+use Doku\Snap\Models\CreateVaResponseAdditionalInfo;
+use Doku\Snap\Models\UpdateVaRequestDTO;
+use Doku\Snap\Models\UpdateVaResponseDTO;
+use Doku\Snap\Models\UpdateVaVirtualAccountConfig;
+use Doku\Snap\Models\UpdateVaRequestAdditionalInfo;
+use Doku\Snap\Models\DeleteVaRequestDTO;
+use Doku\Snap\Models\DeleteVaResponseDTO;
+use Doku\Snap\Models\DeleteVaResponseVirtualAccountData;
+use Doku\Snap\Models\DeleteVaResponseAdditionalInfo;  
+use Doku\Snap\Models\CheckStatusVaRequestDTO;
+use Doku\Snap\Models\CheckStatusVaResponseDTO;
+use Doku\Snap\Models\CheckStatusResponseAdditionalInfo;
+use Doku\Snap\Models\CheckStatusResponsePaymentFlagReason;
+use Doku\Snap\Models\CheckStatusVirtualAccountData;
+
+use Exception;
 class VaServices
 {
     /**

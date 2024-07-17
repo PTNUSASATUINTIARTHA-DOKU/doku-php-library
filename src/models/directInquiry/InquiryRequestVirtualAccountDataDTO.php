@@ -1,5 +1,5 @@
 <?php
-
+namespace Doku\Snap\Models;
 class InquiryRequestVirtualAccountDataDTO
 {
     public string $partnerServiceId;
@@ -11,7 +11,7 @@ class InquiryRequestVirtualAccountDataDTO
     public TotalAmount $totalAmount;
     public string $virtualAccountTrxType;
     public string $expiredDate;
-    public AdditionalInfo $additionalInfo;
+    public InquiryRequestAdditionalInfoDTO $additionalInfo;
     public string $inquiryStatus;
     public InquiryReasonDTO $inquiryReason;
     public string $inquiryRequestId;
@@ -28,7 +28,7 @@ class InquiryRequestVirtualAccountDataDTO
      * @param TotalAmount $totalAmount
      * @param string $virtualAccountTrxType
      * @param string $expiredDate
-     * @param AdditionalInfo $additionalInfo
+     * @param InquiryRequestAdditionalInfoDTO $additionalInfo
      * @param string $inquiryStatus
      * @param InquiryReasonDTO $inquiryReason
      * @param string $inquiryRequestId
@@ -43,7 +43,7 @@ class InquiryRequestVirtualAccountDataDTO
         TotalAmount $totalAmount,
         string $virtualAccountTrxType,
         string $expiredDate,
-        AdditionalInfo $additionalInfo,
+        InquiryRequestAdditionalInfoDTO $additionalInfo,
         string $inquiryStatus,
         InquiryReasonDTO $inquiryReason,
         string $inquiryRequestId

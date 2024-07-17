@@ -1,8 +1,7 @@
 <?php
-/**
- * Class CreateVaRequestDTO
- * Represents the data transfer object for creating a virtual account request
- */
+namespace Doku\Snap\Models;
+
+use DateTime;
 
 require  "src/commons/VaChannels.php";
 class CreateVaRequestDTO

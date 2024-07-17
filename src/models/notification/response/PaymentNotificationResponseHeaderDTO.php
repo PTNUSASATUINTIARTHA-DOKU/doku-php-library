@@ -1,9 +1,6 @@
 <?php
 
-/**
- * Class PaymentNotificationResponseHeaderDTO
- * This class represents the header for payment notification response.
- */
+namespace Doku\Snap\Models;
 class PaymentNotificationResponseHeaderDTO
 {
     public string $xTimestamp;

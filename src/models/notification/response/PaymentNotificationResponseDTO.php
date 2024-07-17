@@ -1,9 +1,6 @@
 <?php
 
-/**
- * Class PaymentNotificationResponseDTO
- * This class represents the payment notification response.
- */
+namespace Doku\Snap\Models;
 class PaymentNotificationResponseDTO
 {
     public PaymentNotificationResponseHeaderDTO $header;

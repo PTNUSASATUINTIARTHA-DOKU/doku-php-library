@@ -1,5 +1,5 @@
 <?php
-
+namespace Doku\Snap\Models;
 class TokenB2BRequestDTO
 {
     public string $signature;

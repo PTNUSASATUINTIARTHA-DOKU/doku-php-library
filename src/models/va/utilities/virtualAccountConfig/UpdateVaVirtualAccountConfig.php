@@ -1,4 +1,5 @@
 <?php
+namespace Doku\Snap\Models;
 class UpdateVaVirtualAccountConfig
 {
     public string $status;

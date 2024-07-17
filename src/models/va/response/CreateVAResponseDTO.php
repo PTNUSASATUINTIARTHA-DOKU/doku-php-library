@@ -1,8 +1,5 @@
 <?php
-/**
- * Class CreateVaResponseDTO
- * Represents the response data transfer object for creating a virtual account
- */
+namespace Doku\Snap\Models;
 class CreateVaResponseDTO
 {
     public ?string $responseCode;

@@ -1,8 +1,5 @@
 <?php
-/**
- * Class AdditionalInfoResponse
- * Represents the additional information in the response
- */
+namespace Doku\Snap\Models;
 class AdditionalInfoResponse
 {
     public ?string $channel;

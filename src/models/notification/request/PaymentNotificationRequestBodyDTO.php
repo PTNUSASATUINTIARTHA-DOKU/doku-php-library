@@ -1,9 +1,5 @@
 <?php
-
-/**
- * Class PaymentNotificationRequestBodyDTO
- * This class represents the request body for payment notification.
- */
+namespace Doku\Snap\Models;
 class PaymentNotificationRequestBodyDTO
 {
     public string $partnerServiceId;
