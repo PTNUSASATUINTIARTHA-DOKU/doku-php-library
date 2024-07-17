@@ -10,6 +10,7 @@ use Doku\Snap\Models\VA\Request\CheckStatusVaRequestDTO;
 use Doku\Snap\Models\VA\Response\CheckStatusVAResponseDTO;
 use Doku\Snap\Models\VA\Request\DeleteVaRequestDTO;
 use Doku\Snap\Models\VA\Response\DeleteVaResponseDTO;
+use Doku\Snap\Commons\Config;
 class VaController
 {
     private VaServices $vaServices;
@@ -60,8 +61,8 @@ class VaController
     ): UpdateVaResponseDTO
     {
         $timestamp = $this->tokenServices->getTimestamp();
-        $baseUrl = getBaseURL($isProduction);
-        $apiEndpoint = $baseUrl . UPDATE_VA_URL;
+        $baseUrl = Config::getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . Config::UPDATE_VA_URL;
         $signature = $this->tokenServices->generateSymmetricSignature(
             'POST',
             $apiEndpoint,
@@ -104,9 +105,9 @@ class VaController
     ): DeleteVaResponseDTO
     {
         $timestamp = $this->tokenServices->getTimestamp();
-        $baseUrl = getBaseURL(false);
+        $baseUrl = Config::getBaseURL(false);
 
-        $apiEndpoint = $baseUrl . DELETE_VA_URL;
+        $apiEndpoint = $baseUrl . Config::DELETE_VA_URL;
         $signature = $this->tokenServices->generateSymmetricSignature(
             "DELETE",
             $apiEndpoint,
@@ -150,8 +151,8 @@ class VaController
     ): CheckStatusVAResponseDTO
     {
         $timestamp = $this->tokenServices->getTimestamp();
-        $baseUrl = getBaseURL($isProduction);
-        $apiEndpoint = $baseUrl . UPDATE_VA_URL;
+        $baseUrl = Config::getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . Config::UPDATE_VA_URL;
 
         $signature = $this->tokenServices->generateSymmetricSignature(
             "POST",
