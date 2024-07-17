@@ -15,4 +15,12 @@ class PaymentNotificationResponseHeaderDTO
     {
         $this->xTimestamp = $xTimestamp;
     }
+
+    public function generateJSONHeader(): string
+    {
+        $payload = array(
+            'xTimestamp' => $this->xTimestamp
+        );
+        return json_encode($payload);
+    }
 }

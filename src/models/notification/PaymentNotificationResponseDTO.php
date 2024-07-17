@@ -19,4 +19,13 @@ class PaymentNotificationResponseDTO
         $this->header = $header;
         $this->body = $body;
     }
+    public function generateJSONHeader(): string
+    {
+        return $this->header->generateJSONHeader();
+    }
+
+    public function generateJSONBody(): string
+    {
+        return $this->body->generateJSONBody();
+    }
 }
