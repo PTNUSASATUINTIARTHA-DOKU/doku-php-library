@@ -2,7 +2,7 @@
 namespace Doku\Snap\Models\VA\Request;
 use Doku\Snap\Models\Utilities\TotalAmount\TotalAmount;
 use Doku\Snap\Models\Utilities\AdditionalInfo\UpdateVaRequestAdditionalInfo;
-
+use Doku\Snap\Commons\VaChannels;
 use DateTime;
 class UpdateVaRequestDTO
 {
@@ -189,7 +189,7 @@ class UpdateVaRequestDTO
 
     public function validateChannel(): bool
     {
-        $validChannels = VIRTUAL_ACCOUNT_CHANNELS;
+        $validChannels = VaChannels::VIRTUAL_ACCOUNT_CHANNELSS;
         $channel = $this->additionalInfo->channel;
 
         return !is_null($channel)

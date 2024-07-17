@@ -2,9 +2,9 @@
 namespace Doku\Snap\Models\VA\Request;
 use Doku\Snap\Models\Utilities\TotalAmount\TotalAmount;
 use Doku\Snap\Models\Utilities\AdditionalInfo\CreateVaRequestAdditionalInfo;
+use Doku\Snap\Commons\VaChannels;
 use DateTime;
 
-require  "src/commons/VaChannels.php";
 class CreateVaRequestDTO
 {
 
@@ -155,7 +155,7 @@ class CreateVaRequestDTO
 
     public function validateChannel(): bool
     {
-        $validChannels = VIRTUAL_ACCOUNT_CHANNELS;
+        $validChannels = VaChannels::VIRTUAL_ACCOUNT_CHANNELSS;
         $channel = $this->additionalInfo->channel;
         if (is_null($channel) || !is_string($channel) || strlen($channel) < 1 || strlen($channel) > 30 || !in_array(strtoupper($channel), $validChannels)) {
             return false;

@@ -3,7 +3,7 @@
         'name' => 'doku/doku-php-library',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'be30dbd00590bbfa55175c1cd720b964c222e593',
+        'reference' => '814c4a267772e36f9bf4db5aa853ff54393d1255',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'doku/doku-php-library' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'be30dbd00590bbfa55175c1cd720b964c222e593',
+            'reference' => '814c4a267772e36f9bf4db5aa853ff54393d1255',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
