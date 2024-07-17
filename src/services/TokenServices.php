@@ -7,15 +7,15 @@ use Exception;
 use Error;
 
 use Doku\Snap\Commons\Helper;
-use Doku\Snap\Models\TokenB2BRequestDTO;
-use Doku\Snap\Models\TokenB2BResponseDTO;
-use Doku\Snap\Models\UpdateVaRequestDTO;
-use Doku\Snap\Models\NotificationTokenDTO;
-use Doku\Snap\Models\NotificationTokenHeaderDTO;
-use Doku\Snap\Models\NotificationTokenBodyDTO;
+use Doku\Snap\Models\Token\TokenB2BRequestDTO;
+use Doku\Snap\Models\Token\TokenB2BResponseDTO;
+use Doku\Snap\Models\VA\Request\UpdateVaRequestDTO;
+use Doku\Snap\Models\Notification\NotificationTokenDTO;
+use Doku\Snap\Models\Notification\NotificationTokenHeaderDTO;
+use Doku\Snap\Models\Notification\NotificationTokenBodyDTO;
 
 
-require  "src/commons/config.php";
+require "./src/Commons/Config.php";
 
 class TokenServices
 {

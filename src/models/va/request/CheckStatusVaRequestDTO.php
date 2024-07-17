@@ -1,5 +1,5 @@
 <?php
-namespace Doku\Snap\Models;
+namespace Doku\Snap\Models\VA\Request;
 class CheckStatusVaRequestDTO
 {
     public ?string $partnerServiceId;

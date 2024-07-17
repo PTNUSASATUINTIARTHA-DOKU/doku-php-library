@@ -1,5 +1,6 @@
 <?php
-namespace Doku\Snap\Models;
+namespace Doku\Snap\Models\VA\Request;
+use Doku\Snap\Models\Utilities\AdditionalInfo\DeleteVaRequestAdditionalInfo;
 class DeleteVaRequestDTO
 {
     public string $partnerServiceId;

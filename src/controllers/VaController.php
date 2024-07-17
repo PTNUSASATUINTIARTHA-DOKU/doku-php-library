@@ -2,14 +2,14 @@
 namespace Doku\Snap\Controllers;
 use Doku\Snap\Services\VaServices;
 use Doku\Snap\Services\TokenServices;
-use Doku\Snap\Models\CreateVaRequestDTO;
-use Doku\Snap\Models\CreateVaResponseDTO;
-use Doku\Snap\Models\UpdateVaRequestDTO;
-use Doku\Snap\Models\UpdateVaResponseDTO;
-use Doku\Snap\Models\CheckStatusVaRequestDTO;
-use Doku\Snap\Models\CheckStatusVAResponseDTO;
-use Doku\Snap\Models\DeleteVaRequestDTO;
-use Doku\Snap\Models\DeleteVaResponseDTO;
+use Doku\Snap\Models\VA\Request\CreateVaRequestDTO;
+use Doku\Snap\Models\VA\Response\CreateVaResponseDTO;
+use Doku\Snap\Models\VA\Request\UpdateVaRequestDTO;
+use Doku\Snap\Models\VA\Response\UpdateVaResponseDTO;
+use Doku\Snap\Models\VA\Request\CheckStatusVaRequestDTO;
+use Doku\Snap\Models\VA\Response\CheckStatusVAResponseDTO;
+use Doku\Snap\Models\VA\Request\DeleteVaRequestDTO;
+use Doku\Snap\Models\VA\Response\DeleteVaResponseDTO;
 class VaController
 {
     private VaServices $vaServices;

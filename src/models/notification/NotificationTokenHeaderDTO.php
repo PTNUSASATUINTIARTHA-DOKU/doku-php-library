@@ -1,6 +1,6 @@
 <?php
 
-namespace Doku\Snap\Models;
+namespace Doku\Snap\Models\Notification;
 class NotificationTokenHeaderDTO
 {
    public string $XClientKey;

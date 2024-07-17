@@ -1,14 +1,14 @@
 <?php
 namespace Doku\Snap\Services;
 
-use Doku\Snap\Models\NotificationTokenHeaderDTO;
-use Doku\Snap\Models\NotificationTokenBodyDTO;
-use Doku\Snap\Models\NotificationTokenDTO;
-use Doku\Snap\Models\NotificationVirtualAccountData;
-use Doku\Snap\Models\PaymentNotificationRequestBodyDTO;
-use Doku\Snap\Models\PaymentNotificationResponseDTO;
-use Doku\Snap\Models\PaymentNotificationResponseHeaderDTO;
-use Doku\Snap\Models\PaymentNotificationResponseBodyDTO;
+use Doku\Snap\Models\Notification\NotificationTokenHeaderDTO;
+use Doku\Snap\Models\Notification\NotificationTokenBodyDTO;
+use Doku\Snap\Models\Notification\NotificationTokenDTO;
+use Doku\Snap\Models\Notification\NotificationVirtualAccountData;
+use Doku\Snap\Models\Notification\PaymentNotificationRequestBodyDTO;
+use Doku\Snap\Models\Notification\PaymentNotificationResponseDTO;
+use Doku\Snap\Models\Notification\PaymentNotificationResponseHeaderDTO;
+use Doku\Snap\Models\Notification\PaymentNotificationResponseBodyDTO;
 use Doku\Snap\Commons\Helper;
 
 class NotificationServices
