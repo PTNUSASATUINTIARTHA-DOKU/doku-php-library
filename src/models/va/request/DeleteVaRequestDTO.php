@@ -23,7 +23,7 @@ class DeleteVaRequestDTO
         $this->additionalInfo = $additionalInfo;
     }
 
-    public function getJSONRequestBody(): string
+    public function generateJSONBody(): string
     {
         $payload = array(
             'partnerServiceId' => $this->partnerServiceId,

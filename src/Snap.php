@@ -244,7 +244,7 @@ class Snap
         $isSignatureValid = $this->validateSignature($requestSignature, $requestTimestamp, $this->privateKey, $this->clientId);
 
         // Generate a TokenB2B object based on the signature validity and set token
-        $notificationTokenDTO = $this->generateTokenB2B($isSignatureValid);
+        $notificationTokenDTO = $this->generateTokenB2BResponse($isSignatureValid);
         $notificationTokenBodyDTO = $notificationTokenDTO->body;
         $this->tokenB2B = $notificationTokenBodyDTO->accessToken;
     }
@@ -255,7 +255,7 @@ class Snap
      * @param bool $isSignatureValid Determines if the signature is valid.
      * @return NotificationTokenDTO The generated TokenB2B object.
      */
-    public function generateTokenB2B(bool $isSignatureValid): NotificationTokenDTO
+    public function generateTokenB2BResponse(bool $isSignatureValid): NotificationTokenDTO
     {
             if($isSignatureValid){
                     return $this->tokenB2BController->generateTokenB2B($this->tokenB2BExpiresIn, $this->issuer, $this->privateKey, $this->clientId);

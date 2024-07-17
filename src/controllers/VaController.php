@@ -67,7 +67,7 @@ class VaController
             'POST',
             $apiEndpoint,
             $tokenB2B,
-            $UpdateVaRequestDTO->getJSONRequestBody(),
+            $UpdateVaRequestDTO->generateJSONBody(),
             $timestamp,
             $secretKey
         );
@@ -112,7 +112,7 @@ class VaController
             "DELETE",
             $apiEndpoint,
             $tokenB2B,
-            $deleteVaRequestDto->getJSONRequestBody(),
+            $deleteVaRequestDto->generateJSONBody(),
             $timestamp,
             $secretKey
         );
@@ -158,7 +158,7 @@ class VaController
             "POST",
             $apiEndpoint,
             $tokenB2B,
-            $checkVARequestDTO->getJSONRequestBody(),
+            $checkVARequestDTO->generateJSONBody(),
             $timestamp,
             $privateKey
         );
