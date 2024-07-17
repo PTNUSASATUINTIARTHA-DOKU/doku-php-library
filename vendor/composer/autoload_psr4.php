@@ -7,5 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
-    'Doku\\DokuPhpLibrary\\' => array($baseDir . '/src'),
+    'Doku\\Snap\\' => array($baseDir . '/src'),
 );

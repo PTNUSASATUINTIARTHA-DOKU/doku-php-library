@@ -5,7 +5,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Doku\\Snap": "src/"
+            "Doku\\Snap\\": "src/"
         }
     },
     "authors": [
