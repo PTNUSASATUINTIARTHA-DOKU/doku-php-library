@@ -1,9 +1,6 @@
 <?php
 
-/**
-* Class NotificationTokenHeaderDTO
-* This class represents the header portion of the notification token.
-*/
+namespace Doku\Snap\Models;
 class NotificationTokenHeaderDTO
 {
    public string $XClientKey;

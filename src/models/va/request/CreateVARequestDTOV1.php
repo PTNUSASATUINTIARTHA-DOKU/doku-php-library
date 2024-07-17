@@ -1,7 +1,7 @@
 <?php
-
- class CreateVaRequestDtoV1
- {
+namespace Doku\Snap\Models;
+class CreateVaRequestDtoV1
+{
     public ?string $mallId;
     public ?string $chainMerchant;
     public ?string $amount;

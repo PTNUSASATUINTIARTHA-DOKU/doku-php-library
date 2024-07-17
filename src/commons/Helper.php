@@ -1,4 +1,11 @@
 <?php
+namespace Doku\Snap\Commons;
+
+use Exception;
+use DateTime;
+use DateTimeZone;
+
+use Doku\Snap\Models\RequestHeaderDTO;
 class Helper
 {
     /**

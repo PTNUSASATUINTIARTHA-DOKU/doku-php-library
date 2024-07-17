@@ -1,5 +1,12 @@
 <?php
-require  "src/services/NotificationServices.php";
+namespace Doku\Snap\Controllers;
+
+use Doku\Snap\Services\NotificationServices;
+use Doku\Snap\Services\TokenServices;
+use Doku\Snap\Models\NotificationTokenDto;
+use Doku\Snap\Models\PaymentNotificationRequestBodyDTO;
+use Doku\Snap\Models\PaymentNotificationResponseDTO;
+
 class NotificationController
 {
    private NotificationServices $notificationServices;
@@ -28,9 +35,9 @@ class NotificationController
     /**
      * Generate an invalid signature response
      *
-     * @return NotificationTokenDto
+     * @return NotificationTokenDTO
      */
-    public function generateInvalidSignatureResponse(): NotificationTokenDto
+    public function generateInvalidSignatureResponse(): NotificationTokenDTO
     {
         $timestamp = $this->tokenServices->getTimestamp();
         return $this->tokenServices->generateInvalidSignature($timestamp);

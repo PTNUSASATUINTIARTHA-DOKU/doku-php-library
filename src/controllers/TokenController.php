@@ -1,5 +1,14 @@
 <?php
-require  "src/services/TokenServices.php";
+namespace Doku\Snap\Controllers;
+
+use Exception;
+
+use Doku\Snap\Services\TokenServices;
+use Doku\Snap\Services\VaServices;
+use Doku\Snap\Models\TokenB2BResponseDTO;
+use Doku\Snap\Models\RequestHeaderDTO;
+use Doku\Snap\Models\NotificationTokenDTO;
+
 class TokenController
 {
     private TokenServices $tokenServices;

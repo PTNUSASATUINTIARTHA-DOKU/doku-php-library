@@ -1,9 +1,6 @@
 <?php
 
-/**
- * Class PaymentNotificationResponseBodyDTO
- * This class represents the body for payment notification response.
- */
+namespace Doku\Snap\Models;
 class PaymentNotificationResponseBodyDTO
 {
     public string $responseCode; // e.g., 2002500

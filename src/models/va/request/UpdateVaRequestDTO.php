@@ -1,8 +1,7 @@
 <?php
-/**
- * Class UpdateVaRequestDTO
- * Represents the data for updating a virtual account.
- */
+namespace Doku\Snap\Models;
+
+use DateTime;
 class UpdateVaRequestDTO
 {
     public ?string $partnerServiceId;

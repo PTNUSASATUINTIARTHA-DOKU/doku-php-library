@@ -1,8 +1,16 @@
 <?php
+namespace Doku\Snap\Services;
 
-/**
-* Class NotificationController
-*/
+use Doku\Snap\Models\NotificationTokenHeaderDTO;
+use Doku\Snap\Models\NotificationTokenBodyDTO;
+use Doku\Snap\Models\NotificationTokenDTO;
+use Doku\Snap\Models\NotificationVirtualAccountData;
+use Doku\Snap\Models\PaymentNotificationRequestBodyDTO;
+use Doku\Snap\Models\PaymentNotificationResponseDTO;
+use Doku\Snap\Models\PaymentNotificationResponseHeaderDTO;
+use Doku\Snap\Models\PaymentNotificationResponseBodyDTO;
+use Doku\Snap\Commons\Helper;
+
 class NotificationServices
 {
    /**

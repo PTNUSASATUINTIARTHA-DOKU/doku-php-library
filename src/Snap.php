@@ -1,7 +1,31 @@
 <?php
-require_once "src/controllers/TokenController.php";
-require_once "src/controllers/NotificationController.php";
-require_once "src/controllers/VaController.php";
+
+namespace Doku\Snap;
+
+use Error;
+use Exception;
+use InvalidArgumentException;
+
+use Doku\Snap\Controllers\NotificationController;
+use Doku\Snap\Controllers\TokenController;
+use Doku\Snap\Controllers\VaController;
+
+use Doku\Snap\Models\TokenB2BResponseDTO;
+use Doku\Snap\Models\RequestHeaderDTO;
+use Doku\Snap\Models\CreateVaRequestDTO;
+use Doku\Snap\Models\CreateVaRequestDTOV1;
+use Doku\Snap\Models\CreateVaResponseDTO;
+use Doku\Snap\Models\UpdateVaRequestDTO;
+use Doku\Snap\Models\UpdateVaResponseDTO;
+use Doku\Snap\Models\DeleteVaRequestDTO;
+use Doku\Snap\Models\NotificationTokenDTO;
+use Doku\Snap\Models\PaymentNotificationRequestBodyDTO;
+use Doku\Snap\Models\PaymentNotificationResponseDTO;
+use Doku\Snap\Models\CheckStatusVaRequestDTO;
+use Doku\Snap\Models\CheckStatusVaResponseDTO;
+use Doku\Snap\Models\Origin;
+
+
 class Snap
 {
     private string $privateKey;

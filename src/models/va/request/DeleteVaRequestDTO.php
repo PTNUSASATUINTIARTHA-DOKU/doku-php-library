@@ -1,5 +1,5 @@
 <?php
-
+namespace Doku\Snap\Models;
 class DeleteVaRequestDTO
 {
     public string $partnerServiceId;

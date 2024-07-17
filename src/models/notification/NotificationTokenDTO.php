@@ -1,9 +1,6 @@
 <?php
 
-/**
-* Class NotificationTokenDTO
-* This class represents the notification token data transfer object.
-*/
+namespace Doku\Snap\Models;
 class NotificationTokenDTO
 {
    public NotificationTokenHeaderDTO $header;

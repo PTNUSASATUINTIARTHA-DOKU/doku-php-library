@@ -1,10 +1,22 @@
 <?php
+namespace Doku\Snap\Services;
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use Exception;
+use Error;
+
+use Doku\Snap\Commons\Helper;
+use Doku\Snap\Models\TokenB2BRequestDTO;
+use Doku\Snap\Models\TokenB2BResponseDTO;
+use Doku\Snap\Models\UpdateVaRequestDTO;
+use Doku\Snap\Models\NotificationTokenDTO;
+use Doku\Snap\Models\NotificationTokenHeaderDTO;
+use Doku\Snap\Models\NotificationTokenBodyDTO;
+
+
 require  "src/commons/config.php";
-require  "src/models/request/TokenB2BRequestDTO.php";
-require  "src/models/response/TokenB2BResponseDTO.php";
+
 class TokenServices
 {
     private string $tokenB2B;
@@ -184,7 +196,7 @@ class TokenServices
      * Generate an invalid signature response.
      *
      * @param string $timestamp
-     * @return NotificationTokenBodyDTO
+     * @return NotificationTokenDTO
      */
     public function generateInvalidSignature(string $timestamp): NotificationTokenDTO
     {

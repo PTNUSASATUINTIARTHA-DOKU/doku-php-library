@@ -1,9 +1,6 @@
 <?php
 
-/**
-* Class NotificationTokenBodyDTO
-* This class represents the body portion of the notification token.
-*/
+namespace Doku\Snap\Models;
 class NotificationTokenBodyDTO
 {
    public string $responseCode;

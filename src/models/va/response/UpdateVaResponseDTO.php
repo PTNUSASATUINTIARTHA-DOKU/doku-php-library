@@ -1,8 +1,5 @@
 <?php
-/**
- * Class UpdateVaResponseDto
- * Represents the response data for updating a virtual account.
- */
+namespace Doku\Snap\Models;
 class UpdateVaResponseDTO
 {
     public ?string $responseCode;
