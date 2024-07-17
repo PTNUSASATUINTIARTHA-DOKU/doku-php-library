@@ -17,7 +17,7 @@ class ComposerStaticInit3006d0051f3e1edb1c3696ffaba50b3a
         ),
         'D' => 
         array (
-            'Doku\\DokuPhpLibrary\\' => 20,
+            'Doku\\Snap\\' => 10,
         ),
     );
 
@@ -26,7 +26,7 @@ class ComposerStaticInit3006d0051f3e1edb1c3696ffaba50b3a
         array (
             0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
-        'Doku\\DokuPhpLibrary\\' => 
+        'Doku\\Snap\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),
