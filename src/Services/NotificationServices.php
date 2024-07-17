@@ -1,0 +1,107 @@
+<?php
+namespace Doku\Snap\Services;
+
+use Doku\Snap\Models\Notification\NotificationTokenHeaderDTO;
+use Doku\Snap\Models\Notification\NotificationTokenBodyDTO;
+use Doku\Snap\Models\Notification\NotificationTokenDTO;
+use Doku\Snap\Models\Notification\NotificationVirtualAccountData;
+use Doku\Snap\Models\Notification\PaymentNotificationRequestBodyDTO;
+use Doku\Snap\Models\Notification\PaymentNotificationResponseDTO;
+use Doku\Snap\Models\Notification\PaymentNotificationResponseHeaderDTO;
+use Doku\Snap\Models\Notification\PaymentNotificationResponseBodyDTO;
+use Doku\Snap\Commons\Helper;
+
+class NotificationServices
+{
+   /**
+    * Generate a notification response based on the provided payment notification request body.
+    *
+    * @param PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO
+    * @return PaymentNotificationResponseDTO
+    */
+   public function generateNotificationResponse(PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO): PaymentNotificationResponseDTO
+   {
+       $responseCode = '2002700';
+       $responseMessage = 'success';
+
+       $virtualAccountData = new NotificationVirtualAccountData(
+           $paymentNotificationRequestBodyDTO->partnerServiceId,
+           $paymentNotificationRequestBodyDTO->customerNo,
+           $paymentNotificationRequestBodyDTO->virtualAccountNo,
+           $paymentNotificationRequestBodyDTO->virtualAccountName,
+           $paymentNotificationRequestBodyDTO->paymentRequestId
+       );
+
+       $responseBody = new PaymentNotificationResponseBodyDTO(
+           $responseCode,
+           $responseMessage,
+           $virtualAccountData
+       );
+
+       $responseHeader = new PaymentNotificationResponseHeaderDTO(
+           Helper::getTimestamp()
+       );
+
+       return new PaymentNotificationResponseDTO(
+           $responseHeader,
+           $responseBody
+       );
+   }
+
+    /**
+     * Generate a NotificationTokenDTO object with invalid signature details
+     *
+     * @param string $timestamp The timestamp received in the request
+     * @return NotificationTokenDTO
+     */
+    public function generateInvalidSignature(string $timestamp): NotificationTokenDTO
+    {
+        $responseCode = '4017300';
+        $responseMessage = 'Unauthorized. Invalid Signature';
+        
+        $body = new NotificationTokenBodyDTO(
+            $responseCode,
+            $responseMessage,
+            null,
+            null,
+            null, 
+            null
+        );
+
+        $header = new NotificationTokenHeaderDTO(null, $timestamp);
+
+        return new NotificationTokenDTO($header, $body);
+    }
+
+    /**
+     * Generate a PaymentNotificationResponseDTO object with invalid signature details
+     *
+     * @param PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO
+     * @return PaymentNotificationResponseDTO
+     */
+    public function generateInvalidTokenNotificationResponse(PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDto): PaymentNotificationResponseDTO
+    {
+        $responseCode = '4012701';
+        $responseMessage = 'invalid Token (B2B)';
+
+        $virtualAccountData = new NotificationVirtualAccountData(
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+        
+        $body = new PaymentNotificationResponseBodyDTO(
+            $responseCode,
+            $responseMessage,
+            $virtualAccountData
+        );
+
+        $header = new PaymentNotificationResponseHeaderDTO(
+            Helper::getTimestamp()
+        );
+
+        return new PaymentNotificationResponseDTO($header, $body); 
+    }
+}
