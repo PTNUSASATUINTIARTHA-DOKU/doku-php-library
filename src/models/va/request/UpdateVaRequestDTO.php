@@ -45,7 +45,7 @@ class UpdateVaRequestDTO
         $this->expiredDate = $expiredDate;
     }
 
-    public function getJSONRequestBody(): string
+    public function generateJSONBody(): string
     {
         $totalAmountArr = array(
             'value' => $this->totalAmount->value,

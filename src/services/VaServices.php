@@ -108,7 +108,7 @@ class VaServices
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::UPDATE_VA_URL;
         $headers = Helper::prepareHeaders($requestHeaderDto);
-        $payload = $requestDTO->getJSONRequestBody();
+        $payload = $requestDTO->generateJSONBody();
         $response = Helper::doHitApi($apiEndpoint, $headers, $payload, "PUT");
         $responseObject = json_decode($response, true);
 

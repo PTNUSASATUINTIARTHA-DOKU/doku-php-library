@@ -29,4 +29,17 @@ class NotificationTokenBodyDTO
        $this->expiresIn = $expiresIn;
        $this->additionalInfo = $additionalInfo;
    }
+
+    public function generateJSONBody(): string
+    {
+        $payload = array(
+            'responseCode' => $this->responseCode,
+            'responseMessage' => $this->responseMessage,
+            'accessToken' => $this->accessToken,
+            'tokenType' => $this->tokenType,
+            'expiresIn' => $this->expiresIn,
+            'additionalInfo' => $this->additionalInfo
+        );
+        return json_encode($payload);
+    }
 }

@@ -17,4 +17,12 @@ class NotificationTokenHeaderDTO
        $this->XClientKey = $XClientKey;
        $this->XTimeStamp = $XTimeStamp;
    }
+       public function generateJSONHeader(): string
+    {
+        $payload = array(
+            'XClientKey' => $this->XClientKey,
+            'XTimeStamp' => $this->XTimeStamp
+        );
+        return json_encode($payload);
+    }
 }
