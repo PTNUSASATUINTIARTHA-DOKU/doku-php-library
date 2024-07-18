@@ -72,7 +72,7 @@ class TokenController
      */
     public function validateSignature(string $requestSignature, string $requestTimestamp, string $privateKey, string $clientId): bool
     {
-        $createdSignature = $this->tokenServices->createSignature($requestTimestamp, $privateKey, $clientId);
+        $createdSignature = $this->tokenServices->createSignature($privateKey, $clientId, $requestTimestamp);
 
         return $this->tokenServices->compareSignatures($requestSignature, $createdSignature);
     }
