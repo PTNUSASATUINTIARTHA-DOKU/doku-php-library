@@ -1,22 +1,22 @@
 <?php
 namespace Doku\Snap\Models\VA\Response;
-use Doku\Snap\Models\Utilities\VirtualAccountData\UpdateVaRequestDTO;
-class UpdateVaResponseDTO
+use Doku\Snap\Models\Utilities\VirtualAccountData\UpdateVaResponseVirtualAccountData;
+class UpdateVaResponseDto
 {
     public ?string $responseCode;
     public ?string $responseMessage;
-    public ?UpdateVaRequestDTO $virtualAccountData;
+    public ?UpdateVaResponseVirtualAccountData $virtualAccountData;
 
     /**
      * UpdateVaResponseDto constructor.
      * @param string $responseCode The response code.
      * @param string $responseMessage The response message.
-     * @param UpdateVaRequestDTO $virtualAccountData The virtual account data.
+     * @param UpdateVaResponseVirtualAccountData $virtualAccountData The virtual account data.
      */
     public function __construct(
         ?string $responseCode, 
         ?string $responseMessage, 
-        ?UpdateVaRequestDTO $virtualAccountData
+        ?UpdateVaResponseVirtualAccountData $virtualAccountData
     ) {
         $this->responseCode = $responseCode;
         $this->responseMessage = $responseMessage;

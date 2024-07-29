@@ -1,13 +1,14 @@
 <?php
 namespace Doku\Snap\Models\VA\Request;
+
 use Doku\Snap\Models\Utilities\TotalAmount\TotalAmount;
 use Doku\Snap\Models\Utilities\AdditionalInfo\CreateVaRequestAdditionalInfo;
 use Doku\Snap\Commons\VaChannels;
 use DateTime;
+use Exception;
 
-class CreateVaRequestDTO
+class CreateVaRequestDto
 {
-
     public ?string $partnerServiceId;
     public ?string $customerNo;
     public ?string $virtualAccountNo;
@@ -19,191 +20,205 @@ class CreateVaRequestDTO
     public CreateVaRequestAdditionalInfo $additionalInfo;
     public ?string $virtualAccountTrxType;
     public ?string $expiredDate;
-    
 
-    public function __construct(
-        ?string $partnerServiceId,
-        ?string $customerNo,
-        ?string $virtualAccountNo,
-        ?string $virtualAccountName,
-        ?string $virtualAccountEmail,
-        ?string $virtualAccountPhone,
-        ?string $trxId,
-        TotalAmount $totalAmount,
-        CreateVaRequestAdditionalInfo $createVaAdditionalInfoDTO,
-        ?string $virtualAccountTrxType,
-        ?string $expiredDate
-    ) {
-        $this->partnerServiceId = $partnerServiceId;
-        $this->customerNo = $customerNo;
-        $this->virtualAccountNo = $virtualAccountNo;
-        $this->virtualAccountName = $virtualAccountName;
-        $this->virtualAccountEmail = $virtualAccountEmail;
-        $this->virtualAccountPhone = $virtualAccountPhone;
-        $this->trxId = $trxId;
-        $this->totalAmount = $totalAmount;
-        $this->additionalInfo = $createVaAdditionalInfoDTO;
-        $this->virtualAccountTrxType = $virtualAccountTrxType;
-        $this->expiredDate = $expiredDate;
-    }
-
-    public function validateVaRequestDTO(): bool
+    public function validateCreateVaRequestDto(): bool
     {
-        $status = true;
-        print("PartnerServiceId: " . ($this->validatePartnerServiceId()) . "\n");
-        print("CustomerNo: " . ($this->validateCustomerNo()) . "\n");
-        print("VirtualAccountName: " . ($this->validateVirtualAccountName()) . "\n");
-        print("VirtualAccountEmail: " . ($this->validateVirtualAccountEmail()) . "\n");
-        print("VirtualAccountPhone: " . ($this->validateVirtualAccountPhone()) . "\n");
-        print("TrxId: " . ($this->validateTrxId()) . "\n");
-        print("Value: " . ($this->validateValue()) . "\n");
-        print("Currency: " . ($this->validateCurrency()) . "\n");
-        print("Channel: " . ($this->validateChannel()) . "\n");
-        print("ReusableStatus: " . ($this->validateReusableStatus()) . "\n");
-        print("VirtualAccountTrxType: " . ($this->validateVirtualAccountTrxType()) . "\n");
-        print("ExpiredDate: " . ($this->validateExpiredDate()) . "\n");
+        $this->validatePartnerServiceId();
+        $this->validateCustomerNo();
+        $this->validateVirtualAccountNo();
+        $this->validateVirtualAccountName();
+        $this->validateVirtualAccountEmail();
+        $this->validateVirtualAccountPhone();
+        $this->validateTrxId();
+        $this->validateTotalAmountCurrency();
+        $this->validateVirtualAccountTrxType();
+        $this->validateExpiredDate();
+        $this->validateAdditionalInfo();
+        $this->validateChannel();
+        $this->validateMinMaxAmount();
         return true;
     }
 
-    public function validatePartnerServiceId(): bool
+    private function validatePartnerServiceId(): void
     {
-        if (is_null($this->partnerServiceId) || !is_string($this->partnerServiceId) || strlen($this->partnerServiceId) > 20 || !preg_match('/^ *\d+$/', $this->partnerServiceId)) {
-            return false;
+        if ($this->partnerServiceId === null) {
+            throw new Exception("partnerServiceId cannot be null. Please provide a partnerServiceId. Example: ' 888994'.");
         }
-        return true;
+        if (!is_string($this->partnerServiceId)) {
+            throw new Exception("partnerServiceId must be a string. Ensure that partnerServiceId is enclosed in quotes. Example: ' 888994'.");
+        }
+        if (strlen($this->partnerServiceId) !== 8) {
+            throw new Exception("partnerServiceId must be exactly 8 characters long. Ensure that partnerServiceId has 8 characters, left-padded with spaces. Example: ' 888994'.");
+        }
+        if (!preg_match('/^\s{0,7}\d{1,8}$/', $this->partnerServiceId)) {
+            throw new Exception("partnerServiceId must consist of up to 7 spaces followed by 1 to 8 digits. Make sure partnerServiceId follows this format. Example: ' 888994' (2 spaces and 6 digits).");
+        }
     }
-    
-    public function validateCustomerNo(): bool
+
+    private function validateCustomerNo(): void
     {
-        if(is_null($this->customerNo)) {
-            return true;
+        if ($this->customerNo === null) {
+            throw new Exception("customerNo cannot be null.");
         }
-        if (!is_string($this->customerNo) || strlen($this->customerNo) !== 8 || !preg_match('/^\s{0,7}\d{1,8}$/', $this->customerNo)) {
-            return false;
+        if (!is_string($this->customerNo)) {
+            throw new Exception("customerNo must be a string. Ensure that customerNo is enclosed in quotes. Example: '00000000000000000001'.");
         }
-        return $this->validateVirtualAccountNo();
+        if (strlen($this->customerNo) > 20) {
+            throw new Exception("customerNo must be 20 characters or fewer. Ensure that customerNo is no longer than 20 characters. Example: '00000000000000000001'.");
+        }
+        if (!preg_match('/^[0-9]*$/', $this->customerNo)) {
+            throw new Exception("customerNo must consist of only digits. Ensure that customerNo contains only numbers. Example: '00000000000000000001'.");
+        }
     }
 
-    public function validateVirtualAccountNo(): bool
+    private function validateVirtualAccountNo(): void
     {
-        if (is_null($this->virtualAccountNo) || !is_string($this->virtualAccountNo) || $this->virtualAccountNo !== $this->partnerServiceId . $this->customerNo) {
-            return false;
+        if ($this->virtualAccountNo === null) {
+            throw new Exception("virtualAccountNo cannot be null. Please provide a virtualAccountNo. Example: ' 88899400000000000000000001'.");
         }
-        return true;
+        if (!is_string($this->virtualAccountNo)) {
+            throw new Exception("virtualAccountNo must be a string. Ensure that virtualAccountNo is enclosed in quotes. Example: ' 88899400000000000000000001'.");
+        }
+        $target = $this->partnerServiceId . $this->customerNo;
+        if ($this->virtualAccountNo !== $target) {
+            throw new Exception("virtualAccountNo must be the concatenation of partnerServiceId and customerNo. Example: ' 88899400000000000000000001' (where partnerServiceId is ' 888994' and customerNo is '00000000000000000001').");
+        }
+
+        if (!empty($this->partnerServiceId) && !empty($this->customerNo) && !empty($this->virtualAccountNo)) {
+            $target = $this->partnerServiceId . $this->customerNo;
+            if ($this->virtualAccountNo !== $target) {
+                throw new Exception("virtualAccountNo must be the concatenation of partnerServiceId and customerNo. Example: ' 88899400000000000000000001' (where partnerServiceId is ' 888994' and customerNo is '00000000000000000001').");
+            }
+        }
     }
 
-    public function validateVirtualAccountName(): bool
+    private function validateVirtualAccountName(): void
     {
-        if (is_null($this->virtualAccountName) || !is_string($this->virtualAccountName) || strlen($this->virtualAccountName) < 1 || strlen($this->virtualAccountName) > 255 || !preg_match('/^[a-zA-Z0-9\.\-\/\,+\=_\:\'\@\% ]+$/', $this->virtualAccountName)) {
-            return false;
+        if ($this->virtualAccountName === null) {
+            throw new Exception("virtualAccountName cannot be null. Please provide a virtualAccountName. Example: 'Toru Yamashita'.");
         }
-        return true;
+        if (!is_string($this->virtualAccountName)) {
+            throw new Exception("virtualAccountName must be a string. Ensure that virtualAccountName is enclosed in quotes. Example: 'Toru Yamashita'.");
+        }
+        $length = strlen($this->virtualAccountName);
+        if ($length < 1 || $length > 255) {
+            throw new Exception("virtualAccountName must be between 1 and 255 characters long. Ensure that virtualAccountName is not empty and no longer than 255 characters. Example: 'Toru Yamashita'.");
+        }
+        if (!preg_match('/^[a-zA-Z0-9.\-\/+,=_:\'@% ]*$/', $this->virtualAccountName)) {
+            throw new Exception("virtualAccountName can only contain letters, numbers, spaces, and the following characters: .\\-/+,=_:'@%. Ensure that virtualAccountName does not contain invalid characters. Example: 'Toru.Yamashita-123'.");
+        }
     }
 
-    public function validateVirtualAccountEmail(): bool
+    private function validateVirtualAccountEmail(): void
     {
-        if (!is_null($this->virtualAccountEmail) && (
-            !is_string($this->virtualAccountEmail) ||
-            strlen($this->virtualAccountEmail) < 1 ||
-            strlen($this->virtualAccountEmail) > 255 
-        )) {
-            return false;
+        if ($this->virtualAccountEmail !== null) {
+            if (!is_string($this->virtualAccountEmail)) {
+                throw new Exception("virtualAccountEmail must be a string. Ensure that virtualAccountEmail is enclosed in quotes. Example: 'toru@example.com'.");
+            }
+            $length = strlen($this->virtualAccountEmail);
+            if ($length < 1 || $length > 255) {
+                throw new Exception("virtualAccountEmail must be between 1 and 255 characters long. Ensure that virtualAccountEmail is not empty and no longer than 255 characters. Example: 'toru@example.com'.");
+            }
+            if (!filter_var($this->virtualAccountEmail, FILTER_VALIDATE_EMAIL)) {
+                throw new Exception("virtualAccountEmail must be a valid email address. Example: 'toru@example.com'.");
+            }
         }
-        return true;
     }
 
-    public function validateVirtualAccountPhone(): bool
+    private function validateVirtualAccountPhone(): void
     {
-        if (!is_null($this->virtualAccountPhone) && (
-            !is_string($this->virtualAccountPhone) ||
-            strlen($this->virtualAccountPhone) < 9 ||
-            strlen($this->virtualAccountPhone) > 30
-        )) {
-            return false;
+        if ($this->virtualAccountPhone !== null) {
+            if (!is_string($this->virtualAccountPhone)) {
+                throw new Exception("virtualAccountPhone must be a string. Ensure that virtualAccountPhone is enclosed in quotes. Example: '628123456789'.");
+            }
+            $length = strlen($this->virtualAccountPhone);
+            if ($length < 9 || $length > 30) {
+                throw new Exception("virtualAccountPhone must be between 9 and 30 characters long. Ensure that virtualAccountPhone is at least 9 characters long and no longer than 30 characters. Example: '628123456789'.");
+            }
         }
-        return true;
     }
 
-    public function validateTrxId(): bool
+    private function validateTrxId(): void
     {
-        if (is_null($this->trxId) || !is_string($this->trxId) || strlen($this->trxId) < 1 || strlen($this->trxId) > 64) {
-            return false;
+        if ($this->trxId === null) {
+            throw new Exception("trxId cannot be null. Please provide a trxId. Example: '23219829713'.");
         }
-        return true;
+        if (!is_string($this->trxId)) {
+            throw new Exception("trxId must be a string. Ensure that trxId is enclosed in quotes. Example: '23219829713'.");
+        }
+        $length = strlen($this->trxId);
+        if ($length < 1 || $length > 64) {
+            throw new Exception("trxId must be between 1 and 64 characters long. Ensure that trxId is not empty and no longer than 64 characters. Example: '23219829713'.");
+        }
     }
-
-    public function validateValue(): bool
+    private function validateVirtualAccountTrxType(): void
     {
-        $value = $this->totalAmount->value;
-        $pattern = '/^(0|[1-9]\d{0,15})(\.\d{2})?$/';
-        if (is_null($value) || !is_string($value) || strlen($value) < 4 || strlen($value) > 19 || !preg_match($pattern, $value)) {
-            return false;
+        if ($this->virtualAccountTrxType === null) {
+            throw new Exception("virtualAccountTrxType cannot be null.");
         }
-
-        return true;
+        if (!is_string($this->virtualAccountTrxType)) {
+            throw new Exception("virtualAccountTrxType must be a string. Ensure that virtualAccountTrxType is enclosed in quotes. Example: 'C'.");
+        }
+        if (strlen($this->virtualAccountTrxType) !== 1) {
+            throw new Exception("virtualAccountTrxType must be exactly 1 character long. Ensure that virtualAccountTrxType is either 'C', 'O', or 'V'. Example: 'C'.");
+        }
+        if (!in_array($this->virtualAccountTrxType, ['C', 'O', 'V'])) {
+            throw new Exception("virtualAccountTrxType must be either 'C', 'O', or 'V'. Ensure that virtualAccountTrxType is one of these values. Example: 'C'.");
+        }
     }
 
-    public function validateCurrency(): bool
+    private function validateExpiredDate(): void
     {
-        $currency = $this->totalAmount->currency;
-        if (!is_null($currency) && (!is_string($currency) || strlen($currency) !== 3 || ($currency !== 'IDR' && $currency !== null))) {
-            return false;
+        if ($this->expiredDate !== null) {
+            if (!is_string($this->expiredDate)) {
+                throw new Exception("expiredDate must be a string. Ensure that expiredDate is enclosed in quotes.");
+            }
+            $dateTime = DateTime::createFromFormat(DATE_ISO8601, $this->expiredDate);
+            if ($dateTime === false) {
+                throw new Exception("expiredDate must be in ISO-8601 format. Ensure that expiredDate follows the correct format. Example: '2023-01-01T10:55:00+07:00'.");
+            }
         }
-
-        return true;
     }
 
-    public function validateChannel(): bool
+    private function validateTotalAmountCurrency(): void
     {
-        $validChannels = VaChannels::VIRTUAL_ACCOUNT_CHANNELSS;
-        $channel = $this->additionalInfo->channel;
-        if (is_null($channel) || !is_string($channel) || strlen($channel) < 1 || strlen($channel) > 30 || !in_array(strtoupper($channel), $validChannels)) {
-            return false;
+        if ($this->totalAmount->currency !== "IDR") {
+            throw new Exception("totalAmount.currency must be 'IDR'. Ensure that totalAmount.currency is 'IDR'. Example: 'IDR'.");
+        }
     }
 
-    return true;
-    }
-
-    public function validateReusableStatus(): bool
+    private function validateAdditionalInfo(): void
     {
-        $reusableStatus = $this->additionalInfo->virtualAccountConfig->reusableStatus;
-        if (!is_null($reusableStatus) && !is_bool($reusableStatus)) {
-            return false;
+        if (isset($this->additionalInfo->virtualAccountConfig)) {
+            if (!isset($this->additionalInfo->virtualAccountConfig->reusableStatus)) {
+                $this->additionalInfo->virtualAccountConfig->reusableStatus = false;
+            }
+        }
     }
 
-    return true;
-    }
-
-    public function validateVirtualAccountTrxType(): bool
+    private function validateChannel(): void
     {
-        if ($this->virtualAccountTrxType === null || 
-            !is_string($this->virtualAccountTrxType) || 
-            strlen($this->virtualAccountTrxType) !== 1 || 
-            !($this->virtualAccountTrxType === '1' || $this->virtualAccountTrxType === '2')
-        ) {
-            return false;
+        if (!$this->isValidChannel($this->additionalInfo->channel)) {
+            throw new Exception("additionalInfo.channel is not valid. Ensure that additionalInfo.channel is one of the valid channels. Example: 'VIRTUAL_ACCOUNT_MANDIRI'.");
         }
-
-        if ($this->virtualAccountTrxType === '2' && ($this->totalAmount->value !== 0 || $this->totalAmount->currency !== 'IDR')) {
-            return false;
-        }
-
-        return true;
     }
 
-    public function validateExpiredDate(): bool
+    private function validateMinMaxAmount(): void
     {
-        if ($this->expiredDate === null) {
-            return false;
+        if (isset($this->additionalInfo->virtualAccountConfig->minAmount) &&
+            isset($this->additionalInfo->virtualAccountConfig->maxAmount)) {
+            if ($this->virtualAccountTrxType === "C") {
+                throw new Exception("Only supported for virtualAccountTrxType O and V only");
+            }
+
+            if ($this->additionalInfo->virtualAccountConfig->minAmount >= $this->additionalInfo->virtualAccountConfig->maxAmount) {
+                throw new Exception("maxAmount cannot be lesser than minAmount");
+            }
         }
+    }
 
-        $dateTime = DateTime::createFromFormat(DATE_ISO8601, $this->expiredDate);
-
-        if ($dateTime === false) {
-            return false;
-        }
-
-        return true;
+    private function isValidChannel(string $channel): bool
+    {
+        return in_array($channel, VaChannels::VIRTUAL_ACCOUNT_CHANNELSS);
     }
 }
-

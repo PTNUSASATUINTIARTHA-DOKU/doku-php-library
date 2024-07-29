@@ -4,53 +4,33 @@ namespace Doku\Snap\Controllers;
 use Doku\Snap\Services\NotificationServices;
 use Doku\Snap\Services\TokenServices;
 use Doku\Snap\Models\Notification\NotificationTokenDto;
-use Doku\Snap\Models\Notification\PaymentNotificationRequestBodyDTO;
-use Doku\Snap\Models\Notification\PaymentNotificationResponseDTO;
+use Doku\Snap\Models\Notification\PaymentNotificationRequestBodyDto;
+use Doku\Snap\Models\Notification\PaymentNotificationResponseDto;
 
 class NotificationController
 {
    private NotificationServices $notificationServices;
    private TokenServices $tokenServices;
 
-   /**
-    * NotificationController constructor.
-    * @param NotificationServices $notificationService
-    */
    public function __construct()
    {
        $this->notificationServices = new NotificationServices();
    }
 
-   /**
-    * Generate a notification response based on the provided payment notification request body.
-    *
-    * @param PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO
-    * @return PaymentNotificationResponseDTO
-    */
-   public function generateNotificationResponse(PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO): PaymentNotificationResponseDTO
+   public function generateNotificationResponse(PaymentNotificationRequestBodyDto $paymentNotificationRequestBodyDto): PaymentNotificationResponseDto
    {
-       return $this->notificationServices->generateNotificationResponse($paymentNotificationRequestBodyDTO);
+       return $this->notificationServices->generateNotificationResponse($paymentNotificationRequestBodyDto);
    }
 
-    /**
-     * Generate an invalid signature response
-     *
-     * @return NotificationTokenDTO
-     */
-    public function generateInvalidSignatureResponse(): NotificationTokenDTO
+    public function generateInvalidSignatureResponse(): NotificationTokenDto
     {
         $timestamp = $this->tokenServices->getTimestamp();
         return $this->tokenServices->generateInvalidSignature($timestamp);
     }
 
-    /**
-     * Generate an invalid token response
-     * @param PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO
-     * @return PaymentNotificationResponseDTO
-     */
-    public function generateInvalidTokenResponse($paymentNotificationRequestBodyDTO): PaymentNotificationResponseDTO
+    public function generateInvalidTokenResponse($paymentNotificationRequestBodyDto): PaymentNotificationResponseDto
     {
-        return $this->notificationServices->generateInvalidTokenNotificationResponse($paymentNotificationRequestBodyDTO);
+        return $this->notificationServices->generateInvalidTokenNotificationResponse($paymentNotificationRequestBodyDto);
     }
 
 }

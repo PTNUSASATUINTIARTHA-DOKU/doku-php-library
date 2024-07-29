@@ -5,15 +5,9 @@ use Exception;
 use DateTime;
 use DateTimeZone;
 
-use Doku\Snap\Models\RequestHeader\RequestHeaderDTO;
+use Doku\Snap\Models\RequestHeader\RequestHeaderDto;
 class Helper
 {
-    /**
-     * Retrieves the current timestamp in the format 'Y-m-d\TH:i:s+07:00'.
-     *
-     * @return string The formatted timestamp.
-     * @throws Exception If the timestamp generation fails.
-     */
     public static function getTimestamp($buffer = 0): string {
         try {
             $offset = '+07:00';
@@ -26,23 +20,23 @@ class Helper
         }
     }
 
-    public static function prepareHeaders(RequestHeaderDTO $requestHeaderDTO): array
+    public static function prepareHeaders(RequestHeaderDto $requestHeaderDto): array
     {
         $result = array(
             "Content-Type: application/json",
-            'X-PARTNER-ID: ' . $requestHeaderDTO->xPartnerId,
-            'X-EXTERNAL-ID: ' . $requestHeaderDTO->xRequestId,
-            'X-TIMESTAMP: ' . $requestHeaderDTO->xTimestamp,
-            'X-SIGNATURE: ' . $requestHeaderDTO->xSignature,
-            'Authorization: Bearer ' . $requestHeaderDTO->authorization
+            'X-PARTNER-ID: ' . $requestHeaderDto->xPartnerId,
+            'X-EXTERNAL-ID: ' . $requestHeaderDto->xRequestId,
+            'X-TIMESTAMP: ' . $requestHeaderDto->xTimestamp,
+            'X-SIGNATURE: ' . $requestHeaderDto->xSignature,
+            'Authorization: Bearer ' . $requestHeaderDto->authorization
         );
-        if($requestHeaderDTO->channelId != null) {
-            array_push($result, 'CHANNEL-ID: ' . $requestHeaderDTO->channelId);
+        if($requestHeaderDto->channelId != null) {
+            array_push($result, 'CHANNEL-ID: ' . $requestHeaderDto->channelId);
         }
         return $result;
     }
 
-    public static function doHitAPI(string $apiEndpoint, array $headers, string $payload, string $method = "POST"): string
+    public static function doHitAPI(string $apiEndpoint, array $headers, string $payload, string $method): string
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $apiEndpoint);

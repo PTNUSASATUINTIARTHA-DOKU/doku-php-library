@@ -1,14 +1,9 @@
 <?php
 namespace Doku\Snap\Models\DirectInquiry;
-class InquiryRequestAdditionalInfoDTO
+class InquiryRequestAdditionalInfoDto
 {
     public string $channel;
 
-    /**
-     * InquiryRequestAdditionalInfoDto constructor.
-     *
-     * @param string $channel The channel information
-     */
     public function __construct(string $channel)
     {
         $this->channel = $channel;

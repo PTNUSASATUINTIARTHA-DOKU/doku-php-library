@@ -1,6 +1,6 @@
 <?php
 namespace Doku\Snap\Models\DirectInquiry;
-class InquiryRequestBodyDTO
+class InquiryRequestBodyDto
 {
     public string $partnerServiceId;
     public string $customerNo;
@@ -9,20 +9,8 @@ class InquiryRequestBodyDTO
     public string $trxDateInit;
     public string $language;
     public string $inquiryRequestId;
-    public InquiryRequestAdditionalInfoDTO $additionalInfo;
+    public InquiryRequestAdditionalInfoDto $additionalInfo;
 
-    /**
-     * InquiryRequestBodyDTO constructor.
-     *
-     * @param string $partnerServiceId
-     * @param string $customerNo
-     * @param string $virtualAccountNo
-     * @param string $channelCode
-     * @param string $trxDateInit
-     * @param string $language
-     * @param string $inquiryRequestId
-     * @param InquiryRequestAdditionalInfoDTO $additionalInfo
-     */
     public function __construct(
         string $partnerServiceId,
         string $customerNo,
@@ -31,7 +19,7 @@ class InquiryRequestBodyDTO
         string $trxDateInit,
         string $language,
         string $inquiryRequestId,
-        InquiryRequestAdditionalInfoDTO $additionalInfo
+        InquiryRequestAdditionalInfoDto $additionalInfo
     ) {
         $this->partnerServiceId = $partnerServiceId;
         $this->customerNo = $customerNo;

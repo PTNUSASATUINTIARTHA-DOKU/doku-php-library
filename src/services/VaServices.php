@@ -3,22 +3,22 @@ namespace Doku\Snap\Services;
 
 use Doku\Snap\Commons\Helper;
 use Doku\Snap\Commons\Config;
-use Doku\Snap\Models\RequestHeader\RequestHeaderDTO;
+use Doku\Snap\Models\RequestHeader\RequestHeaderDto;
 use Doku\Snap\Models\Utilities\TotalAmount\TotalAmount;
-use Doku\Snap\Models\VA\Request\CreateVaRequestDTO;
-use Doku\Snap\Models\VA\Response\CreateVaResponseDTO;
+use Doku\Snap\Models\VA\Request\CreateVaRequestDto;
+use Doku\Snap\Models\VA\Response\CreateVaResponseDto;
 use Doku\Snap\Models\Utilities\VirtualAccountData\CreateVaResponseVirtualAccountData;
 use Doku\Snap\Models\Utilities\AdditionalInfo\CreateVaResponseAdditionalInfo;
-use Doku\Snap\Models\VA\Request\UpdateVaRequestDTO;
-use Doku\Snap\Models\VA\Response\UpdateVaResponseDTO;
+use Doku\Snap\Models\VA\Request\UpdateVaRequestDto;
+use Doku\Snap\Models\VA\Response\UpdateVaResponseDto;
 use Doku\Snap\Models\Utilities\VirtualAccountConfig\UpdateVaVirtualAccountConfig;
 use Doku\Snap\Models\Utilities\AdditionalInfo\UpdateVaRequestAdditionalInfo;
-use Doku\Snap\Models\VA\Request\DeleteVaRequestDTO;
-use Doku\Snap\Models\VA\Response\DeleteVaResponseDTO;
+use Doku\Snap\Models\VA\Request\DeleteVaRequestDto;
+use Doku\Snap\Models\VA\Response\DeleteVaResponseDto;
 use Doku\Snap\Models\Utilities\VirtualAccountData\DeleteVaResponseVirtualAccountData;
 use Doku\Snap\Models\Utilities\AdditionalInfo\DeleteVaResponseAdditionalInfo;  
-use Doku\Snap\Models\VA\Request\CheckStatusVaRequestDTO;
-use Doku\Snap\Models\VA\Response\CheckStatusVaResponseDTO;
+use Doku\Snap\Models\VA\Request\CheckStatusVaRequestDto;
+use Doku\Snap\Models\VA\Response\CheckStatusVaResponseDto;
 use Doku\Snap\Models\Utilities\AdditionalInfo\CheckStatusResponseAdditionalInfo;
 use Doku\Snap\Models\Utilities\VirtualAccountData\CheckStatusResponsePaymentFlagReason;
 use Doku\Snap\Models\Utilities\VirtualAccountData\CheckStatusVirtualAccountData;
@@ -26,46 +26,36 @@ use Doku\Snap\Models\Utilities\VirtualAccountData\CheckStatusVirtualAccountData;
 use Exception;
 class VaServices
 {
-    /**
-     * Create a virtual account by making a request to the DOKU API
-     *
-     * @param CreateVaRequestDTO $requestDTO The request DTO
-     * @param string $accessToken The access token
-     * @param bool $isProduction Whether to use the production or sandbox environment
-     * @return CreateVaResponseDTO
-     * @throws Exception If there is an error creating the virtual account
-     */
-
-    public function createVa(RequestHeaderDTO $requestHeaderDTO, CreateVaRequestDTO $requestDTO, bool $isProduction): CreateVaResponseDTO
+    public function createVa(RequestHeaderDto $requestHeaderDto, CreateVaRequestDto $requestDto, bool $isProduction): CreateVaResponseDto
     {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::CREATE_VA;
-        $headers = Helper::prepareHeaders($requestHeaderDTO);
+        $headers = Helper::prepareHeaders($requestHeaderDto);
         
         $totalAmountArr = array(
-            'value' => $requestDTO->totalAmount->value,
-            'currency' => $requestDTO->totalAmount->currency
+            'value' => $requestDto->totalAmount->value,
+            'currency' => $requestDto->totalAmount->currency
         );
         $virtualAccountConfigArr = array(
-            'reusableStatus' => $requestDTO->additionalInfo->virtualAccountConfig->reusableStatus
+            'reusableStatus' => $requestDto->additionalInfo->virtualAccountConfig->reusableStatus
         );
         $additionalInfoArr = array(
-            'channel' => $requestDTO->additionalInfo->channel,
+            'channel' => $requestDto->additionalInfo->channel,
             'virtualAccountConfig' => $virtualAccountConfigArr,
-            'origin' => $requestDTO->additionalInfo->origin->toArray()
+            'origin' => $requestDto->additionalInfo->origin->toArray()
         );
         $payload = array(
-            'partnerServiceId' => $requestDTO->partnerServiceId,
-            'customerNo' => $requestDTO->customerNo,
-            'virtualAccountNo' => $requestDTO->virtualAccountNo,
-            'virtualAccountName' => $requestDTO->virtualAccountName,
-            'virtualAccountEmail' => $requestDTO->virtualAccountEmail,
-            'virtualAccountPhone' => $requestDTO->virtualAccountPhone,
-            'trxId' => $requestDTO->trxId,
+            'partnerServiceId' => $requestDto->partnerServiceId,
+            'customerNo' => $requestDto->customerNo,
+            'virtualAccountNo' => $requestDto->virtualAccountNo,
+            'virtualAccountName' => $requestDto->virtualAccountName,
+            'virtualAccountEmail' => $requestDto->virtualAccountEmail,
+            'virtualAccountPhone' => $requestDto->virtualAccountPhone,
+            'trxId' => $requestDto->trxId,
             'totalAmount' => $totalAmountArr,
             'additionalInfo' => $additionalInfoArr,
-            'virtualAccountTrxType' => $requestDTO->virtualAccountTrxType,
-            'expiredDate' => $requestDTO->expiredDate,
+            'virtualAccountTrxType' => $requestDto->virtualAccountTrxType,
+            'expiredDate' => $requestDto->expiredDate,
         );
         
         $payload = json_encode($payload);
@@ -93,7 +83,7 @@ class VaServices
                 $totalAmount,
                 $additionalInfo
             );
-            return new CreateVaResponseDTO(
+            return new CreateVaResponseDto(
                 $responseObject['responseCode'],
                 $responseObject['responseMessage'],
                 $virtualAccountData
@@ -103,12 +93,12 @@ class VaServices
         }
     }
 
-    public function doUpdateVa(RequestHeaderDTO $requestHeaderDto, UpdateVaRequestDTO $requestDTO, bool $isProduction = false): UpdateVaResponseDto
+    public function doUpdateVa(RequestHeaderDto $requestHeaderDto, UpdateVaRequestDto $requestDto, bool $isProduction = false): UpdateVaResponseDto
     {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::UPDATE_VA_URL;
         $headers = Helper::prepareHeaders($requestHeaderDto);
-        $payload = $requestDTO->generateJSONBody();
+        $payload = $requestDto->generateJSONBody();
         $response = Helper::doHitApi($apiEndpoint, $headers, $payload, "PUT");
         $responseObject = json_decode($response, true);
 
@@ -125,7 +115,7 @@ class VaServices
                 $responseData['additionalInfo']['channel'] ?? null,
                 $virtualAccountConfig
             );
-            $virtualAccountData = new UpdateVaRequestDTO(
+            $virtualAccountData = new UpdateVaRequestDto(
                 $responseData['partnerServiceId'],
                 $responseData['customerNo'],
                 $responseData['virtualAccountNo'],
@@ -148,7 +138,7 @@ class VaServices
         }
     }
 
-    public function doDeletePaymentCode(RequestHeaderDTO $requestHeader, DeleteVaRequestDTO $deleteVaRequest, bool $isProduction = false): DeleteVaResponseDTO
+    public function doDeletePaymentCode(RequestHeaderDto $requestHeader, DeleteVaRequestDto $deleteVaRequest, bool $isProduction = false): DeleteVaResponseDto
     {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DELETE_VA_URL;
@@ -187,7 +177,7 @@ class VaServices
         }
     }
 
-    public function doCheckStatusVa(RequestHeaderDTO $requestHeader, CheckStatusVaRequestDTO $checkStatusVaRequest, bool $isProduction = false): CheckStatusVaResponseDTO
+    public function doCheckStatusVa(RequestHeaderDto $requestHeader, CheckStatusVaRequestDto $checkStatusVaRequest, bool $isProduction = false): CheckStatusVaResponseDto
     {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::CHECK_VA;
@@ -206,7 +196,7 @@ class VaServices
         $responseData = json_decode($response, true);
 
         if (isset($responseData['responseCode']) && $responseData['responseCode'] === '2002600') {
-            return new CheckStatusVaResponseDTO(
+            return new CheckStatusVaResponseDto(
                 $responseData['responseCode'],
                 $responseData['responseMessage'] ?? '',
                 new CheckStatusVirtualAccountData(
@@ -239,12 +229,6 @@ class VaServices
         }
     }
 
-    /**
-     * Generate the external ID by combining the UUID and timestamp.
-     *
-     * @param string $timestamp The timestamp
-     * @return string The generated external ID
-     */
     public function generateExternalId(): string
     {
         // Generate a UUID and combine the UUID and timestamp
@@ -254,25 +238,15 @@ class VaServices
         return $externalId;
     }
 
-    /**
-     * Create the request header DTO for the create virtual account request.
-     *
-     * @param string $privateKey The private key for authentication
-     * @param string $clientId The client ID for authentication
-     * @param string $tokenB2B The B2B token
-     * @param string $timestamp The timestamp
-     * @param string $externalId The external ID
-     * @return RequestHeaderDTO The request header DTO
-     */
-    public function generateRequestHeaderDTO(
+    public function generateRequestHeaderDto(
         string $timestamp,
         string $signature,
         string $clientId,
         string $externalId,
         ?string $channelId,
         string $tokenB2B
-    ): RequestHeaderDTO {
-        $requestHeaderDTO = new RequestHeaderDTO(
+    ): RequestHeaderDto {
+        $requestHeaderDto = new RequestHeaderDto(
             $timestamp,
             $signature,
             $clientId,
@@ -280,6 +254,6 @@ class VaServices
             $channelId,
             $tokenB2B
         );
-        return $requestHeaderDTO;
+        return $requestHeaderDto;
     }
 }

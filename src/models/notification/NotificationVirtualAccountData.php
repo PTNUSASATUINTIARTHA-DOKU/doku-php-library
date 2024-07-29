@@ -9,15 +9,6 @@ class NotificationVirtualAccountData
     public string $virtualAccountName;
     public string $paymentRequestId;
 
-    /**
-     * Constructor for NotificationVirtualAccountData
-     *
-     * @param string $partnerServiceId
-     * @param string $customerNo
-     * @param string $virtualAccountNo
-     * @param string $virtualAccountName
-     * @param string $paymentRequestId
-     */
     public function __construct(
         string $partnerServiceId,
         string $customerNo,

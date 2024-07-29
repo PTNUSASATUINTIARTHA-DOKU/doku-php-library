@@ -1,18 +1,12 @@
 <?php
 
 namespace Doku\Snap\Models\Notification;
-class NotificationTokenDTO
+class NotificationTokenDto
 {
-    public NotificationTokenHeaderDTO $header;
-    public NotificationTokenBodyDTO $body;
+    public NotificationTokenHeaderDto $header;
+    public NotificationTokenBodyDto $body;
 
-    /**
-        * Constructor for NotificationTokenDTO
-        *
-        * @param NotificationTokenHeaderDTO $header
-        * @param NotificationTokenBodyDTO $body
-        */
-    public function __construct(NotificationTokenHeaderDTO $header, NotificationTokenBodyDTO $body)
+    public function __construct(NotificationTokenHeaderDto $header, NotificationTokenBodyDto $body)
     {
         $this->header = $header;
         $this->body = $body;

@@ -10,24 +10,27 @@ use Doku\Snap\Controllers\NotificationController;
 use Doku\Snap\Controllers\TokenController;
 use Doku\Snap\Controllers\VaController;
 
-use Doku\Snap\Models\Token\TokenB2BResponseDTO;
-use Doku\Snap\Models\RequestHeader\RequestHeaderDTO;
-use Doku\Snap\Models\VA\Request\CreateVaRequestDTO;
-use Doku\Snap\Models\VA\Request\CreateVaRequestDTOV1;
-use Doku\Snap\Models\VA\Response\CreateVaResponseDTO;
-use Doku\Snap\Models\VA\Request\UpdateVaRequestDTO;
-use Doku\Snap\Models\VA\Response\UpdateVaResponseDTO;
-use Doku\Snap\Models\VA\Request\DeleteVaRequestDTO;
-use Doku\Snap\Models\Notification\NotificationTokenDTO;
-use Doku\Snap\Models\Notification\PaymentNotificationRequestBodyDTO;
-use Doku\Snap\Models\Notification\PaymentNotificationResponseDTO;
-use Doku\Snap\Models\VA\Request\CheckStatusVaRequestDTO;
-use Doku\Snap\Models\VA\Response\CheckStatusVaResponseDTO;
+use Doku\Snap\Models\Token\TokenB2BResponseDto;
+use Doku\Snap\Models\RequestHeader\RequestHeaderDto;
+use Doku\Snap\Models\VA\Request\CreateVaRequestDto;
+use Doku\Snap\Models\VA\Request\CreateVaRequestDtoV1;
+use Doku\Snap\Models\VA\Response\CreateVaResponseDto;
+use Doku\Snap\Models\VA\Request\UpdateVaRequestDto;
+use Doku\Snap\Models\VA\Response\UpdateVaResponseDto;
+use Doku\Snap\Models\VA\Request\DeleteVaRequestDto;
+use Doku\Snap\Models\Notification\NotificationTokenDto;
+use Doku\Snap\Models\Notification\PaymentNotificationRequestBodyDto;
+use Doku\Snap\Models\Notification\PaymentNotificationResponseDto;
+use Doku\Snap\Models\VA\Request\CheckStatusVaRequestDto;
+use Doku\Snap\Models\VA\Response\CheckStatusVaResponseDto;
 use Doku\Snap\Models\Utilities\AdditionalInfo\Origin;
 
 
 class Snap
 {
+    private VaController $vaController;
+    private TokenController $tokenB2BController;
+    private NotificationController $notificationController;
     private string $privateKey;
     private string $clientId;
     private bool $isProduction;
@@ -36,17 +39,8 @@ class Snap
     private int $tokenB2BGeneratedTimestamp; 
     private string $publicKey;
     private string $issuer;
-    private TokenController $tokenB2BController;
-    private NotificationController $notificationController;
     private ?string $secretKey;
 
-    /**
-     * Constructor
-     *
-     * @param string $privateKey The private key for authentication
-     * @param string $clientId The client ID for authentication
-     * @param bool $isProduction Flag indicating whether to use production or sandbox environment
-     */
     public function __construct(string $privateKey, string $publicKey, string $clientId, string $issuer, bool $isProduction, string $secretKey)
     {
         $this->privateKey = $privateKey;
@@ -58,17 +52,12 @@ class Snap
 
         $this->tokenB2BController = new TokenController();
         $this->notificationController = new NotificationController();
+        $this->vaController = new VaController();
 
-        $tokenB2BResponseDTO = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
-        $this->setTokenB2B($tokenB2BResponseDTO);
+        $tokenB2BResponseDto = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
+        $this->setTokenB2B($tokenB2BResponseDto);
     }
 
-    /**
-     * Validates and sanitizes the input string
-     *
-     * @param string $input The input string to validate
-     * @return string The sanitized string
-     */
     private function validateString(string $input): string
     {
         // Perform string validation and sanitization here
@@ -80,15 +69,10 @@ class Snap
         return trim(preg_replace($regex, '', $input));
     }
 
-    /**
-     * Set the B2B token properties
-     *
-     * @param TokenB2BResponseDTO $tokenB2BResponseDTO The DTO containing the B2B token response
-    */
-    public function setTokenB2B(TokenB2BResponseDTO $tokenB2BResponseDTO)
+    public function setTokenB2B(TokenB2BResponseDto $tokenB2BResponseDto)
     {
-        $this->tokenB2B = $tokenB2BResponseDTO->accessToken;
-        $this->tokenB2BExpiresIn = $tokenB2BResponseDTO->expiresIn - 10; // Subtract 10 seconds as in diagram requirements
+        $this->tokenB2B = $tokenB2BResponseDto->accessToken;
+        $this->tokenB2BExpiresIn = $tokenB2BResponseDto->expiresIn - 10; // Subtract 10 seconds as in diagram requirements
         $this->tokenB2BGeneratedTimestamp = time();
 
         // TODO
@@ -101,9 +85,6 @@ class Snap
 
     /**
      * ONLY FOR TESTING
-     * Get the token, timestamp, and expiration time of the B2B token
-     *
-     * @return string The token, timestamp, and expiration time of the B2B token
      */
     public function getTokenAndTime(): string
     {
@@ -112,150 +93,76 @@ class Snap
         return $string  . "Expired In: " . $this->tokenB2BExpiresIn . PHP_EOL;
     }
 
-    /**
-     * Retrieves the value of the new generated tokenB2B property.
-     *
-     * @return string The value of the tokenB2B property.
-     */
-    public function getTokenB2B(): string
+    public function getB2BToken(string $privateKey, string $clientId, bool $isProduction): string
     {
-        $tokenB2BResponseDTO = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
-        $this->setTokenB2B($tokenB2BResponseDTO);
+        $tokenB2BResponseDto = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
+        $this->setTokenB2B($tokenB2BResponseDto);
         return $this->tokenB2B;
     }
 
-
-    /**
-     * Retrieves the value of the current tokenB2B property.
-     *
-     * @return string The value of the tokenB2B property.
-     */
     public function getCurrentTokenB2B(): string
     {
         return $this->tokenB2B;
     }
 
-
-    /**
-     * create Virtual Account based on the request
-     *
-     * @param CreateVaRequestDTO $createVaRequestDTO The DTO containing the create virtual account request
-     * @return CreateVaResponseDTO The DTO containing the create virtual account response
-    */
-    public function createVa($createVaRequestDTO): CreateVaResponseDTO
+    public function createVa($createVaRequestDto): CreateVaResponseDto
     {
-        // TODO refactor error message
-        $status = $createVaRequestDTO->validateVaRequestDTO();
-        if(!$status){
-            throw new Error();
-        }
-        $createVaRequestDTO->additionalInfo->origin = new Origin();
+        $status = $createVaRequestDto->validateCreateVaRequestDto();
+        $createVaRequestDto->additionalInfo->origin = new Origin();
         // TODO review is it referring to the same token or not
         // what if there are 2 merchant in same time hitting API
         // async or not
         $checkTokenInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
         if($checkTokenInvalid){
-            $tokenB2BResponseDTO = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
-            $this->setTokenB2B($tokenB2BResponseDTO);
+            $tokenB2BResponseDto = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
+            $this->setTokenB2B($tokenB2BResponseDto);
         }	
-        $vaController = new VaController(); // TODO move or not
-        $createVAResponseDTO = $vaController->createVa($createVaRequestDTO, $this->privateKey, $this->clientId, $this->tokenB2B, $this->isProduction);
-        return $createVAResponseDTO;
+        print_r($createVaRequestDto);
+        $createVAResponseDto = $this->vaController->createVa($createVaRequestDto, $this->privateKey, $this->clientId, $this->tokenB2B, $this->isProduction);
+        return $createVAResponseDto;
     }
 
-    /**
-     * Generate a notification response based on token validity and request body
-     *
-     * @param bool $isTokenValid Whether the token is valid or not
-     * @param PaymentNotificationRequestBodyDTO|null $requestBodyDTO The payment notification request body DTO
-     * @return PaymentNotificationResponseDTO
-     * @throws Exception If the token is valid but the request body DTO is missing
-     */
-    public function generateNotificationResponse(bool $isTokenValid, ?PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO): PaymentNotificationResponseDTO
+    public function generateNotificationResponse(bool $isTokenValid, ?PaymentNotificationRequestBodyDto $paymentNotificationRequestBodyDto): PaymentNotificationResponseDto
     {
         if ($isTokenValid) {
-            if ($paymentNotificationRequestBodyDTO !== null) {
-                return $this->notificationController->generateNotificationResponse($paymentNotificationRequestBodyDTO);
+            if ($paymentNotificationRequestBodyDto !== null) {
+                return $this->notificationController->generateNotificationResponse($paymentNotificationRequestBodyDto);
             } else {
-                throw new Exception('If token is valid, please provide PaymentNotificationRequestBodyDTO');
+                throw new Exception('If token is valid, please provide PaymentNotificationRequestBodyDto');
             }
         } else {
-            return $this->notificationController->generateInvalidTokenResponse($paymentNotificationRequestBodyDTO);
+            return $this->notificationController->generateInvalidTokenResponse($paymentNotificationRequestBodyDto);
         }
     }
 
-    /**
-     * Validates the signature received in the request.
-     *
-     * @param string $requestSignature The signature received in the request.
-     * @param string $requestTimestamp The timestamp received in the request.
-     * @param string $privateKey The private key for authentication.
-     * @param string $clientId The client ID for authentication.
-     *
-     * @return bool True if the signature is valid, false otherwise.
-     */
     public function validateSignature(string $requestSignature, string $requestTimestamp, string $privateKey, string $clientId): bool
     {
-        // Call the validateSignature method of the tokenB2BController to validate the signature
         return $this->tokenB2BController->validateSignature($requestSignature, $requestTimestamp, $privateKey, $clientId);
     }
 
-     
-    /**
-     * Validates the TokenB2B received in the request and generates a notification response.
-     *
-     * This method is responsible for validating the TokenB2B received in the request and generating a notification response.
-     * If the TokenB2B is valid, it calls the `generateNotificationResponse` method of the `NotificationController` to generate the notification response.
-     *
-     * @param RequestHeaderDTO $requestHeaderDTO The header DTO containing the TokenB2B for validation.
-     * @param PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO The payment notification request body DTO.
-     * @return PaymentNotificationResponseDTO The generated notification response.
-     */
-    public function validateTokenAndGenerateNotificationResponse(RequestHeaderDTO $requestHeaderDTO, PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO): PaymentNotificationResponseDTO
+    public function validateTokenAndGenerateNotificationResponse(RequestHeaderDto $requestHeaderDto, PaymentNotificationRequestBodyDto $paymentNotificationRequestBodyDto): PaymentNotificationResponseDto
     {
-        $isTokenValid = $this->validateTokenB2B($requestHeaderDTO->authorization);
-        return $this->generateNotificationResponse($isTokenValid, $paymentNotificationRequestBodyDTO);
+        $isTokenValid = $this->validateTokenB2B($requestHeaderDto->authorization);
+        return $this->generateNotificationResponse($isTokenValid, $paymentNotificationRequestBodyDto);
     }
 
-
-    /**
-     * Validates the TokenB2B received in the request.
-     *
-     * @param string $requestTokenB2B The TokenB2B received in the request.
-     *
-     * @return bool Returns `true` if the TokenB2B is valid, `false` otherwise.
-     */
     public function validateTokenB2B(string $requestTokenB2B): bool
     {
         return $this->tokenB2BController->validateTokenB2B($requestTokenB2B, $this->publicKey);
     }
 
-    /**
-     * Validates the signature and generates a TokenB2B object accordingly.
-     *
-     * @param string $requestSignature The signature received in the request.
-     * @param string $requestTimestamp The timestamp received in the request.
-     *
-     * @return void
-     */
     public function validateSignatureAndGenerateToken(string $requestSignature, string $requestTimestamp): void
     {
         // Validate the signature
         $isSignatureValid = $this->validateSignature($requestSignature, $requestTimestamp, $this->privateKey, $this->clientId);
 
         // Generate a TokenB2B object based on the signature validity and set token
-        $notificationTokenDTO = $this->generateTokenB2BResponse($isSignatureValid);
-        $notificationTokenBodyDTO = $notificationTokenDTO->body;
-        $this->tokenB2B = $notificationTokenBodyDTO->accessToken;
+        $notificationTokenDto = $this->generateTokenB2BResponse($isSignatureValid);
+        $notificationTokenBodyDto = $notificationTokenDto->body;
+        $this->tokenB2B = $notificationTokenBodyDto->accessToken;
     }
 
-    /**
-     * Generates a TokenB2B object based on the validity of the signature.
-     *
-     * @param bool $isSignatureValid Determines if the signature is valid.
-     * @return NotificationTokenDTO The generated TokenB2B object.
-     */
-    public function generateTokenB2BResponse(bool $isSignatureValid): NotificationTokenDTO
+    public function generateTokenB2BResponse(bool $isSignatureValid): NotificationTokenDto
     {
             if($isSignatureValid){
                     return $this->tokenB2BController->generateTokenB2B($this->tokenB2BExpiresIn, $this->issuer, $this->privateKey, $this->clientId);
@@ -264,36 +171,18 @@ class Snap
             }
     }
 
-    /**
-     * Create a virtual account using CreateVaRequestDtoV1
-     *
-     * @param CreateVaRequestDTOV1 $createVaRequestDtoV1
-     * @return CreateVaResponseDto
-     * @throws Exception If there is an error creating the virtual account
-     */
-    public function createVaV1(CreateVaRequestDTOV1 $createVaRequestDTOV1): CreateVaResponseDTO
+    public function createVaV1(CreateVaRequestDtoV1 $createVaRequestDtoV1): CreateVaResponseDto
     {
         try {
-            $createVaRequestDTO = $createVaRequestDTOV1->convertToCreateVaRequestDTO();
-            $status = $createVaRequestDTO->validateVaRequestDTO();
-            if(!$status){
-                throw new Error();
-            }
-            return $this->createVa($createVaRequestDTO);
+            $createVaRequestDto = $createVaRequestDtoV1->convertToCreateVaRequestDto();
+            $status = $createVaRequestDto->validateCreateVaRequestDto();
+            return $this->createVa($createVaRequestDto);
         } catch (Exception $e) {
             throw $e;
         }
     }
 
-    /**
-     * Generates a request header DTO.
-     *
-     * This function checks if the current token is invalid and generates a new one if necessary.
-     * Then, it generates a request header DTO using the token obtained from the token B2B controller.
-     *
-     * @return RequestHeaderDTO The generated request header DTO.
-     */
-    public function generateRequestHeader(string $channelId = "SDK"): RequestHeaderDTO
+    public function generateRequestHeader(string $channelId = "SDK"): RequestHeaderDto
     {
         $isTokenInvalid = $this->tokenB2BController->isTokenInvalid(
             $this->tokenB2B,
@@ -302,47 +191,38 @@ class Snap
         );
 
         if ($isTokenInvalid) {
-            $tokenB2BResponseDTO = $this->tokenB2BController->getTokenB2B(
+            $tokenB2BResponseDto = $this->tokenB2BController->getTokenB2B(
                 $this->privateKey,
                 $this->clientId,
                 $this->isProduction
             );
-            $this->setTokenB2B($tokenB2BResponseDTO);
+            $this->setTokenB2B($tokenB2BResponseDto);
         }
 
-        $requestHeaderDTO = $this->tokenB2BController->doGenerateRequestHeader(
+        $requestHeaderDto = $this->tokenB2BController->doGenerateRequestHeader(
             $this->privateKey,
             $this->clientId,
             $this->tokenB2B,
             $channelId
         );
 
-        return $requestHeaderDTO;
+        return $requestHeaderDto;
     }
 
-     /**
-     * Updates a virtual account based on the provided request DTO.
-     *
-     * @param UpdateVaRequestDTO $updateVaRequestDto The DTO containing the update virtual account request.
-     * @return UpdateVaResponseDTO The DTO containing the update virtual account response.
-     * @throws Exception If the request DTO is invalid.
-     */
-    public function updateVa(UpdateVaRequestDTO $updateVaRequestDto): UpdateVaResponseDTO
+    public function updateVa(UpdateVaRequestDto $updateVaRequestDto): UpdateVaResponseDto
     {
         if (!$updateVaRequestDto->validateUpdateVaRequestDto()) {
-            return new UpdateVaResponseDTO('400', 'Invalid request data', null);
+            return new UpdateVaResponseDto('400', 'Invalid request data', null);
         }
 
         $isTokenInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
 
         if ($isTokenInvalid) {
-            $tokenController = new TokenController();
-            $tokenB2BResponseDto = $tokenController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
+            $tokenB2BResponseDto = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
             $this->setTokenB2B($tokenB2BResponseDto);
         }
 
-        $vaController = new VaController();
-        $updateVaResponseDto = $vaController->doUpdateVa($updateVaRequestDto, $this->privateKey, $this->clientId, $this->tokenB2B, $this->secretKey, $this->isProduction);
+        $updateVaResponseDto = $this->vaController->doUpdateVa($updateVaRequestDto, $this->privateKey, $this->clientId, $this->tokenB2B, $this->secretKey, $this->isProduction);
 
         return $updateVaResponseDto;
     }
@@ -365,8 +245,7 @@ class Snap
             $this->setTokenB2B($tokenB2BResponse);
         }
 
-        $vaController = new VaController();
-        return $vaController->doDeletePaymentCode(
+        return $this->vaController->doDeletePaymentCode(
             $deleteVaRequestDto,
             $this->privateKey,
             $this->clientId,
@@ -397,8 +276,7 @@ class Snap
             $this->setTokenB2B($tokenB2BResponse);
         }
 
-        $vaController = new VaController();
-        $checkStatusVaResponseDto = $vaController->doCheckStatusVa(
+        $checkStatusVaResponseDto = $this->vaController->doCheckStatusVa(
             $checkStatusVaRequestDto,
             $this->privateKey,
             $this->clientId,

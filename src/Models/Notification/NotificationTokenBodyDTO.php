@@ -1,7 +1,7 @@
 <?php
 
 namespace Doku\Snap\Models\Notification;
-class NotificationTokenBodyDTO
+class NotificationTokenBodyDto
 {
    public string $responseCode;
    public string $responseMessage;
@@ -11,7 +11,7 @@ class NotificationTokenBodyDTO
    public string $additionalInfo;
 
    /**
-    * Constructor for NotificationTokenBodyDTO
+    * Constructor for NotificationTokenBodyDto
     *
     * @param string $responseCode The response code
     * @param string $responseMessage The response message

@@ -1,7 +1,7 @@
 <?php
 namespace Doku\Snap\Models\Notification;
 use Doku\Snap\Models\Utilities\TotalAmount\TotalAmount;
-class PaymentNotificationRequestBodyDTO
+class PaymentNotificationRequestBodyDto
 {
     public string $partnerServiceId;
     public string $customerNo;
@@ -13,19 +13,6 @@ class PaymentNotificationRequestBodyDTO
     public string $virtualAccountEmail;
     public string $virtualAccountPhone;
 
-    /**
-     * Constructor for PaymentNotificationRequestBodyDTO
-     *
-     * @param string $partnerServiceId
-     * @param string $customerNo
-     * @param string $virtualAccountNo
-     * @param string $virtualAccountName
-     * @param string $trxId
-     * @param string $paymentRequestId
-     * @param TotalAmount $paidAmount
-     * @param string $virtualAccountEmail
-     * @param string $virtualAccountPhone
-     */
     public function __construct(
         string $partnerServiceId,
         string $customerNo,
