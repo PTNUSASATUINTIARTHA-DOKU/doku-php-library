@@ -272,7 +272,7 @@ $createVaRequestDtoConverted = $createVaRequestDtoV1->convertToCreateVaRequestDt
 
         $partner = ' 8129014';
         $virtualno = '1722399214994';
-$createVaRequestDto = new CreateVARequestDto(
+$createVaRequestDto = new CreateVaRequestDto(
                 $partner,
                 $virtualno,
                 $partner . $virtualno,
