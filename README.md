@@ -23,7 +23,7 @@ This repository demonstrates how to integrate and use the Doku Snap SDK for virt
 To install the Doku Snap SDK, use Composer:
 
 ```bash
-composer require doku/snap-sdk
+composer require doku/doku-php-library
 ```
 
 ## Configuration
