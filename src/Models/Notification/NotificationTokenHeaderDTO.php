@@ -1,17 +1,11 @@
 <?php
 
 namespace Doku\Snap\Models\Notification;
-class NotificationTokenHeaderDTO
+class NotificationTokenHeaderDto
 {
     public string $XClientKey;
     public string $XTimeStamp;
 
-    /**
-    * Constructor for NotificationTokenHeaderDTO
-    *
-    * @param string $XClientKey
-    * @param string $XTimeStamp
-    */
     public function __construct(string $XClientKey, string $XTimeStamp)
     {
         $this->XClientKey = $XClientKey;

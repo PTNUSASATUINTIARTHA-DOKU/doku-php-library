@@ -1,6 +1,6 @@
 <?php
 namespace Doku\Snap\Models\RequestHeader;
-class RequestHeaderDTO
+class RequestHeaderDto
 {
     public string $xTimestamp;
     public string $xSignature;

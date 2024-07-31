@@ -106,18 +106,12 @@ class CreateVaRequestDtoV1
         $this->expiredDate = $expiredDate;
     }
 
- 
-     /**
-      * Converts the current object to a CreateVaRequestDto object.
-      *
-      * @return CreateVaRequestDto The converted CreateVaRequestDto object.
-      */
-     public function convertToCreateVaRequestDTO(): CreateVaRequestDTO
+     public function convertToCreateVaRequestDto(): CreateVaRequestDto
      {
          $totalAmount = new TotalAmount($this->amount, $this->currency);
          $additionalInfo = new CreateVaRequestAdditionalInfo($this->paymentChannel, new CreateVaVirtualAccountConfig(false));
  
-         return new CreateVaRequestDTO(
+         return new CreateVaRequestDto(
              $this->partnerServiceId,
              null,
              null,

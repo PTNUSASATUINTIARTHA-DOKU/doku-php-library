@@ -1,7 +1,7 @@
 <?php
 namespace Doku\Snap\Models\VA\Response;
 use Doku\Snap\Models\Utilities\VirtualAccountData\CheckStatusVirtualAccountData;
-class CheckStatusVaResponseDTO
+class CheckStatusVaResponseDto
 {
     public ?string $responseCode;
     public ?string $responseMessage;

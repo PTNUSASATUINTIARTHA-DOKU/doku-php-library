@@ -11,6 +11,8 @@ class CreateVaResponseVirtualAccountData
     public ?string $virtualAccountEmail;
     public ?string $trxId;
     public TotalAmount $totalAmount;
+    public ?string $virtualAccountTrxType;
+    public ?string $expiredDate;
     public CreateVaResponseAdditionalInfo $additionalInfo;
 
     public function __construct(
@@ -21,6 +23,8 @@ class CreateVaResponseVirtualAccountData
         ?string $virtualAccountEmail,
         ?string $trxId,
         ?TotalAmount $totalAmount,
+        ?string $virtualAccountTrxType,
+        ?string $expiredDate,
         ?CreateVaResponseAdditionalInfo $additionalInfo
     ) {
         $this->partnerServiceId = $partnerServiceId;
@@ -30,6 +34,8 @@ class CreateVaResponseVirtualAccountData
         $this->virtualAccountEmail = $virtualAccountEmail;
         $this->trxId = $trxId;
         $this->totalAmount = $totalAmount;
+        $this->virtualAccountTrxType = $virtualAccountTrxType;
+        $this->expiredDate = $expiredDate;
         $this->additionalInfo = $additionalInfo;
     }
 }

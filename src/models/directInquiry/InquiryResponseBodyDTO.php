@@ -1,22 +1,15 @@
 <?php
 namespace Doku\Snap\Models\DirectInquiry;
-class InquiryResponseBodyDTO
+class InquiryResponseBodyDto
 {
     public string $responseCode;
     public string $responseMessage;
-    public InquiryRequestVirtualAccountDataDTO $virtualAccountData;
+    public InquiryResponseVirtualAccountDataDto $virtualAccountData;
 
-    /**
-     * InquiryResponseBodyDTO constructor.
-     *
-     * @param string $responseCode
-     * @param string $responseMessage
-     * @param InquiryRequestVirtualAccountDataDTO $virtualAccountData
-     */
     public function __construct(
         string $responseCode,
         string $responseMessage,
-        InquiryRequestVirtualAccountDataDTO $virtualAccountData
+        InquiryResponseVirtualAccountDataDto $virtualAccountData
     ) {
         $this->responseCode = $responseCode;
         $this->responseMessage = $responseMessage;

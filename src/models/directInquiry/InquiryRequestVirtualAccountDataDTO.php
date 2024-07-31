@@ -1,7 +1,7 @@
 <?php
 namespace Doku\Snap\Models\DirectInquiry;
 use Doku\Snap\Models\Utilities\TotalAmount\TotalAmount;
-class InquiryRequestVirtualAccountDataDTO
+class InquiryRequestVirtualAccountDataDto
 {
     public string $partnerServiceId;
     public string $customerNo;
@@ -12,28 +12,11 @@ class InquiryRequestVirtualAccountDataDTO
     public TotalAmount $totalAmount;
     public string $virtualAccountTrxType;
     public string $expiredDate;
-    public InquiryRequestAdditionalInfoDTO $additionalInfo;
+    public InquiryRequestAdditionalInfoDto $additionalInfo;
     public string $inquiryStatus;
-    public InquiryReasonDTO $inquiryReason;
+    public InquiryReasonDto $inquiryReason;
     public string $inquiryRequestId;
 
-    /**
-     * InquiryRequestVirtualAccountDataDTO constructor.
-     *
-     * @param string $partnerServiceId
-     * @param string $customerNo
-     * @param string $virtualAccountNo
-     * @param string $virtualAccountName
-     * @param string $virtualAccountEmail
-     * @param string $virtualAccountPhone
-     * @param TotalAmount $totalAmount
-     * @param string $virtualAccountTrxType
-     * @param string $expiredDate
-     * @param InquiryRequestAdditionalInfoDTO $additionalInfo
-     * @param string $inquiryStatus
-     * @param InquiryReasonDTO $inquiryReason
-     * @param string $inquiryRequestId
-     */
     public function __construct(
         string $partnerServiceId,
         string $customerNo,
@@ -44,9 +27,9 @@ class InquiryRequestVirtualAccountDataDTO
         TotalAmount $totalAmount,
         string $virtualAccountTrxType,
         string $expiredDate,
-        InquiryRequestAdditionalInfoDTO $additionalInfo,
+        InquiryRequestAdditionalInfoDto $additionalInfo,
         string $inquiryStatus,
-        InquiryReasonDTO $inquiryReason,
+        InquiryReasonDto $inquiryReason,
         string $inquiryRequestId
     ) {
         $this->partnerServiceId = $partnerServiceId;

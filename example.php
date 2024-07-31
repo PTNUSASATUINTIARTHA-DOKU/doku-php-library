@@ -3,11 +3,11 @@
 require __DIR__ . '/vendor/autoload.php';
 
 use Doku\Snap\Snap;
-use Doku\Snap\Models\VA\Request\CreateVaRequestDTO;
-use Doku\Snap\Models\VA\Request\UpdateVaRequestDTO;
-use Doku\Snap\Models\VA\Request\DeleteVaRequestDTO;
-use Doku\Snap\Models\VA\Request\CheckStatusVaRequestDTO;
-use Doku\Snap\Models\VA\Request\CreateVARequestDTOV1;
+use Doku\Snap\Models\VA\Request\CreateVaRequestDto;
+use Doku\Snap\Models\VA\Request\UpdateVaRequestDto;
+use Doku\Snap\Models\VA\Request\DeleteVaRequestDto;
+use Doku\Snap\Models\VA\Request\CheckStatusVaRequestDto;
+use Doku\Snap\Models\VA\Request\CreateVARequestDtoV1;
 use Doku\Snap\Models\Utilities\AdditionalInfo\CreateVaRequestAdditionalInfo;
 use Doku\Snap\Models\Utilities\AdditionalInfo\UpdateVaRequestAdditionalInfo;
 use Doku\Snap\Models\Utilities\AdditionalInfo\DeleteVaRequestAdditionalInfo;
@@ -146,14 +146,16 @@ OrzKGlO90/6sNzIDd2DbRSM=
 
 $isProduction = false;
 $issuer = "";
-$publicKey = "";
+$publicKey = "-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr7gNEvkfERhKE8WWH5LHTWpt/4jays2P0ahmzeBn9I7iDfF51DPHRr+A1apl0METDHkNzf2NuqTAydb/4uhOQcFmrAQL3kpO25lAUGDFEc8a7wW730TbyMLWA2vnMd/R2pn4mGDh6uIWVUuhtpvEqgxITjcYR0JhD/RTx0joz0FikpYMa09wSiPREqUKH3MSkV94cn4ejHnVk5WaV1CayPW3egM4NxXecKXx0JS3CkkfF69hKx+3TUuCNtQ0x0fuqsdNk6HL+Q99Dg2pgOshvYcZxRES1RPvBpyROdmI47JuaLRkcIx0uJ4EkoXPwJNWcpLGgkxZdMRMEydaHhEn3wIDAQAB
+-----END PUBLIC KEY-----";
 $timestamp = time();
 
 /**
  * Entry Point
  */
 $clientId = $clientId1;
-$privateKey = $privateKey4;
+$privateKey = $privateKey1;
 $secretKey = "SK-tDzY6MSLBWlNXy3qCsUU";
 $Snap = new Snap($privateKey, $publicKey, $clientId, $issuer, $isProduction, $secretKey);
 // $requestSignature = "LtMvncYrtpqDR41PDQLGXaeznzf0/R1mkUZ6KfWslwEDyRTv/Vb2oQlEhrCxIbmLTPxyajTUF96kmDQ4m3ScCCZlDefcI3ovrm3sTBybk2ZfkwgLy9cIkNLVvoZu4jxkA/nYidCVA3BBglc0HqMd/SDE0YI0/tPMl6kOSBQVUz7RAc4oJQ2XQy91k6wzYVUW0S34AQXu+1hPc6f2Dam8kpHFPg8w7LyLTLEoZehRG6uMAi9dj9Y/oMw4i0xu2ZCfxtOPsWMqPHqszjGTk3jPL9wSihbwLYSxdbpYZ2BkbNjHcWbcdnI6ksUotYe+tLPfOTLfAMcjzeOqwBrMorOwpw==";
@@ -165,34 +167,34 @@ function getToken($Snap) {
     echo $Snap->getTokenAndTime();
 }
 
-function createVA($Snap, $updateVaRequestDTO) {
+function createVA($Snap, $updateVaRequestDto) {
     echo "Create VA B2B: " . PHP_EOL;
-    $virtualAccount = $Snap->createVa($updateVaRequestDTO);
+    $virtualAccount = $Snap->createVa($updateVaRequestDto);
     echo json_encode($virtualAccount, JSON_PRETTY_PRINT);
     return $virtualAccount;
 }
 
-function updateVA($Snap, $createVaRequestDTO) {
+function updateVA($Snap, $createVaRequestDto) {
     echo "Updating VA B2B: " . PHP_EOL;
-    $virtualAccount = $Snap->updateVa($createVaRequestDTO);
+    $virtualAccount = $Snap->updateVa($createVaRequestDto);
     echo json_encode($virtualAccount, JSON_PRETTY_PRINT);
 }
 
-function deleteVA($Snap, $createVaRequestDTO) {
+function deleteVA($Snap, $createVaRequestDto) {
     echo "Deleting VA B2B: " . PHP_EOL;
-    $virtualAccount = $Snap->deletePaymentCode($createVaRequestDTO);
+    $virtualAccount = $Snap->deletePaymentCode($createVaRequestDto);
     echo json_encode($virtualAccount, JSON_PRETTY_PRINT);
 }
 
-function checkVA($Snap, $createVaRequestDTO) {
+function checkVA($Snap, $createVaRequestDto) {
     echo "Checking Status VA B2B: " . PHP_EOL;
-    $virtualAccount = $Snap->checkStatusVa($createVaRequestDTO);
+    $virtualAccount = $Snap->checkStatusVa($createVaRequestDto);
     echo json_encode($virtualAccount, JSON_PRETTY_PRINT);
 }
 
-function createVAV1($Snap, $createVaRequestDTOV1) {
+function createVAV1($Snap, $createVaRequestDtoV1) {
     echo "Creating VA B2B V1: " . PHP_EOL;
-    $virtualAccount = $Snap->createVaV1($createVaRequestDTOV1);
+    $virtualAccount = $Snap->createVaV1($createVaRequestDtoV1);
     echo json_encode($virtualAccount, JSON_PRETTY_PRINT);
 }
 
@@ -231,7 +233,7 @@ function convertV1toSnap($Snap, $dtov1) {
 /**
  * Mock Object
  */ 
-$createVaRequestDtoV1 = new CreateVaRequestDTOV1(
+$createVaRequestDtoV1 = new CreateVaRequestDtoV1(
     "1899", // $mallId
     "CHAIN_MERCHANT", // $chainMerchant
     "12500.00", // $amount
@@ -266,23 +268,26 @@ $createVaRequestDtoV1 = new CreateVaRequestDTOV1(
     "2024-06-24T15:54:04+07:00" // $expiredDate
 );
 
-$createVaRequestDTOConverted = $createVaRequestDtoV1->convertToCreateVaRequestDTO();
+$createVaRequestDtoConverted = $createVaRequestDtoV1->convertToCreateVaRequestDto();
 
-$createVaRequestDTO = new CreateVARequestDTO(
-   "    1899", // $partnerServiceId
-   null, // $customerNo
-   null, // $virtualAccountNo
+        $partner = ' 8129014';
+        $virtualno = '1722399214994';
+$createVaRequestDto = new CreateVARequestDto(
+                $partner,
+                $virtualno,
+                $partner . $virtualno,
+    // null,null,null,
    "T_" . $timestamp, // $virtualAccountName
    "test.bnc." . $timestamp . "@test.com", // $virtualAccountEmail
-   "00000062798", // $virtualAccountPhone
+   "621722399214895", // $virtualAccountPhone
    "INV_CIMB_" . $timestamp, // $trxId
    new TotalAmount("12500.00", "IDR"), // $totalAmount
-   new CreateVaRequestAdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB", new CreateVaVirtualAccountConfig(false)), // $additionalInfo
-   "1", // $virtualAccountTrxType
-   "2024-07-24T15:54:04+07:00" // $expiredDate
+   new CreateVaRequestAdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB", new CreateVaVirtualAccountConfig(true)), // $additionalInfo
+   'C', // $virtualAccountTrxType
+   "2024-08-01T09:54:04+07:00" // $expiredDate
 );
 
-$updateVaRequestDTO = new UpdateVaRequestDTO(
+$updateVaRequestDto = new UpdateVaRequestDto(
    "    1899", // $partnerServiceId
    "000000000461", // $customerNo
    "    1899000000000461", // $virtualAccountNo
@@ -295,16 +300,15 @@ $updateVaRequestDTO = new UpdateVaRequestDTO(
    "1", // $virtualAccountTrxType
    "2024-07-24T15:54:04+07:00" // $expiredDate
 );
-
 // getToken($Snap);
 
-$virtualAccountMock = createVA($Snap, $createVaRequestDTO);
+$virtualAccountMock = createVA($Snap, $createVaRequestDto);
 // sleep(2);
 
 // echo "Virtual Account: " . $virtualAccountMock->virtualAccountData->virtualAccountNo . PHP_EOL;
 
 // sleep(1);
-// $updateVaRequestDTO = new UpdateVaRequestDTO(
+// $updateVaRequestDto = new UpdateVaRequestDto(
 //    $virtualAccountMock->virtualAccountData->partnerServiceId, // $partnerServiceId
 //    $virtualAccountMock->virtualAccountData->customerNo, // $customerNo
 //    $virtualAccountMock->virtualAccountData->virtualAccountNo, // $virtualAccountNo
@@ -317,28 +321,28 @@ $virtualAccountMock = createVA($Snap, $createVaRequestDTO);
 //    "1", // $virtualAccountTrxType
 //    "2024-07-24T15:54:04+07:00" // $expiredDate
 // );
-//updateVA($Snap, $updateVaRequestDTO);
+//updateVA($Snap, $updateVaRequestDto);
 
-$deleteVaRequestDTO = new DeleteVaRequestDTO(
-   $virtualAccountMock->virtualAccountData->partnerServiceId, // $partnerServiceId
-   $virtualAccountMock->virtualAccountData->customerNo, // $customerNo
-   $virtualAccountMock->virtualAccountData->virtualAccountNo, // $virtualAccountNo
-    $virtualAccountMock->virtualAccountData->trxId, // $trxId
-    new DeleteVaRequestAdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB") // $additionalInfo
-);
-//deleteVA($Snap, $deleteVaRequestDTO);
-//sleep(1);
+// $deleteVaRequestDto = new DeleteVaRequestDto(
+//    $virtualAccountMock->virtualAccountData->partnerServiceId, // $partnerServiceId
+//    $virtualAccountMock->virtualAccountData->customerNo, // $customerNo
+//    $virtualAccountMock->virtualAccountData->virtualAccountNo, // $virtualAccountNo
+//     $virtualAccountMock->virtualAccountData->trxId, // $trxId
+//     new DeleteVaRequestAdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB") // $additionalInfo
+// );
+// //deleteVA($Snap, $deleteVaRequestDto);
+// //sleep(1);
 
-$checkStatusVaRequestDTO = new CheckStatusVaRequestDTO(
-   $virtualAccountMock->virtualAccountData->partnerServiceId, // $partnerServiceId
-   $virtualAccountMock->virtualAccountData->customerNo, // $customerNo
-   $virtualAccountMock->virtualAccountData->virtualAccountNo, // $virtualAccountNo
-    null,
-    null,
-    null
-);
-checkVA($Snap, $checkStatusVaRequestDTO);
-// createVAV1($Snap, $createVaRequestDTOV1);
+// $checkStatusVaRequestDto = new CheckStatusVaRequestDto(
+//    $virtualAccountMock->virtualAccountData->partnerServiceId, // $partnerServiceId
+//    $virtualAccountMock->virtualAccountData->customerNo, // $customerNo
+//    $virtualAccountMock->virtualAccountData->virtualAccountNo, // $virtualAccountNo
+//     null,
+//     null,
+//     null
+// );
+//checkVA($Snap, $checkStatusVaRequestDto);
+// createVAV1($Snap, $createVaRequestDtoV1);
 //convertV1toSnap($Snap, $createVaRequestDtoV1);
 
 // validateSignature($Snap, $requestSignature, $requestTimestamp);

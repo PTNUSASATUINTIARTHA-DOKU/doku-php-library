@@ -1,19 +1,12 @@
 <?php
 
 namespace Doku\Snap\Models\Notification;
-class PaymentNotificationResponseBodyDTO
+class PaymentNotificationResponseBodyDto
 {
-    public string $responseCode; // e.g., 2002500
+    public string $responseCode;
     public string $responseMessage;
     public NotificationVirtualAccountData $virtualAccountData;
 
-    /**
-     * Constructor for PaymentNotificationResponseBodyDTO
-     *
-     * @param string $responseCode
-     * @param string $responseMessage
-     * @param NotificationVirtualAccountData $virtualAccountData
-     */
     public function __construct(
         string $responseCode,
         string $responseMessage,

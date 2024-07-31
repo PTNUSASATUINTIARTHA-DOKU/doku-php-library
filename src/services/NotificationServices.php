@@ -1,65 +1,53 @@
 <?php
 namespace Doku\Snap\Services;
 
-use Doku\Snap\Models\Notification\NotificationTokenHeaderDTO;
-use Doku\Snap\Models\Notification\NotificationTokenBodyDTO;
-use Doku\Snap\Models\Notification\NotificationTokenDTO;
+use Doku\Snap\Models\Notification\NotificationTokenHeaderDto;
+use Doku\Snap\Models\Notification\NotificationTokenBodyDto;
+use Doku\Snap\Models\Notification\NotificationTokenDto;
 use Doku\Snap\Models\Notification\NotificationVirtualAccountData;
-use Doku\Snap\Models\Notification\PaymentNotificationRequestBodyDTO;
-use Doku\Snap\Models\Notification\PaymentNotificationResponseDTO;
-use Doku\Snap\Models\Notification\PaymentNotificationResponseHeaderDTO;
-use Doku\Snap\Models\Notification\PaymentNotificationResponseBodyDTO;
+use Doku\Snap\Models\Notification\PaymentNotificationRequestBodyDto;
+use Doku\Snap\Models\Notification\PaymentNotificationResponseDto;
+use Doku\Snap\Models\Notification\PaymentNotificationResponseHeaderDto;
+use Doku\Snap\Models\Notification\PaymentNotificationResponseBodyDto;
 use Doku\Snap\Commons\Helper;
 
 class NotificationServices
 {
-   /**
-    * Generate a notification response based on the provided payment notification request body.
-    *
-    * @param PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO
-    * @return PaymentNotificationResponseDTO
-    */
-   public function generateNotificationResponse(PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO): PaymentNotificationResponseDTO
+   public function generateNotificationResponse(PaymentNotificationRequestBodyDto $paymentNotificationRequestBodyDto): PaymentNotificationResponseDto
    {
        $responseCode = '2002700';
        $responseMessage = 'success';
 
        $virtualAccountData = new NotificationVirtualAccountData(
-           $paymentNotificationRequestBodyDTO->partnerServiceId,
-           $paymentNotificationRequestBodyDTO->customerNo,
-           $paymentNotificationRequestBodyDTO->virtualAccountNo,
-           $paymentNotificationRequestBodyDTO->virtualAccountName,
-           $paymentNotificationRequestBodyDTO->paymentRequestId
+           $paymentNotificationRequestBodyDto->partnerServiceId,
+           $paymentNotificationRequestBodyDto->customerNo,
+           $paymentNotificationRequestBodyDto->virtualAccountNo,
+           $paymentNotificationRequestBodyDto->virtualAccountName,
+           $paymentNotificationRequestBodyDto->paymentRequestId
        );
 
-       $responseBody = new PaymentNotificationResponseBodyDTO(
+       $responseBody = new PaymentNotificationResponseBodyDto(
            $responseCode,
            $responseMessage,
            $virtualAccountData
        );
 
-       $responseHeader = new PaymentNotificationResponseHeaderDTO(
+       $responseHeader = new PaymentNotificationResponseHeaderDto(
            Helper::getTimestamp()
        );
 
-       return new PaymentNotificationResponseDTO(
+       return new PaymentNotificationResponseDto(
            $responseHeader,
            $responseBody
        );
    }
 
-    /**
-     * Generate a NotificationTokenDTO object with invalid signature details
-     *
-     * @param string $timestamp The timestamp received in the request
-     * @return NotificationTokenDTO
-     */
-    public function generateInvalidSignature(string $timestamp): NotificationTokenDTO
+    public function generateInvalidSignature(string $timestamp): NotificationTokenDto
     {
         $responseCode = '4017300';
         $responseMessage = 'Unauthorized. Invalid Signature';
         
-        $body = new NotificationTokenBodyDTO(
+        $body = new NotificationTokenBodyDto(
             $responseCode,
             $responseMessage,
             null,
@@ -68,18 +56,12 @@ class NotificationServices
             null
         );
 
-        $header = new NotificationTokenHeaderDTO(null, $timestamp);
+        $header = new NotificationTokenHeaderDto(null, $timestamp);
 
-        return new NotificationTokenDTO($header, $body);
+        return new NotificationTokenDto($header, $body);
     }
 
-    /**
-     * Generate a PaymentNotificationResponseDTO object with invalid signature details
-     *
-     * @param PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDTO
-     * @return PaymentNotificationResponseDTO
-     */
-    public function generateInvalidTokenNotificationResponse(PaymentNotificationRequestBodyDTO $paymentNotificationRequestBodyDto): PaymentNotificationResponseDTO
+    public function generateInvalidTokenNotificationResponse(PaymentNotificationRequestBodyDto $paymentNotificationRequestBodyDto): PaymentNotificationResponseDto
     {
         $responseCode = '4012701';
         $responseMessage = 'invalid Token (B2B)';
@@ -92,16 +74,16 @@ class NotificationServices
             null
         );
         
-        $body = new PaymentNotificationResponseBodyDTO(
+        $body = new PaymentNotificationResponseBodyDto(
             $responseCode,
             $responseMessage,
             $virtualAccountData
         );
 
-        $header = new PaymentNotificationResponseHeaderDTO(
+        $header = new PaymentNotificationResponseHeaderDto(
             Helper::getTimestamp()
         );
 
-        return new PaymentNotificationResponseDTO($header, $body); 
+        return new PaymentNotificationResponseDto($header, $body); 
     }
 }

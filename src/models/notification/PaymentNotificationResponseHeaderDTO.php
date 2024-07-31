@@ -1,16 +1,11 @@
 <?php
 
 namespace Doku\Snap\Models\Notification;
-class PaymentNotificationResponseHeaderDTO
+class PaymentNotificationResponseHeaderDto
 {
     public string $xTimestamp;
     public string $contentType = "application/json";
 
-    /**
-     * Constructor for PaymentNotificationResponseHeaderDTO
-     *
-     * @param string $xTimestamp
-     */
     public function __construct(string $xTimestamp)
     {
         $this->xTimestamp = $xTimestamp;

@@ -1,20 +1,14 @@
 <?php
 
 namespace Doku\Snap\Models\Notification;
-class PaymentNotificationResponseDTO
+class PaymentNotificationResponseDto
 {
-    public PaymentNotificationResponseHeaderDTO $header;
-    public PaymentNotificationResponseBodyDTO $body;
+    public PaymentNotificationResponseHeaderDto $header;
+    public PaymentNotificationResponseBodyDto $body;
 
-    /**
-     * Constructor for PaymentNotificationResponseDTO
-     *
-     * @param PaymentNotificationResponseHeaderDTO $header
-     * @param PaymentNotificationResponseBodyDTO $body
-     */
     public function __construct(
-        PaymentNotificationResponseHeaderDTO $header,
-        PaymentNotificationResponseBodyDTO $body
+        PaymentNotificationResponseHeaderDto $header,
+        PaymentNotificationResponseBodyDto $body
     ) {
         $this->header = $header;
         $this->body = $body;

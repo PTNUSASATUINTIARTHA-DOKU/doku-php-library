@@ -2,14 +2,14 @@
 namespace Doku\Snap\Controllers;
 use Doku\Snap\Services\VaServices;
 use Doku\Snap\Services\TokenServices;
-use Doku\Snap\Models\VA\Request\CreateVaRequestDTO;
-use Doku\Snap\Models\VA\Response\CreateVaResponseDTO;
-use Doku\Snap\Models\VA\Request\UpdateVaRequestDTO;
-use Doku\Snap\Models\VA\Response\UpdateVaResponseDTO;
-use Doku\Snap\Models\VA\Request\CheckStatusVaRequestDTO;
-use Doku\Snap\Models\VA\Response\CheckStatusVAResponseDTO;
-use Doku\Snap\Models\VA\Request\DeleteVaRequestDTO;
-use Doku\Snap\Models\VA\Response\DeleteVaResponseDTO;
+use Doku\Snap\Models\VA\Request\CreateVaRequestDto;
+use Doku\Snap\Models\VA\Response\CreateVaResponseDto;
+use Doku\Snap\Models\VA\Request\UpdateVaRequestDto;
+use Doku\Snap\Models\VA\Response\UpdateVaResponseDto;
+use Doku\Snap\Models\VA\Request\CheckStatusVaRequestDto;
+use Doku\Snap\Models\VA\Response\CheckStatusVAResponseDto;
+use Doku\Snap\Models\VA\Request\DeleteVaRequestDto;
+use Doku\Snap\Models\VA\Response\DeleteVaResponseDto;
 use Doku\Snap\Commons\Config;
 class VaController
 {
@@ -20,45 +20,24 @@ class VaController
         $this->tokenServices = new TokenServices();
     }
 
-    /**
-     * Creates a virtual account using the provided CreateVaRequestDTO and other parameters.
-     *
-     * @param CreateVaRequestDTO $createVaRequestDTO The DTO containing the request data.
-     * @param string $privateKey The private key for authentication.
-     * @param string $clientId The client ID for authentication.
-     * @param string $tokenB2B The B2B token.
-     * @param bool $isProduction Whether to use the production or sandbox environment.
-     * @return CreateVaResponseDTO The DTO containing the response data.
-     */
-    public function createVa(CreateVaRequestDTO $createVaRequestDTO, string $privateKey, string $clientId, string $tokenB2B, bool $isProduction): CreateVaResponseDTO
+    public function createVa(CreateVaRequestDto $createVaRequestDto, string $privateKey, string $clientId, string $tokenB2B, bool $isProduction): CreateVaResponseDto
     {
         $externalId = $this->vaServices->generateExternalId();
         $timestamp = $this->tokenServices->getTimestamp();
         $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
-        $requestHeaderDTO = $this->vaServices->generateRequestHeaderDTO($timestamp, $signature, $clientId, $externalId, $createVaRequestDTO->additionalInfo->channel, $tokenB2B);
-        $createVaResponseDTO = $this->vaServices->createVa($requestHeaderDTO, $createVaRequestDTO, $isProduction);
-        return $createVaResponseDTO;
+        $requestHeaderDto = $this->vaServices->generateRequestHeaderDto($timestamp, $signature, $clientId, $externalId, $createVaRequestDto->additionalInfo->channel, $tokenB2B);
+        $createVaResponseDto = $this->vaServices->createVa($requestHeaderDto, $createVaRequestDto, $isProduction);
+        return $createVaResponseDto;
     }
 
-    /**
-     * Updates a virtual account using the provided UpdateVaRequestDTO and other parameters.
-     *
-     * @param UpdateVaRequestDTO $UpdateVaRequestDTO The DTO containing the request data.
-     * @param string $privateKey The private key for authentication.
-     * @param string $clientId The client ID for authentication.
-     * @param string $tokenB2B The B2B token.
-     * @param string $secretKey The secret key for signing the request.
-     * @param bool $isProduction Whether to use the production or sandbox environment.
-     * @return UpdateVaResponseDTO The DTO containing the response data.
-     */
     public function doUpdateVa(
-        UpdateVaRequestDTO $UpdateVaRequestDTO,
+        UpdateVaRequestDto $UpdateVaRequestDto,
         string $privateKey,
         string $clientId,
         string $tokenB2B,
         string $secretKey,
         string $isProduction
-    ): UpdateVaResponseDTO
+    ): UpdateVaResponseDto
     {
         $timestamp = $this->tokenServices->getTimestamp();
         $baseUrl = Config::getBaseURL($isProduction);
@@ -67,13 +46,13 @@ class VaController
             'POST',
             $apiEndpoint,
             $tokenB2B,
-            $UpdateVaRequestDTO->generateJSONBody(),
+            $UpdateVaRequestDto->generateJSONBody(),
             $timestamp,
             $secretKey
         );
         $externalId = $this->vaServices->generateExternalId();
-        $header = $this->vaServices->generateRequestHeaderDTO(
-            $UpdateVaRequestDTO->additionalInfo->channel,
+        $header = $this->vaServices->generateRequestHeaderDto(
+            $UpdateVaRequestDto->additionalInfo->channel,
             $clientId,
             $tokenB2B,
             $timestamp,
@@ -81,20 +60,9 @@ class VaController
             $externalId
         );
 
-        return $this->vaServices->doUpdateVa($header, $UpdateVaRequestDTO);
+        return $this->vaServices->doUpdateVa($header, $UpdateVaRequestDto);
     }
 
-    /**
-     * Deletes a payment code using the provided DeleteVaRequestDto and other parameters.
-     *
-     * @param DeleteVaRequestDto $deleteVaRequestDto The DTO containing the request data.
-     * @param string $privateKey The private key for authentication.
-     * @param string $clientId The client ID for authentication.
-     * @param string $secretKey The secret key for signing the request.
-     * @param string $tokenB2B The B2B token.
-     * @param string $isProduction Whether to use the production or sandbox environment.
-     * @return DeleteVaResponseDTO The DTO containing the response data.
-     */
     public function doDeletePaymentCode(
         DeleteVaRequestDto $deleteVaRequestDto, 
         string $privateKey, 
@@ -102,7 +70,7 @@ class VaController
         string $secretKey, 
         string $tokenB2B, 
         string $isProduction
-    ): DeleteVaResponseDTO
+    ): DeleteVaResponseDto
     {
         $timestamp = $this->tokenServices->getTimestamp();
         $baseUrl = Config::getBaseURL(false);
@@ -118,7 +86,7 @@ class VaController
         );
 
         $externalId = $this->vaServices->generateExternalId();
-        $requestHeaderDto = $this->vaServices->generateRequestHeaderDTO(
+        $requestHeaderDto = $this->vaServices->generateRequestHeaderDto(
             $timestamp, 
             $signature,
             $clientId, 
@@ -132,23 +100,13 @@ class VaController
         return $response;
     }
 
-    /**
-     * Checks the status of a virtual account using the provided CheckStatusVaRequestDTO and other parameters.
-     *
-     * @param CheckStatusVaRequestDTO $checkVARequestDTO The DTO containing the request data.
-     * @param string $privateKey The private key for authentication.
-     * @param string $clientId The client ID for authentication.
-     * @param string $tokenB2B The B2B token.
-     * @param bool $isProduction Whether to use the production or sandbox environment.
-     * @return CheckStatusVAResponseDTO The DTO containing the response data.
-     */
     public function doCheckStatusVa(
-        CheckStatusVaRequestDTO $checkVARequestDTO, 
+        CheckStatusVaRequestDto $checkVARequestDto, 
         string $privateKey, 
         string $clientId, 
         string $tokenB2B, 
         bool $isProduction
-    ): CheckStatusVAResponseDTO
+    ): CheckStatusVAResponseDto
     {
         $timestamp = $this->tokenServices->getTimestamp();
         $baseUrl = Config::getBaseURL($isProduction);
@@ -158,14 +116,14 @@ class VaController
             "POST",
             $apiEndpoint,
             $tokenB2B,
-            $checkVARequestDTO->generateJSONBody(),
+            $checkVARequestDto->generateJSONBody(),
             $timestamp,
             $privateKey
         );
 
         $externalId = $this->vaServices->generateExternalId();
 
-        $header = $this->vaServices->generateRequestHeaderDTO(
+        $header = $this->vaServices->generateRequestHeaderDto(
             $timestamp, 
             $signature,
             $clientId, 
@@ -174,6 +132,6 @@ class VaController
             $tokenB2B, 
         );
 
-        return $this->vaServices->doCheckStatusVa($header, $checkVARequestDTO);
+        return $this->vaServices->doCheckStatusVa($header, $checkVARequestDto);
     }
 }

@@ -8,45 +8,27 @@ use Error;
 
 use Doku\Snap\Commons\Helper;
 use Doku\Snap\Commons\Config;
-use Doku\Snap\Models\Token\TokenB2BRequestDTO;
-use Doku\Snap\Models\Token\TokenB2BResponseDTO;
-use Doku\Snap\Models\VA\Request\UpdateVaRequestDTO;
-use Doku\Snap\Models\Notification\NotificationTokenDTO;
-use Doku\Snap\Models\Notification\NotificationTokenHeaderDTO;
-use Doku\Snap\Models\Notification\NotificationTokenBodyDTO;
+use Doku\Snap\Models\Token\TokenB2BRequestDto;
+use Doku\Snap\Models\Token\TokenB2BResponseDto;
+use Doku\Snap\Models\Notification\NotificationTokenDto;
+use Doku\Snap\Models\Notification\NotificationTokenHeaderDto;
+use Doku\Snap\Models\Notification\NotificationTokenBodyDto;
 
 class TokenServices
 {
     private string $tokenB2B;
     private string $tokenExpiresIn;
 
-    /**
-     * Generate the timestamp in the included format for the DOKU SNAP API.
-     *
-     * @return string The timestamp in the format 'yyyyMMddTHH:mm:ss.SSSSZ'
-     */
     public function getTimestamp(): string
     {
        return Helper::getTimestamp();
     }
 
-    /**
-     * Generate the X-SIGNATURE for the DOKU SNAP API request.
-     *
-     * @param string $privateKey The private key for authentication
-     * @param string $clientId The client ID for authentication
-     * @param string $timestamp The timestamp for the request
-     * @return string The generated X-SIGNATURE
-     * @throws Exception If there is an error in signature generation
-     */
     public function createSignature(string $privateKey, string $clientId, string $timestamp): string
     {
-        // Validate the input parameters
         if (empty($privateKey) || empty($clientId) || empty($timestamp)) {
             throw new Exception('Invalid privateKey, clientId, or timestamp');
         }
-        
-        // Construct the string to sign and generate signature in base 64
         $stringToSign = $clientId . "|" . $timestamp;
         $signature = "";
         $success = openssl_sign($stringToSign, $signature, $privateKey, OPENSSL_ALGO_SHA256);
@@ -59,40 +41,24 @@ class TokenServices
         return $base64Signature;
     }
 
-    /**
-     * Create a TokenB2BRequestDTO instance
-     *
-     * @param string $privateKey The private key for authentication
-     * @param string $clientId The client ID for authentication
-     * @return TokenB2BRequestDTO
-     * @throws Exception If there is an error creating the request DTO
-     */
-    public function createTokenB2BRequestDTO(string $signature, string $timestamp, string $clientId): TokenB2BRequestDTO
+    public function createTokenB2BRequestDto(string $signature, string $timestamp, string $clientId): TokenB2BRequestDto
     {
         try {
-            return new TokenB2BRequestDTO($signature, $timestamp, $clientId);
+            return new TokenB2BRequestDto($signature, $timestamp, $clientId);
         } catch (Exception $e) {
-            throw new Exception("Failed to generate TokenB2BRequestDTO: " . $e->getMessage());
+            throw new Exception("Failed to generate TokenB2BRequestDto: " . $e->getMessage());
         }
     }
 
-    /**
-     * Create a TokenB2B by making a request to the DOKU SNAP API
-     *
-     * @param TokenB2BRequestDTO $requestDTO The request DTO
-     * @param bool $isProduction Whether to use the production or sandbox environment
-     * @return TokenB2BResponseDTO
-     * @throws Exception If there is an error creating the token
-     */
-    public function createTokenB2B(TokenB2BRequestDTO $requestDTO, bool $isProduction): TokenB2BResponseDTO
+    public function createTokenB2B(TokenB2BRequestDto $requestDto, bool $isProduction): TokenB2BResponseDto
     {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::ACCESS_TOKEN;
 
         $headers = array(
-            "X-CLIENT-KEY: " . $requestDTO->clientId,
-            "X-TIMESTAMP: " .  $requestDTO->timestamp,
-            "X-SIGNATURE: " . $requestDTO->signature,
+            "X-CLIENT-KEY: " . $requestDto->clientId,
+            "X-TIMESTAMP: " .  $requestDto->timestamp,
+            "X-SIGNATURE: " . $requestDto->signature,
             "Content-Type: " . "application/json"
         );
 
@@ -125,11 +91,12 @@ class TokenServices
         }
 
         if (isset($responseData['error'])) {
-            throw new Exception($responseData['error']['message'] ?? 'Missing error in response data');
+            print_r($responseData['error']);
+            throw new Exception('Missing error in response data');
         }
 
         try {
-            return new TokenB2BResponseDTO(
+            return new TokenB2BResponseDto(
                 $responseData['responseCode'] ?? '',
                 $responseData['responseMessage'] ?? '',
                 $responseData['accessToken'] ?? '',
@@ -138,17 +105,10 @@ class TokenServices
                 $responseData['additionalInfo'] ?? ''
             );
         } catch (Error $e) {
-            throw new Exception('Failed to create TokenB2BResponseDTO: ' . $e->getMessage());
+            throw new Exception('Failed to create TokenB2BResponseDto: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Checking if a generated TokenB2B is empty or not.
-     *
-     * @param string $tokenB2B The generated tokenB2B
-     * @return bool true if tokenB2B isEmpty, else false
-     * @throws Exception If there is an error creating the token
-     */
     public function isTokenEmpty(string $tokenB2B): bool
     {
         if(is_null($tokenB2B)) {
@@ -157,13 +117,6 @@ class TokenServices
         return false;
     }
 
-    /**
-     * Checking if a generated TokenB2B has been already expired or not
-     *
-     * @param string $tokenB2B The generated tokenB2B
-     * @return bool true if tokenB2B is already expired, else false
-     * @throws Exception If there is an error creating the token
-     */
     public function isTokenExpired(int $tokenExpiresIn, int $tokenGeneratedTimestamp) 
     {
         $currentTimestamp = time();
@@ -173,14 +126,6 @@ class TokenServices
         return $expirationTimestamp < $currentTimestamp;
     }
 
-    /**
-     * Compare the request signature with the created signature.
-     *
-     * @param string $requestSignature The signature received in the request
-     * @param string $createdSignature The signature generated by the application
-     *
-     * @return bool True if the signatures match, false otherwise
-     */
     public function compareSignatures(string $requestSignature, string $createdSignature)
     {
         if ($requestSignature === $createdSignature) {
@@ -190,20 +135,14 @@ class TokenServices
         }
     }
 
-    /**
-     * Generate an invalid signature response.
-     *
-     * @param string $timestamp
-     * @return NotificationTokenDTO
-     */
-    public function generateInvalidSignature(string $timestamp): NotificationTokenDTO
+    public function generateInvalidSignature(string $timestamp): NotificationTokenDto
     {
-        $responseHeader = new NotificationTokenHeaderDTO(
+        $responseHeader = new NotificationTokenHeaderDto(
             null,
             $timestamp
         );
 
-        $responseBody = new NotificationTokenBodyDTO(
+        $responseBody = new NotificationTokenBodyDto(
             "4017300",
             "Unauthorized. Invalid Signature",
             null,
@@ -212,7 +151,7 @@ class TokenServices
             null
         );
 
-        $response = new NotificationTokenDTO(
+        $response = new NotificationTokenDto(
             $responseHeader,
             $responseBody
         );
@@ -220,19 +159,9 @@ class TokenServices
         return $response;
     }
 
-    /**
-     * Generate a NotificationTokenDTO with the provided parameters.
-     *
-     * @param string $token The access token
-     * @param string $timestamp The timestamp
-     * @param string $clientId The client ID
-     * @param int $expiresIn The expiration time (in seconds) for the access token
-     *
-     * @return NotificationTokenDTO
-     */
-    public function generateNotificationTokenDTO(string $token, string $timestamp, string $clientId, int $expiresIn): NotificationTokenDTO
+    public function generateNotificationTokenDto(string $token, string $timestamp, string $clientId, int $expiresIn): NotificationTokenDto
     {
-        $responseBody = new NotificationTokenBodyDTO(
+        $responseBody = new NotificationTokenBodyDto(
             "2007300",
             "Successful",
             $token,
@@ -244,24 +173,17 @@ class TokenServices
         $responseBody->timestamp = $timestamp;
         $responseBody->clientKey = $clientId;
 
-        $header = new NotificationTokenHeaderDTO(
+        $header = new NotificationTokenHeaderDto(
             $clientId,
             $timestamp
         );
 
-        return new NotificationTokenDTO(
+        return new NotificationTokenDto(
             $header,
             $responseBody
         );
     }
 
-    /**
-     * Validate the TokenB2B received in a payment notification HTTP request
-     *
-     * @param string $jwtToken The JWT token received in the request
-     * @param string $publicKey The public key used for token verification
-     * @return bool True if the token is valid, false otherwise
-     */
     public function validateTokenB2B(string $jwtToken, string $publicKey): bool
     {
         try {
@@ -274,16 +196,6 @@ class TokenServices
         }
     }
 
-    /**
-     * Generate a JWT token
-     *
-     * @param int $expiredIn Timestamp when the token should expire
-     * @param string $issuer The issuer of the token
-     * @param string $privateKey The private key for signing the token
-     * @param string $clientId The client ID to include in the token
-     * @return string The generated JWT token
-     * @throws Exception If there is an error generating the token
-     */
     function generateToken(int $expiredIn, string $issuer, string $privateKey, string $clientId): string
     {
         $issuedAt = time();
@@ -301,17 +213,6 @@ class TokenServices
         return $jwt;
     }
 
-    /**
-     * Generates a symmetric signature for a given HTTP method, endpoint URL, token, request DTO, timestamp, and secret key.
-     *
-     * @param string $httpMethod The HTTP method used for the request.
-     * @param string $endPointUrl The URL of the endpoint.
-     * @param string $tokenB2B The B2B token.
-     * @param UpdateVaRequestDTO $UpdateVaRequestDTO The request DTO.
-     * @param string $timestamp The timestamp of the request.
-     * @param string $secretKey The secret key used for signing.
-     * @return string The base64 encoded signature.
-     */
     public function generateSymmetricSignature(
         string $httpMethod,
         string $endpointUrl,
@@ -320,12 +221,21 @@ class TokenServices
         string $timestamp,
         string $secretKey
     ): string {
-        // Minify and hash the request DTO
         $minifiedBody = json_encode(json_decode($requestBody), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         $bodyHash = hash('sha256', $minifiedBody);
         $bodyHashHex = strtolower($bodyHash);
         $stringToSign = $httpMethod . ":" . $endpointUrl . ":" . $tokenB2B . ":" . $bodyHashHex . ":" . $timestamp;
         $signature = hash_hmac('sha512', $stringToSign, $secretKey, true);
+        return base64_encode($signature);
+    }
+
+    public function generateAsymmetricSignature(
+        string $privateKey,
+        string $clientId,
+        string $timestamp
+    ): string {
+        $stringToSign = $clientId . "|" . $timestamp;
+        $signature = hash_hmac('sha512', $stringToSign, $privateKey, true);
         return base64_encode($signature);
     }
 }
