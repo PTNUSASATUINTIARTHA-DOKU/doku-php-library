@@ -4,12 +4,12 @@ class InquiryResponseBodyDto
 {
     public string $responseCode;
     public string $responseMessage;
-    public InquiryRequestVirtualAccountDataDto $virtualAccountData;
+    public InquiryResponseVirtualAccountDataDto $virtualAccountData;
 
     public function __construct(
         string $responseCode,
         string $responseMessage,
-        InquiryRequestVirtualAccountDataDto $virtualAccountData
+        InquiryResponseVirtualAccountDataDto $virtualAccountData
     ) {
         $this->responseCode = $responseCode;
         $this->responseMessage = $responseMessage;

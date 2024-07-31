@@ -3,6 +3,7 @@ namespace Doku\Snap\Services;
 
 use Doku\Snap\Commons\Helper;
 use Doku\Snap\Commons\Config;
+use Doku\Snap\Commons\VaChannels;
 use Doku\Snap\Models\RequestHeader\RequestHeaderDto;
 use Doku\Snap\Models\Utilities\TotalAmount\TotalAmount;
 use Doku\Snap\Models\VA\Request\CreateVaRequestDto;
@@ -81,6 +82,8 @@ class VaServices
                 $responseData['virtualAccountEmail'],
                 $responseData['trxId'],
                 $totalAmount,
+                $responseData['virtualAccountTrxType'],
+                $responseData['expiredDate'],
                 $additionalInfo
             );
             return new CreateVaResponseDto(
@@ -89,7 +92,11 @@ class VaServices
                 $virtualAccountData
             );
         } else {
-            throw new Exception('Error creating virtual account: ' . $responseObject['responseMessage']);
+             return new CreateVaResponseDto(
+                $responseObject['responseCode'],
+                'Error creating virtual account: ' . $responseObject['responseMessage'],
+                null
+            );
         }
     }
 
@@ -134,7 +141,11 @@ class VaServices
                 $virtualAccountData
             );
         } else {
-            throw new Exception('Error updating virtual account: ' . $responseObject['responseMessage']);
+            return new UpdateVaResponseDto(
+                $responseObject['responseCode'],
+                'Error updating virtual account: ' . $responseObject['responseMessage'],
+                null
+            );
         }
     }
 
@@ -173,7 +184,12 @@ class VaServices
                 )
             );
         } else {
-            throw new Exception('Error deleting virtual account: ' . $responseData['responseMessage'] ?? $responseData['error']);
+            //print_r ($responseData);
+            return new DeleteVaResponseDto(
+                $responseData['responseCode'],
+                'Error deleting virtual account: ' . $responseData['responseMessage'] ?? $responseData['error'],
+                null
+            );
         }
     }
 
@@ -225,7 +241,12 @@ class VaServices
                 )
             );
         } else {
-            throw new Exception('Error checking status of virtual account: ' . $responseData['responseMessage']);
+            //print_r ($responseData);
+            return new CheckStatusVaResponseDto(
+                $responseData['responseCode'],
+                'Error checking status of virtual account: ' . $responseData['responseMessage'],
+                null
+            );
         }
     }
 
@@ -255,5 +276,86 @@ class VaServices
             $tokenB2B
         );
         return $requestHeaderDto;
+    }
+
+    public function convertVAInquiryRequestSnapToV1Form($snapJson): string
+    {
+        $snapData = json_decode($snapJson, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception("Failed to decode JSON: " . json_last_error_msg());
+        }
+        $headers = $snapData['headers'] ?? [];
+        $body = $snapData['body'] ?? [];
+        $v1FormData = [
+            'MALLID' => $headers['X-PARTNER-ID'] ?? '',
+            'CHAINMERCHANT' => '', 
+            'PAYMENTCHANNEL' => VaChannels::MAP_SNAP_TO_OCO_CHANNEL[$body['additionalInfo']['channel']] ?? '',
+            'STATUSTYPE' => '',
+            'WORDS' => '',  // in new v1, this field is not required, checksum will use X-SIGNATURE instead
+            'OCOID' => $body['inquiryRequestId'] ?? ''
+        ];
+
+        return http_build_query($v1FormData);
+    }
+
+    public function convertVAInquiryResponseV1XmlToSnapJson($xmlString): string
+    {
+        $xml = simplexml_load_string($xmlString);
+        if ($xml === false) {
+            throw new Exception("Failed to parse XML");
+        }
+
+        $responseCodeToMessageMap = [
+            "3000" => "Bill not found",
+            "3001" => "Decline",
+            "3002" => "Bill already paid",
+            "3004" => "Account number / Bill was expired",
+            "3006" => "VA Number not found",
+            "0000" => "Success",
+            "9999" => "Internal Error / Failed"
+        ];
+
+        $snapJson = [
+            "responseCode" => (string)$xml->RESPONSECODE,
+            "responseMessage" => $responseCodeToMessageMap[(string)$xml->RESPONSECODE] ?? '',
+            "virtualAccountData" => [
+                "partnerServiceId" => "", // Not provided in XML
+                "customerNo" => (string)$xml->PAYMENTCODE, 
+                "virtualAccountNo" => (string)$xml->PAYMENTCODE,
+                "virtualAccountName" => (string)$xml->NAME,
+                "virtualAccountEmail" => (string)$xml->EMAIL,
+                "virtualAccountPhone" => "", // Not provided in XML
+                "totalAmount" => [
+                    "value" => number_format((float)$xml->AMOUNT, 2, '.', ''),
+                    "currency" => "IDR"
+                ],
+                "virtualAccountTrxType" => "C",
+                "expiredDate" => date('Y-m-d\TH:i:sP', strtotime((string)$xml->REQUESTDATETIME)),
+                "additionalInfo" => [
+                    "channel" => "VIRTUAL_ACCOUNT_BANK_MANDIRI",
+                    "trxId" => (string)$xml->TRANSIDMERCHANT,
+                    "virtualAccountConfig" => [
+                        "reusableStatus" => false,
+                        "minAmount" => number_format((float)$xml->MINAMOUNT, 2, '.', ''),
+                        "maxAmount" => number_format((float)$xml->MAXAMOUNT, 2, '.', '')
+                    ]
+                ],
+                "inquiryStatus" => "", // Not provided in XML
+                "inquiryReason" => [
+                    "english" => "Success",
+                    "indonesia" => "Sukses"
+                ],
+                "inquiryRequestId" => (string)$xml->SESSIONID,
+                "freeText" => [
+                    [
+                        "english" => (string)$xml->ADDITIONALDATA,
+                        "indonesia" => (string)$xml->ADDITIONALDATA
+                    ]
+                ]
+            ]
+        ];
+
+        return json_encode($snapJson, JSON_PRETTY_PRINT);
     }
 }

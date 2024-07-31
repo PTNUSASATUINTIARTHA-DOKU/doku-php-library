@@ -91,7 +91,8 @@ class TokenServices
         }
 
         if (isset($responseData['error'])) {
-            throw new Exception($responseData['error']['message'] ?? 'Missing error in response data');
+            print_r($responseData['error']);
+            throw new Exception('Missing error in response data');
         }
 
         try {
@@ -225,6 +226,16 @@ class TokenServices
         $bodyHashHex = strtolower($bodyHash);
         $stringToSign = $httpMethod . ":" . $endpointUrl . ":" . $tokenB2B . ":" . $bodyHashHex . ":" . $timestamp;
         $signature = hash_hmac('sha512', $stringToSign, $secretKey, true);
+        return base64_encode($signature);
+    }
+
+    public function generateAsymmetricSignature(
+        string $privateKey,
+        string $clientId,
+        string $timestamp
+    ): string {
+        $stringToSign = $clientId . "|" . $timestamp;
+        $signature = hash_hmac('sha512', $stringToSign, $privateKey, true);
         return base64_encode($signature);
     }
 }

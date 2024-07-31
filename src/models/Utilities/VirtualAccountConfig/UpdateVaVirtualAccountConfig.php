@@ -2,15 +2,14 @@
 namespace Doku\Snap\Models\Utilities\VirtualAccountConfig;
 class UpdateVaVirtualAccountConfig
 {
-    public string $status;
-    public int $minAmount;
-    public int $maxAmount;
-    /**
-     * UpdateVaVirtualAccountConfig constructor.
-     * @param string $status The status of the virtual account.
-     */
-    public function __construct(?string $status)
+    public ?string $status;
+    public ?string $minAmount;
+    public ?string $maxAmount;
+
+    public function __construct(?string $status, ?string $minAmount=null, ?string $maxAmount=null)
     {
         $this->status = $status;
+        $this->minAmount = $minAmount;
+        $this->maxAmount = $maxAmount;
     }
 }

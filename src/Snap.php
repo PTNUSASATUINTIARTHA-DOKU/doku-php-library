@@ -93,11 +93,22 @@ class Snap
         return $string  . "Expired In: " . $this->tokenB2BExpiresIn . PHP_EOL;
     }
 
-    public function getB2BToken(string $privateKey, string $clientId, bool $isProduction): string
+    public function getB2BToken(string $privateKey, string $clientId, bool $isProduction): TokenB2BResponseDto
     {
-        $tokenB2BResponseDto = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
-        $this->setTokenB2B($tokenB2BResponseDto);
-        return $this->tokenB2B;
+        try {
+            $tokenB2BResponseDto = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
+            $this->setTokenB2B($tokenB2BResponseDto);
+            return $tokenB2BResponseDto;
+        } catch (Exception $e) {
+            return new TokenB2BResponseDto(
+                "5007300",
+                $e->getMessage(),
+                "",
+                "",
+                0,
+                ""
+            );
+        }
     }
 
     public function getCurrentTokenB2B(): string
@@ -117,9 +128,8 @@ class Snap
             $tokenB2BResponseDto = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
             $this->setTokenB2B($tokenB2BResponseDto);
         }	
-        print_r($createVaRequestDto);
-        $createVAResponseDto = $this->vaController->createVa($createVaRequestDto, $this->privateKey, $this->clientId, $this->tokenB2B, $this->isProduction);
-        return $createVAResponseDto;
+        $createVaResponseDto = $this->vaController->createVa($createVaRequestDto, $this->privateKey, $this->clientId, $this->tokenB2B, $this->isProduction);
+        return $createVaResponseDto;
     }
 
     public function generateNotificationResponse(bool $isTokenValid, ?PaymentNotificationRequestBodyDto $paymentNotificationRequestBodyDto): PaymentNotificationResponseDto
@@ -229,6 +239,7 @@ class Snap
 
     public function deletePaymentCode(DeleteVaRequestDto $deleteVaRequestDto)
     {
+        $deleteVaRequestDto->validateDeleteVaRequestDto();
         $isTokenInvalid = $this->tokenB2BController->isTokenInvalid(
             $this->tokenB2B,
             $this->tokenB2BExpiresIn,
@@ -257,10 +268,7 @@ class Snap
 
     public function checkStatusVa(CheckStatusVaRequestDto $checkStatusVaRequestDto): CheckStatusVaResponseDto
     {
-        if (!$checkStatusVaRequestDto->validateCheckStatusVaRequestDto()) {
-            throw new InvalidArgumentException("Invalid CheckStatusVaRequestDto");
-        }
-
+        $checkStatusVaRequestDto->validateCheckStatusVaRequestDto();
         $isTokenInvalid = $this->tokenB2BController->isTokenInvalid(
             $this->tokenB2B,
             $this->tokenB2BExpiresIn,

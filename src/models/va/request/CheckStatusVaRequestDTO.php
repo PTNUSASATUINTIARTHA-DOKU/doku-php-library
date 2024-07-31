@@ -131,7 +131,7 @@ class CheckStatusVaRequestDto
 
     private function validateAdditionalInfo(): bool
     {
-        // No specific validation for additionalInfo in the Java example
+        // No specific validation for additionalInfo in example
         return true;
     }
 }

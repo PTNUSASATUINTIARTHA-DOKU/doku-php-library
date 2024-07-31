@@ -6,13 +6,6 @@ class UpdateVaResponseDto
     public ?string $responseCode;
     public ?string $responseMessage;
     public ?UpdateVaResponseVirtualAccountData $virtualAccountData;
-
-    /**
-     * UpdateVaResponseDto constructor.
-     * @param string $responseCode The response code.
-     * @param string $responseMessage The response message.
-     * @param UpdateVaResponseVirtualAccountData $virtualAccountData The virtual account data.
-     */
     public function __construct(
         ?string $responseCode, 
         ?string $responseMessage, 

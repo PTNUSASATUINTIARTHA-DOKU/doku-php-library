@@ -5,18 +5,18 @@ use Doku\Snap\Commons\VaChannels;
 use InvalidArgumentException;
 class DeleteVaRequestDto
 {
-    public string $partnerServiceId;
-    public string $customerNo;
-    public string $virtualAccountNo;
-    public string $trxId;
-    public DeleteVaRequestAdditionalInfo $additionalInfo;
+    public ?string $partnerServiceId;
+    public ?string $customerNo;
+    public ?string $virtualAccountNo;
+    public ?string $trxId;
+    public ?DeleteVaRequestAdditionalInfo $additionalInfo;
 
     public function __construct(
-        string $partnerServiceId,
-        string $customerNo,
-        string $virtualAccountNo,
-        string $trxId,
-        DeleteVaRequestAdditionalInfo $additionalInfo
+        ?string $partnerServiceId,
+        ?string $customerNo,
+        ?string $virtualAccountNo,
+        ?string $trxId,
+        ?DeleteVaRequestAdditionalInfo $additionalInfo
     ) {
         $this->partnerServiceId = $partnerServiceId;
         $this->customerNo = $customerNo;
@@ -38,16 +38,13 @@ class DeleteVaRequestDto
         );
         return json_encode($payload);
     }
-    public function validateDeleteVaRequest(): bool
+    public function validateDeleteVaRequestDto(): void
     {
-        $status = true;
-        $status &= $this->validatePartnerServiceId();
-        $status &= $this->validateCustomerNo();
-        $status &= $this->validateVirtualAccountNo();
-        $status &= $this->validateTrxId();
-        $status &= $this->validateAdditionalInfo();
-
-        return $status;
+        $this->validatePartnerServiceId();
+        $this->validateCustomerNo();
+        $this->validateVirtualAccountNo();
+        $this->validateTrxId();
+        $this->validateAdditionalInfo();
     }
 
     private function validatePartnerServiceId(): bool
@@ -121,13 +118,36 @@ class DeleteVaRequestDto
 
     private function validateAdditionalInfo(): bool
     {
-        if (!($this->additionalInfo instanceof DeleteVaRequestAdditionalInfoDto)) {
+        if (!($this->additionalInfo instanceof DeleteVaRequestAdditionalInfo)) {
             throw new InvalidArgumentException("additionalInfo must be an instance of DeleteVaRequestAdditionalInfoDto.");
         }
-        if (!$this->isValidChannel($this->additionalInfo->getChannel())) {
+        $this->validateChannel();
+        return true;
+    }
+
+    private function validateChannel(): void
+    {
+        $channel = $this->additionalInfo->channel;
+
+        if ($channel === null) {
+            throw new InvalidArgumentException("additionalInfo.channel cannot be null.");
+        }
+
+        if (!is_string($channel)) {
+            throw new InvalidArgumentException("additionalInfo.channel must be a string. Ensure that additionalInfo.channel is enclosed in quotes. Example: 'VIRTUAL_ACCOUNT_MANDIRI'.");
+        }
+
+        if (strlen($channel) < 1) {
+            throw new InvalidArgumentException("additionalInfo.channel must be at least 1 character long. Ensure that additionalInfo.channel is not empty. Example: 'VIRTUAL_ACCOUNT_MANDIRI'.");
+        }
+
+        if (strlen($channel) > 30) {
+            throw new InvalidArgumentException("additionalInfo.channel must be 30 characters or fewer. Ensure that additionalInfo.channel is no longer than 30 characters. Example: 'VIRTUAL_ACCOUNT_MANDIRI'.");
+        }
+
+        if (!$this->isValidChannel($channel)) {
             throw new InvalidArgumentException("additionalInfo.channel is not valid. Ensure that additionalInfo.channel is one of the valid channels. Example: 'VIRTUAL_ACCOUNT_MANDIRI'.");
         }
-        return true;
     }
 
     private function isValidChannel(string $channel): bool
