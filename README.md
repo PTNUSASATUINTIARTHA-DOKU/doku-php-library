@@ -1,6 +1,6 @@
 
 
-```markdown
+
 # Doku Snap SDK Integration Example
 
 This repository demonstrates how to integrate and use the Doku Snap SDK for virtual account operations in your PHP project.
