@@ -761,12 +761,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "3ea544bf87ae5a9d575907dc07694945943d0c86"
+                "reference": "998130eb044284d0e727ca597588e24914e9bc65"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/3ea544bf87ae5a9d575907dc07694945943d0c86",
-                "reference": "3ea544bf87ae5a9d575907dc07694945943d0c86",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/998130eb044284d0e727ca597588e24914e9bc65",
+                "reference": "998130eb044284d0e727ca597588e24914e9bc65",
                 "shasum": ""
             },
             "require": {
@@ -799,7 +799,7 @@
             "suggest": {
                 "ext-soap": "To be able to generate mocks based on WSDL files"
             },
-            "time": "2024-07-31T06:06:33+00:00",
+            "time": "2024-07-31T14:59:03+00:00",
             "default-branch": true,
             "bin": [
                 "phpunit"
