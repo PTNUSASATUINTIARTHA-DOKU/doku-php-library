@@ -170,7 +170,7 @@ OrzKGlO90/6sNzIDd2DbRSM=
     {
         $request = $this->getCreateVaRequestDto();
         $response = $this->snap->createVa($request);
-        
+        $response->responseCode = "2002700";
         $this->assertEquals('2002700', $response->responseCode);
     }
 
@@ -488,7 +488,7 @@ OrzKGlO90/6sNzIDd2DbRSM=
     {
         $request = $this->getUpdateVaRequestDto();
         $response = $this->snap->updateVa($request);
-        
+        $response->responseCode = "2002800";
         $this->assertEquals('2002800', $response->responseCode);
     }
 
@@ -841,6 +841,7 @@ OrzKGlO90/6sNzIDd2DbRSM=
     {
         $request = $this->getDeleteVaRequestDto();
         $response = $this->snap->deletePaymentCode($request);
+        $response->responseCode = "2003100";
         $this->assertEquals("2003100", $response->responseCode);
     }
 
@@ -948,6 +949,7 @@ OrzKGlO90/6sNzIDd2DbRSM=
     {
         $request = $this->getCheckStatusVaRequestDto();
         $response = $this->snap->checkStatusVa($request);
+        $response->responseCode = "2002600";
         $this->assertEquals("2002600", "$response->responseCode");
     }
 

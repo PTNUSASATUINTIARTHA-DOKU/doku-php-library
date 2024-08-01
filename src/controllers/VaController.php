@@ -134,4 +134,14 @@ class VaController
 
         return $this->vaServices->doCheckStatusVa($header, $checkVARequestDto);
     }
+
+    public function convertVAInquiryRequestSnapToV1Form($snapJson): string
+    {
+        return $this->vaServices->convertVAInquiryRequestSnapToV1Form($snapJson);
+    }
+
+    public function convertVAInquiryResponseV1XmlToSnapJson($xmlString): string
+    {
+        return $this->vaServices->convertVAInquiryResponseV1XmlToSnapJson($xmlString);
+    }
 }
