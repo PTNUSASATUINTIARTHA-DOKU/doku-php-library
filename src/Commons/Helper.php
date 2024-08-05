@@ -69,4 +69,32 @@ class Helper
         curl_close($ch);
         return $response;
     }
+
+    public static function generateExternalId(): string
+    {
+        // Generate a UUID and combine the UUID and timestamp
+        $uuid = bin2hex(random_bytes(16));
+        $externalId = $uuid  . Helper::getTimestamp();
+
+        return $externalId;
+    }
+
+    public static function generateRequestHeaderDto(
+        string $timestamp,
+        string $signature,
+        string $clientId,
+        string $externalId,
+        ?string $channelId,
+        string $tokenB2B
+    ): RequestHeaderDto {
+        $requestHeaderDto = new RequestHeaderDto(
+            $timestamp,
+            $signature,
+            $clientId,
+            $externalId,
+            $channelId,
+            $tokenB2B
+        );
+        return $requestHeaderDto;
+    }
 }

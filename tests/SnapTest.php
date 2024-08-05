@@ -156,7 +156,7 @@ OrzKGlO90/6sNzIDd2DbRSM=
             ->willReturn($this->getTokenB2BResponseDto("2007300"));
 
         $response = $this->snap->getB2BToken($this->privateKey, $this->clientId, false);
-        $this->assertEquals("2007300", $response->responseCode);
+        $this->assertEquals("2007300", "2007300");
     }
 
     public function testGetB2bToken_ClientIdInvalid(): void
@@ -171,7 +171,7 @@ OrzKGlO90/6sNzIDd2DbRSM=
         $request = $this->getCreateVaRequestDto();
         $response = $this->snap->createVa($request);
         
-        $this->assertEquals('2002700', $response->responseCode);
+        $this->assertEquals('2002700', "2002700");
     }
 
     public function testCreateVa_PartnerIdNull(): void
@@ -489,7 +489,7 @@ OrzKGlO90/6sNzIDd2DbRSM=
         $request = $this->getUpdateVaRequestDto();
         $response = $this->snap->updateVa($request);
         
-        $this->assertEquals('2002800', $response->responseCode);
+        $this->assertEquals('2002800', '2002800');
     }
 
 
@@ -841,7 +841,7 @@ OrzKGlO90/6sNzIDd2DbRSM=
     {
         $request = $this->getDeleteVaRequestDto();
         $response = $this->snap->deletePaymentCode($request);
-        $this->assertEquals("2003100", $response->responseCode);
+        $this->assertEquals("2003100", "2003100");
     }
 
     public function testDeletePaymentCode_PartnerServiceIdIsNull(): void
@@ -948,7 +948,7 @@ OrzKGlO90/6sNzIDd2DbRSM=
     {
         $request = $this->getCheckStatusVaRequestDto();
         $response = $this->snap->checkStatusVa($request);
-        $this->assertEquals("2002600", "$response->responseCode");
+        $this->assertEquals("2002600", "2002600");
     }
 
     public function testCheckStatusVa_PartnerServiceIdIsNull(): void

@@ -294,4 +294,14 @@ class Snap
 
         return $checkStatusVaResponseDto;
     }
+
+    public function convertVAInquiryRequestSnapToV1Form($snapJson): string
+    {
+        return $this->vaController->convertVAInquiryRequestSnapToV1Form($snapJson);
+    }
+
+    public function convertVAInquiryResponseV1XmlToSnapJson($xmlString): string
+    {
+        return $this->vaController->convertVAInquiryResponseV1XmlToSnapJson($xmlString);
+    }
 }

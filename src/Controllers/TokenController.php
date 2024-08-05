@@ -8,6 +8,7 @@ use Doku\Snap\Services\VaServices;
 use Doku\Snap\Models\Token\TokenB2BResponseDto;
 use Doku\Snap\Models\RequestHeader\RequestHeaderDto;
 use Doku\Snap\Models\Notification\NotificationTokenDto;
+use Doku\Snap\Commons\Helper;
 
 class TokenController
 {
@@ -70,11 +71,11 @@ class TokenController
 
     public function doGenerateRequestHeader(string $privateKey, string $clientId, string $tokenB2B, string $channelId = "SDK"): RequestHeaderDto
     {
-        $externalId = $this->vaServices->generateExternalId();
+        $externalId = Helper::generateExternalId();;
         $timestamp = $this->tokenServices->getTimestamp();
         $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
 
-        return $this->vaServices->generateRequestHeaderDto(
+        return Helper::generateRequestHeaderDto(
             $timestamp,
             $signature,
             $clientId,

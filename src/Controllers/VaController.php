@@ -11,6 +11,7 @@ use Doku\Snap\Models\VA\Response\CheckStatusVAResponseDto;
 use Doku\Snap\Models\VA\Request\DeleteVaRequestDto;
 use Doku\Snap\Models\VA\Response\DeleteVaResponseDto;
 use Doku\Snap\Commons\Config;
+use Doku\Snap\Commons\Helper;
 class VaController
 {
     private VaServices $vaServices;
@@ -22,10 +23,10 @@ class VaController
 
     public function createVa(CreateVaRequestDto $createVaRequestDto, string $privateKey, string $clientId, string $tokenB2B, bool $isProduction): CreateVaResponseDto
     {
-        $externalId = $this->vaServices->generateExternalId();
+        $externalId = Helper::generateExternalId();;
         $timestamp = $this->tokenServices->getTimestamp();
         $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
-        $requestHeaderDto = $this->vaServices->generateRequestHeaderDto($timestamp, $signature, $clientId, $externalId, $createVaRequestDto->additionalInfo->channel, $tokenB2B);
+        $requestHeaderDto = Helper::generateRequestHeaderDto($timestamp, $signature, $clientId, $externalId, $createVaRequestDto->additionalInfo->channel, $tokenB2B);
         $createVaResponseDto = $this->vaServices->createVa($requestHeaderDto, $createVaRequestDto, $isProduction);
         return $createVaResponseDto;
     }
@@ -50,8 +51,8 @@ class VaController
             $timestamp,
             $secretKey
         );
-        $externalId = $this->vaServices->generateExternalId();
-        $header = $this->vaServices->generateRequestHeaderDto(
+        $externalId = Helper::generateExternalId();;
+        $header = Helper::generateRequestHeaderDto(
             $UpdateVaRequestDto->additionalInfo->channel,
             $clientId,
             $tokenB2B,
@@ -85,8 +86,8 @@ class VaController
             $secretKey
         );
 
-        $externalId = $this->vaServices->generateExternalId();
-        $requestHeaderDto = $this->vaServices->generateRequestHeaderDto(
+        $externalId = Helper::generateExternalId();;
+        $requestHeaderDto = Helper::generateRequestHeaderDto(
             $timestamp, 
             $signature,
             $clientId, 
@@ -121,9 +122,9 @@ class VaController
             $privateKey
         );
 
-        $externalId = $this->vaServices->generateExternalId();
+        $externalId = Helper::generateExternalId();;
 
-        $header = $this->vaServices->generateRequestHeaderDto(
+        $header = Helper::generateRequestHeaderDto(
             $timestamp, 
             $signature,
             $clientId, 
@@ -133,5 +134,15 @@ class VaController
         );
 
         return $this->vaServices->doCheckStatusVa($header, $checkVARequestDto);
+    }
+
+    public function convertVAInquiryRequestSnapToV1Form($snapJson): string
+    {
+        return $this->vaServices->convertVAInquiryRequestSnapToV1Form($snapJson);
+    }
+
+    public function convertVAInquiryResponseV1XmlToSnapJson($xmlString): string
+    {
+        return $this->vaServices->convertVAInquiryResponseV1XmlToSnapJson($xmlString);
     }
 }
