@@ -304,4 +304,25 @@ class Snap
     {
         return $this->vaController->convertVAInquiryResponseV1XmlToSnapJson($xmlString);
     }
+
+        public function doPaymentJumpApp(
+        PaymentJumpAppRequestDto $requestDto,
+        string $authCode,
+        string $privateKey,
+        string $clientId,
+        string $secretKey,
+        bool $isProduction
+    ): PaymentJumpAppResponseDto {
+        $requestDto->validatePaymentJumpAppRequestDto();
+        $tokenController = new TokenController();
+        $isTokenB2bInvalid = $tokenController->isTokenInvalid($this->tokenB2B, $this->tokenB2bExpiresIn, $this->tokenB2bGeneratedTimestamp);
+        if ($isTokenB2bInvalid) {
+            $tokenB2BResponse = $tokenController->getTokenB2B($privateKey, $clientId, $isProduction);
+            $this->setTokenB2B($tokenB2BResponse->getAccessToken());
+        }
+
+        $directDebitController = new DirectDebitController();
+        $response = $directDebitController->doPaymentJumpApp($requestDto, $privateKey, $clientId, $this->tokenB2B, $secretKey, $isProduction);
+        return $response;
+    }
 }

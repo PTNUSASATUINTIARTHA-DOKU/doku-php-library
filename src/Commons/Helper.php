@@ -33,6 +33,15 @@ class Helper
         if($requestHeaderDto->channelId != null) {
             array_push($result, 'CHANNEL-ID: ' . $requestHeaderDto->channelId);
         }
+        if($requestHeaderDto->ipAddress != null) {
+            array_push($result, 'X-IP-ADDRESS: ' . $requestHeaderDto->ipAddress);
+        }
+        if($requestHeaderDto->deviceId != null) {
+            array_push($result, 'X-DEVICE-ID: ' . $requestHeaderDto->deviceId);
+        }
+        if($requestHeaderDto->xChannelId != null) {
+            array_push($result, 'X-CHANNEL-ID: ' . $requestHeaderDto->xChannelId);
+        }
         return $result;
     }
 
@@ -84,8 +93,10 @@ class Helper
         string $signature,
         string $clientId,
         string $externalId,
-        ?string $channelId,
-        string $tokenB2B
+        ?string $channelId = null,
+        string $tokenB2B,
+        ?string $ipAddress = null,
+        ?string $deviceId = null
     ): RequestHeaderDto {
         $requestHeaderDto = new RequestHeaderDto(
             $timestamp,
@@ -93,7 +104,9 @@ class Helper
             $clientId,
             $externalId,
             $channelId,
-            $tokenB2B
+            $tokenB2B,
+            $ipAddress,
+            $deviceId
         );
         return $requestHeaderDto;
     }
