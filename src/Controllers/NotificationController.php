@@ -15,6 +15,7 @@ class NotificationController
    public function __construct()
    {
        $this->notificationServices = new NotificationServices();
+       $this->tokenServices = new TokenServices();
    }
 
    public function generateNotificationResponse(PaymentNotificationRequestBodyDto $paymentNotificationRequestBodyDto): PaymentNotificationResponseDto
@@ -28,7 +29,7 @@ class NotificationController
         return $this->tokenServices->generateInvalidSignature($timestamp);
     }
 
-    public function generateInvalidTokenResponse($paymentNotificationRequestBodyDto): PaymentNotificationResponseDto
+    public function generateInvalidTokenResponse(PaymentNotificationRequestBodyDto $paymentNotificationRequestBodyDto): PaymentNotificationResponseDto
     {
         return $this->notificationServices->generateInvalidTokenNotificationResponse($paymentNotificationRequestBodyDto);
     }

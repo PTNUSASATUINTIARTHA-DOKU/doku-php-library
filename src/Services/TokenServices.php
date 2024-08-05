@@ -121,8 +121,6 @@ class TokenServices
     {
         $currentTimestamp = time();
         $expirationTimestamp = $tokenGeneratedTimestamp + $tokenExpiresIn;
-        
-        // Check if the token has expired
         return $expirationTimestamp < $currentTimestamp;
     }
 
