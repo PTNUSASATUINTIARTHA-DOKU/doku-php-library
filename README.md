@@ -172,23 +172,23 @@ $virtualAccountV1 = $Snap->createVaV1($createVaRequestDtoV1);
 
 The SDK handles authentication automatically using the provided credentials. You can get a token for B2B operations:
 
-```php
-$tokenAndTime = $Snap->getTokenAndTime();
-```
-
-## Error Handling
-
-The SDK throws exceptions for various error conditions. It's recommended to wrap your API calls in try-catch blocks to handle potential errors:
+### Get Current (Already Generated) Token String
 
 ```php
-try {
-    $virtualAccount = $Snap->createVa($createVaRequestDto);
-} catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
-}
+$token = $Snap->getCurrentTokenB2B();
 ```
 
-For more detailed information about the Doku Snap SDK and its features, please refer to the official documentation.
+### Get Newly Generated TokenB2BResponseDto
+```php
+$tokenB2BResponseDto = $Snap->getB2BToken(
+    $privateKey, 
+    $clientId, 
+    $isProduction
+);
+```
+
+
+For more detailed information about the Doku Snap SDK and its features, please refer to the official documentation. 
 ```
 
 This README provides an overview of how to use the Doku Snap SDK for virtual account operations, including installation, configuration, and examples of various operations. You may want to customize it further based on your specific use case and add any additional information that might be relevant to your users.
