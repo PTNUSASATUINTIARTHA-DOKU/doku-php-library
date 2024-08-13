@@ -10,6 +10,8 @@ use Doku\Snap\Commons\Helper;
 use Doku\Snap\Commons\Config;
 use Doku\Snap\Models\Token\TokenB2BRequestDto;
 use Doku\Snap\Models\Token\TokenB2BResponseDto;
+use Doku\Snap\Models\Token\TokenB2B2CRequestDto;
+use Doku\Snap\Models\Token\TokenB2B2CResponseDto;
 use Doku\Snap\Models\Notification\NotificationTokenDto;
 use Doku\Snap\Models\Notification\NotificationTokenHeaderDto;
 use Doku\Snap\Models\Notification\NotificationTokenBodyDto;
@@ -67,23 +69,7 @@ class TokenServices
             'additionalInfo' => [],
         ]);
 
-        $ch = curl_init();
-        curl_setopt_array($ch, [
-            CURLOPT_URL => $apiEndpoint,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_POSTFIELDS => $body,
-        ]);
-        $response = curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            $error = curl_error($ch);
-            curl_close($ch);
-            throw new Exception('cURL error: ' . $error);
-        }
-        curl_close($ch);
-
+        $response = Helper::doHitAPI($apiEndpoint, $headers, $body, 'POST');
         $responseData = json_decode($response, true);
 
         if ($responseData === null) {
@@ -106,6 +92,62 @@ class TokenServices
             );
         } catch (Error $e) {
             throw new Exception('Failed to create TokenB2BResponseDto: ' . $e->getMessage());
+        }
+    }
+
+    public function createTokenB2B2CRequestDto(string $authCode): TokenB2B2CRequestDto
+    {
+        try {
+            return new TokenB2B2CRequestDto("authorization_code", $authCode);
+        } catch (Exception $e) {
+            throw new Exception("Failed to generate TokenB2B2CRequestDto: " . $e->getMessage());
+        }
+    }
+
+    public function hitTokenB2B2CApi(TokenB2B2CRequestDto $tokenB2B2CRequestDto, string $timestamp, string $signature, string $clientId, bool $isProduction): TokenB2B2CResponseDto
+    {
+        $baseUrl = Config::getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . Config::ACCESS_TOKEN_B2B2C;
+
+        $headers = array(
+            "X-CLIENT-KEY: " . $clientId,
+            "X-TIMESTAMP: " . $timestamp,
+            "X-SIGNATURE: " . $signature,
+            "Content-Type: application/json"
+        );
+
+        $body = json_encode([
+            'grantType' => $tokenB2B2CRequestDto->grantType,
+            'authCode' => $tokenB2B2CRequestDto->authCode,
+            'additionalInfo' => $tokenB2B2CRequestDto->additionalInfo,
+        ]);
+
+        $response = Helper::doHitAPI($apiEndpoint, $headers, $body, 'POST');
+
+        $responseData = json_decode($response, true);
+
+        if ($responseData === null) {
+            throw new Exception('Null Response Data: Failed to decode JSON response');
+        }
+
+        if (isset($responseData['error'])) {
+            print_r($responseData['error']);
+            throw new Exception('Error in response data');
+        }
+
+        try {
+            return new TokenB2B2CResponseDto(
+                $responseData['responseCode'] ?? '',
+                $responseData['responseMessage'] ?? '',
+                $responseData['accessToken'] ?? '',
+                $responseData['tokenType'] ?? '',
+                $responseData['accessTokenExpiryTime'] ?? '',
+                $responseData['refreshToken'] ?? '',
+                $responseData['refreshTokenExpiryTime'] ?? '',
+                $responseData['additionalInfo'] ?? null
+            );
+        } catch (Error $e) {
+            throw new Exception('Failed to create TokenB2B2CResponseDto: ' . $e->getMessage());
         }
     }
 

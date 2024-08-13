@@ -1,6 +1,6 @@
 <?php
-namespace Doku\Snap\Models\PaymentJumpApp;
-class PaymentJumpAppResponseDto
+namespace Doku\Snap\Models\Payment;
+class PaymentResponseDto
 {
     public ?string $responseCode;
     public ?string $responseMessage;
@@ -17,16 +17,5 @@ class PaymentJumpAppResponseDto
         $this->responseMessage = $responseMessage;
         $this->webRedirectUrl = $webRedirectUrl;
         $this->partnerReferenceNo = $partnerReferenceNo;
-    }
-
-    public function generateJSONBody(): string
-    {
-        $payload = array(
-            "responseCode" => $this->responseCode,
-            "responseMessage" => $this->responseMessage,
-            "webRedirectUrl" => $this->webRedirectUrl,
-            "partnerReferenceNo" => $this->partnerReferenceNo
-        );
-        return json_encode($payload);
     }
 }

@@ -10,6 +10,7 @@ class RequestHeaderDto
     public string $authorization;
     public ?string $ipAddress;
     public ?string $deviceId;
+    public ?string $tokenB2B2C;
     public ?string $xChannelId;
     public function __construct(
         string $xTimestamp,
@@ -20,6 +21,7 @@ class RequestHeaderDto
         string $authorization,
         ?string $ipAddress,
         ?string $deviceId,
+        ?string $tokenB2B2C,
         ?string $xChannelId = "H2H"
     ) {
         $this->xTimestamp = $xTimestamp;
@@ -30,6 +32,7 @@ class RequestHeaderDto
         $this->authorization = $authorization;
         $this->ipAddress = $ipAddress;
         $this->deviceId = $deviceId;
+        $this->tokenB2B2C = $tokenB2B2C;
         $this->xChannelId = $xChannelId;
     }
 }

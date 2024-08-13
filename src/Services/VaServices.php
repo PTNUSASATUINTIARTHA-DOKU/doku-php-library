@@ -32,34 +32,7 @@ class VaServices
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::CREATE_VA;
         $headers = Helper::prepareHeaders($requestHeaderDto);
-        
-        $totalAmountArr = array(
-            'value' => $requestDto->totalAmount->value,
-            'currency' => $requestDto->totalAmount->currency
-        );
-        $virtualAccountConfigArr = array(
-            'reusableStatus' => $requestDto->additionalInfo->virtualAccountConfig->reusableStatus
-        );
-        $additionalInfoArr = array(
-            'channel' => $requestDto->additionalInfo->channel,
-            'virtualAccountConfig' => $virtualAccountConfigArr,
-            'origin' => $requestDto->additionalInfo->origin->toArray()
-        );
-        $payload = array(
-            'partnerServiceId' => $requestDto->partnerServiceId,
-            'customerNo' => $requestDto->customerNo,
-            'virtualAccountNo' => $requestDto->virtualAccountNo,
-            'virtualAccountName' => $requestDto->virtualAccountName,
-            'virtualAccountEmail' => $requestDto->virtualAccountEmail,
-            'virtualAccountPhone' => $requestDto->virtualAccountPhone,
-            'trxId' => $requestDto->trxId,
-            'totalAmount' => $totalAmountArr,
-            'additionalInfo' => $additionalInfoArr,
-            'virtualAccountTrxType' => $requestDto->virtualAccountTrxType,
-            'expiredDate' => $requestDto->expiredDate,
-        );
-        
-        $payload = json_encode($payload);
+        $payload = $requestDto->generateJSONBody();
         $response = Helper::doHitApi($apiEndpoint, $headers, $payload, "POST");
         $responseObject = json_decode($response, true);
 

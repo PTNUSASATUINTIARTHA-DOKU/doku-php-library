@@ -121,7 +121,7 @@ class CreateVaRequestDtoV1
              $this->transIdMerchant,
              $totalAmount,
              $additionalInfo,
-             "1",
+             "C",
              $this->expiredDate
          );
      }

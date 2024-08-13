@@ -42,6 +42,9 @@ class Helper
         if($requestHeaderDto->xChannelId != null) {
             array_push($result, 'X-CHANNEL-ID: ' . $requestHeaderDto->xChannelId);
         }
+        if($requestHeaderDto->tokenB2B2C != null) {
+            array_push($result, 'X-TOKEN-B2B-2C: ' . $requestHeaderDto->tokenB2B2C);
+        }
         return $result;
     }
 
@@ -96,7 +99,8 @@ class Helper
         ?string $channelId = null,
         string $tokenB2B,
         ?string $ipAddress = null,
-        ?string $deviceId = null
+        ?string $deviceId = null,
+        ?string $tokenB2B2C = null
     ): RequestHeaderDto {
         $requestHeaderDto = new RequestHeaderDto(
             $timestamp,
@@ -106,7 +110,8 @@ class Helper
             $channelId,
             $tokenB2B,
             $ipAddress,
-            $deviceId
+            $deviceId,
+            $tokenB2B2C
         );
         return $requestHeaderDto;
     }

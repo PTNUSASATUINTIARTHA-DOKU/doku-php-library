@@ -47,6 +47,36 @@ class CreateVaRequestDto
         $this->expiredDate = $expiredDate;
     }
 
+    public function generateJSONBody(): string
+    {
+        $totalAmountArr = array(
+            'value' => $this->totalAmount->value,
+            'currency' => $this->totalAmount->currency
+        );
+        $virtualAccountConfigArr = array(
+            'reusableStatus' => $this->additionalInfo->virtualAccountConfig->reusableStatus
+        );
+        $additionalInfoArr = array(
+            'channel' => $this->additionalInfo->channel,
+            'virtualAccountConfig' => $virtualAccountConfigArr,
+            'origin' => $this->additionalInfo->origin->toArray()
+        );
+        $payload = array(
+            'partnerServiceId' => $this->partnerServiceId,
+            'customerNo' => $this->customerNo,
+            'virtualAccountNo' => $this->virtualAccountNo,
+            'virtualAccountName' => $this->virtualAccountName,
+            'virtualAccountEmail' => $this->virtualAccountEmail,
+            'virtualAccountPhone' => $this->virtualAccountPhone,
+            'trxId' => $this->trxId,
+            'totalAmount' => $totalAmountArr,
+            'additionalInfo' => $additionalInfoArr,
+            'virtualAccountTrxType' => $this->virtualAccountTrxType,
+            'expiredDate' => $this->expiredDate,
+        );
+        return json_encode($payload);
+    }
+
     public function validateCreateVaRequestDto(): bool
     {
         $this->validatePartnerServiceId();

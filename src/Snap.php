@@ -2,17 +2,16 @@
 
 namespace Doku\Snap;
 
-use Error;
 use Exception;
-use InvalidArgumentException;
 
 use Doku\Snap\Controllers\NotificationController;
 use Doku\Snap\Controllers\TokenController;
 use Doku\Snap\Controllers\VaController;
+use Doku\Snap\Controllers\DirectDebitController;
 
 use Doku\Snap\Models\Token\TokenB2BResponseDto;
+use Doku\Snap\Models\Token\TokenB2B2CResponseDto;
 use Doku\Snap\Models\RequestHeader\RequestHeaderDto;
-use Doku\Snap\Models\VA\Request\CreateVaRequestDto;
 use Doku\Snap\Models\VA\Request\CreateVaRequestDtoV1;
 use Doku\Snap\Models\VA\Response\CreateVaResponseDto;
 use Doku\Snap\Models\VA\Request\UpdateVaRequestDto;
@@ -24,22 +23,35 @@ use Doku\Snap\Models\Notification\PaymentNotificationResponseDto;
 use Doku\Snap\Models\VA\Request\CheckStatusVaRequestDto;
 use Doku\Snap\Models\VA\Response\CheckStatusVaResponseDto;
 use Doku\Snap\Models\Utilities\AdditionalInfo\Origin;
-
+use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppRequestDto;
+use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppResponseDto;
+use Doku\Snap\Models\AccountBinding\AccountBindingRequestDto;
+use Doku\Snap\Models\AccountBinding\AccountBindingResponseDto;
+use Doku\Snap\Models\AccountUnbinding\AccountUnbindingRequestDto;
+use Doku\Snap\Models\AccountUnbinding\AccountUnbindingResponseDto;
+use Doku\Snap\Models\Payment\PaymentRequestDto;
+use Doku\Snap\Models\Payment\PaymentResponseDto;
 
 class Snap
 {
     private VaController $vaController;
     private TokenController $tokenB2BController;
     private NotificationController $notificationController;
+    private DirectDebitController $directDebitController;
     private string $privateKey;
     private string $clientId;
     private bool $isProduction;
     private string $tokenB2B;
     private int $tokenB2BExpiresIn = 900; // 15 minutes (900 seconds)
     private int $tokenB2BGeneratedTimestamp; 
+    private string $tokenB2B2C;
+    private int $tokenB2B2CExpiresIn = 900; // 15 minutes (900 seconds)
+    private int $tokenB2B2CGeneratedTimestamp;
     private string $publicKey;
     private string $issuer;
     private ?string $secretKey;
+    private ?string $deviceId;
+    private ?string $ipAddress;
 
     public function __construct(string $privateKey, string $publicKey, string $clientId, string $issuer, bool $isProduction, string $secretKey)
     {
@@ -53,6 +65,7 @@ class Snap
         $this->tokenB2BController = new TokenController();
         $this->notificationController = new NotificationController();
         $this->vaController = new VaController();
+        $this->directDebitController = new DirectDebitController();
 
         $tokenB2BResponseDto = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
         $this->setTokenB2B($tokenB2BResponseDto);
@@ -60,11 +73,6 @@ class Snap
 
     private function validateString(string $input): string
     {
-        // Perform string validation and sanitization here
-        // TODO
-        // Regex (waiting for the sanitation requirements)
-        // prefix BRN / RCH (?), length still unknown
-        // no empty string, must be char/digit (?)
         $regex = '/[^A-Za-z0-9\-]/';
         return trim(preg_replace($regex, '', $input));
     }
@@ -114,6 +122,33 @@ class Snap
     public function getCurrentTokenB2B(): string
     {
         return $this->tokenB2B;
+    }
+
+    public function getTokenB2B2C(string $authCode, string $privateKey, string $clientId, bool $isProduction): TokenB2B2CResponseDto
+    {
+        try {
+            $tokenB2B2CResponseDto = $this->tokenB2BController->getTokenB2B2C($authCode, $privateKey, $clientId, $isProduction);
+            $this->setTokenB2B2C($tokenB2B2CResponseDto);
+            return $tokenB2B2CResponseDto;
+        } catch (Exception $e) {
+            return new TokenB2B2CResponseDto(
+                "5007300",
+                $e->getMessage(),
+                "",
+                "",
+                "",
+                "",
+                "",
+                null
+            );
+        }
+    }
+
+    public function setTokenB2B2C(TokenB2B2CResponseDto $tokenB2B2CResponseDto)
+    {
+        $this->tokenB2B2C = $tokenB2B2CResponseDto->accessToken;
+        $this->tokenB2B2CExpiresIn = strtotime($tokenB2B2CResponseDto->accessTokenExpiryTime) - 10; // Subtract 10 seconds as in diagram requirements
+        $this->tokenB2B2CGeneratedTimestamp = time();
     }
 
     public function createVa($createVaRequestDto): CreateVaResponseDto
@@ -174,11 +209,11 @@ class Snap
 
     public function generateTokenB2BResponse(bool $isSignatureValid): NotificationTokenDto
     {
-            if($isSignatureValid){
-                    return $this->tokenB2BController->generateTokenB2B($this->tokenB2BExpiresIn, $this->issuer, $this->privateKey, $this->clientId);
-            }else{
-                    return $this->tokenB2BController->generateInvalidSignatureResponse();
-            }
+        if($isSignatureValid){
+                return $this->tokenB2BController->generateTokenB2B($this->tokenB2BExpiresIn, $this->issuer, $this->privateKey, $this->clientId);
+        }else{
+                return $this->tokenB2BController->generateInvalidSignatureResponse();
+        }
     }
 
     public function createVaV1(CreateVaRequestDtoV1 $createVaRequestDtoV1): CreateVaResponseDto
@@ -305,7 +340,7 @@ class Snap
         return $this->vaController->convertVAInquiryResponseV1XmlToSnapJson($xmlString);
     }
 
-        public function doPaymentJumpApp(
+    public function doPaymentJumpApp(
         PaymentJumpAppRequestDto $requestDto,
         string $authCode,
         string $privateKey,
@@ -314,15 +349,105 @@ class Snap
         bool $isProduction
     ): PaymentJumpAppResponseDto {
         $requestDto->validatePaymentJumpAppRequestDto();
-        $tokenController = new TokenController();
-        $isTokenB2bInvalid = $tokenController->isTokenInvalid($this->tokenB2B, $this->tokenB2bExpiresIn, $this->tokenB2bGeneratedTimestamp);
+        $isTokenB2bInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
         if ($isTokenB2bInvalid) {
-            $tokenB2BResponse = $tokenController->getTokenB2B($privateKey, $clientId, $isProduction);
-            $this->setTokenB2B($tokenB2BResponse->getAccessToken());
+            $tokenB2BResponse = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
+            $this->setTokenB2B($tokenB2BResponse);
         }
 
-        $directDebitController = new DirectDebitController();
-        $response = $directDebitController->doPaymentJumpApp($requestDto, $privateKey, $clientId, $this->tokenB2B, $secretKey, $isProduction);
+        
+        $response = $this->directDebitController->doPaymentJumpApp($requestDto, $privateKey, $clientId, $this->tokenB2B, $secretKey, $isProduction);
         return $response;
+    }
+
+
+    public function doAccountBinding(
+        AccountBindingRequestDto $accountBindingRequestDto,
+        string $privateKey,
+        string $clientId,
+        string $secretKey,
+        bool $isProduction
+    ): AccountBindingResponseDto {
+        $accountBindingRequestDto->validateAccountBindingRequestDto();
+        $isTokenInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
+
+        if ($isTokenInvalid) {
+            $tokenB2BResponse = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
+            $this->setTokenB2B($tokenB2BResponse);
+        }
+        
+        return $this->directDebitController->doAccountBinding(
+            $accountBindingRequestDto,
+            $privateKey,
+            $clientId,
+            $this->tokenB2B,
+            $this->deviceId,
+            $this->ipAddress,
+            $secretKey,
+            $isProduction
+        );
+    }
+
+    public function doPayment(
+        PaymentRequestDto $paymentRequestDto,
+        string $authCode,
+        string $privateKey,
+        string $clientId,
+        string $secretKey,
+        bool $isProduction
+    ): PaymentResponseDto {
+        $paymentRequestDto->validatePaymentRequestDto();
+        
+        // Check token B2B
+        $isTokenB2bInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
+        if ($isTokenB2bInvalid) {
+            $tokenB2BResponse = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
+            $this->setTokenB2B($tokenB2BResponse);
+        }
+
+        // Check token B2B2C
+        $isTokenB2B2CInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B2C, $this->tokenB2B2CExpiresIn, $this->tokenB2B2CGeneratedTimestamp);
+        if ($isTokenB2B2CInvalid) {
+            $tokenB2B2CResponse = $this->tokenB2BController->getTokenB2B2C($authCode, $privateKey, $clientId, $isProduction);
+            $this->setTokenB2B2C($tokenB2B2CResponse);
+        }
+        
+        return $this->directDebitController->doPayment(
+            $paymentRequestDto,
+            $privateKey,
+            $clientId,
+            $this->tokenB2B,
+            $this->tokenB2B2C,
+            $secretKey,
+            $isProduction
+        );
+    }
+
+    public function doAccountUnbinding(
+        AccountUnbindingRequestDto $accountUnbindingRequestDto,
+        string $privateKey,
+        string $clientId,
+        string $secretKey,
+        bool $isProduction
+    ): AccountUnbindingResponseDto {
+        $accountUnbindingRequestDto->validateAccountUnbindingRequestDto();
+
+        $isTokenInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenExpiresIn, $this->tokenGeneratedTimestamp);
+
+        if ($isTokenInvalid) {
+            $tokenB2BResponse = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
+            $this->setTokenB2B($tokenB2BResponse);
+        }
+
+        
+        return $this->directDebitController->doAccountUnbinding(
+            $accountUnbindingRequestDto,
+            $privateKey,
+            $clientId,
+            $this->tokenB2B,
+            $this->ipAddress,
+            $secretKey,
+            $isProduction
+        );
     }
 }

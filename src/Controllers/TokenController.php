@@ -6,6 +6,7 @@ use Exception;
 use Doku\Snap\Services\TokenServices;
 use Doku\Snap\Services\VaServices;
 use Doku\Snap\Models\Token\TokenB2BResponseDto;
+use Doku\Snap\Models\Token\TokenB2B2CResponseDto;
 use Doku\Snap\Models\RequestHeader\RequestHeaderDto;
 use Doku\Snap\Models\Notification\NotificationTokenDto;
 use Doku\Snap\Commons\Helper;
@@ -67,6 +68,14 @@ class TokenController
         $token = $this->tokenServices->generateToken($expiredIn, $issuer, $privateKey, $clientId);
         $notificationTokenDto = $this->tokenServices->generateNotificationTokenDto($token, $timestamp, $clientId, $expiredIn);
         return $notificationTokenDto;
+    }
+
+    public function getTokenB2B2C(string $authCode, string $privateKey, string $clientId, bool $isProduction): TokenB2B2CResponseDto
+    {
+        $timestamp = $this->tokenServices->getTimestamp() - 7;
+        $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
+        $tokenB2b2cRequestDto = $this->tokenServices->createTokenB2B2CRequestDto($authCode);
+        return $this->tokenServices->hitTokenB2B2CApi($tokenB2b2cRequestDto, $timestamp, $signature, $clientId, $isProduction);
     }
 
     public function doGenerateRequestHeader(string $privateKey, string $clientId, string $tokenB2B, string $channelId = "SDK"): RequestHeaderDto
