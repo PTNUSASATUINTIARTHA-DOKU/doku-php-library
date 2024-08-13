@@ -186,7 +186,177 @@ $tokenB2BResponseDto = $Snap->getB2BToken(
     $isProduction
 );
 ```
+## Create Token Helper
+Example code:
+```php
+public function tokenRequest()
+{
+    try {
+        $xSignature = $this->request->getHeaderLine('X-SIGNATURE');
+        $xTimestamp = $this->request->getHeaderLine('X-TIMESTAMP');
+        $xClientKey = $this->request->getHeaderLine('X-CLIENT-KEY');
+        $jsonBody = $this->request->getJSON(true);
 
+        $isSignatureValid = $this->snap->validateSignature($xSignature, $xTimestamp, $this->privateKey, $xClientKey);
+        $notificationTokenDTO = $this->snap->generateTokenB2BResponse($isSignatureValid);
+        $responseBody = $notificationTokenDTO->generateJSONBody();
+        $headers = $notificationTokenDTO->generateJSONHeader();
+
+        $tokenData = [
+            'http_request_xRequestId' => time() * 1000,
+            'http_request_header' => $this->request->getHeaders(),
+            'http_request_body' => $this->request->getJSON(),
+            'http_response_xrequestid' => time() * 1000,
+            'http_response_header' => $headers,
+            'http_response_body' => $responseBody,
+            'prog_language' => "php",
+            'versi_sdk' => "1.0.0"
+        ];
+
+        // Save to token table using the existing TokenModel
+        $result = $this->tokenModel->createToken($tokenData);
+        if (!$result) {
+            throw new \Exception('Failed to insert token data');
+        }
+
+        // Set response headers
+        foreach (json_decode($headers) as $name => $value) {
+            $this->response->setHeader($name, $value);
+        }
+
+        return $this->respond($finalResponse, 200);
+
+    } catch (\Exception $e) {
+        // Handle any unexpected exceptions
+        //...
+    }
+}
+```
+
+## Receive Notification Helper
+Example Code:
+```php
+public function paymentNotification()
+{
+    $jsonBody = $this->request->getJSON(true);
+    $xRequestId = time() * 1000;
+
+    $requestHeaderDTO = new RequestHeaderDTO(
+        $this->request->getHeaderLine('X-TIMESTAMP'),
+        $this->request->getHeaderLine('X-SIGNATURE'),
+        $this->request->getHeaderLine('X-CLIENT-KEY'),
+        $xRequestId,
+        "channel id",
+        $this->request->getHeaderLine('Authorization')
+    );
+
+    $paidAmount = new TotalAmount(
+        $jsonBody['paidAmount']['value'] ?? null,
+        $jsonBody['paidAmount']['currency'] ?? null
+    );
+
+    $additionalInfo = new PaymentNotificationRequestAdditionalInfo(
+        $jsonBody['additionalInfo']['channel'] ?? null,
+        $jsonBody['additionalInfo']['senderName'] ?? null,
+        $jsonBody['additionalInfo']['sourceAccountNo'] ?? null,
+        $jsonBody['additionalInfo']['sourceBankCode'] ?? null,
+        $jsonBody['additionalInfo']['sourceBankName'] ?? null
+    );
+
+    $paymentNotificationRequestBodyDTO = new PaymentNotificationRequestBodyDTO(
+        $jsonBody['partnerServiceId'] ?? '',
+        $jsonBody['customerNo'] ?? '',
+        $jsonBody['virtualAccountNo'] ?? '',
+        $jsonBody['virtualAccountName'] ?? '',
+        $jsonBody['virtualAccountEmail'] ?? '',
+        $jsonBody['trxId'] ?? '',
+        $jsonBody['paymentRequestId'] ?? '',
+        $paidAmount,
+        $jsonBody['virtualAccountPhone'] ?? '',
+        $additionalInfo,
+        $jsonBody['trxDateTime'] ?? $jsonBody['expiredDate'] ?? '',
+        $jsonBody['virtualAccountTrxType'] ?? ''
+    );
+
+    $responseDTO = $this->snap->validateTokenAndGenerateNotificationResponse($requestHeaderDTO, $paymentNotificationRequestBodyDTO);
+    $headers = $responseDTO->generateJSONHeader();
+    $responseBody = $responseDTO->generateJSONBody();
+
+    $data = [
+        'http_request_xRequestId' => $xRequestId,
+        'http_request_header' => json_encode($this->request->getHeaders()),
+        'http_request_body' => json_encode($jsonBody),
+        'http_response_xrequestid' => $xRequestId,
+        'http_response_header' => $headers,
+        'http_response_body' => $responseBody,
+        'prog_language' => "php",
+        'versi_sdk' => "1.0.5"
+    ];
+
+    try {
+        $result = $this->notificationModel->createNotification($data);
+        if (!$result) {
+            // do other logic here
+        }
+    } catch (\Exception $e) {
+        // do handling here
+    }
+
+    foreach (json_decode($headers) as $name => $value) {
+        $this->response->setHeader($name, $value);
+    }
+    return $this->respond($responseBody);
+}
+
+```
+
+
+## Direct Inquiry Helper
+```php
+    public function inquiry()
+    {
+        $authorization = $this->request->getHeaderLine('Authorization');
+        $isValid = $this->snap->validateTokenB2B($authorization);
+
+        if ($isValid) {
+            $requestBody = $this->request->getJSON(true);
+            $inquiryRequestId = $requestBody['inquiryRequestId'];
+
+            $header = $this->snap->generateRequestHeader();
+            $body = [
+                // construct json body here
+            ];
+            $directInquiryData = [
+                'inquiry_request_id' => $inquiryRequestId,
+                'inquiry_json_object' => json_encode($body),
+                'prog_language' => 'php',
+                'versi_sdk' => '1.0.0'
+            ];
+            $incomingRequestData = [
+                'request_inquiry_request_id' => $inquiryRequestId,
+                'request_inquiry_body' => json_encode($requestBody),
+                'request_inquiry_header' => json_encode($this->request->getHeaders()),
+                'prog_language' => 'php',
+                'versi_sdk' => '1.0.0'
+            ];
+
+            try {
+                $result = $this->directInquiryModel->createInquiry($directInquiryData);
+                $result = $this->incomingRequestDirectInquiryModel->createRequest($incomingRequestData);
+            } catch (\Exception $e) {
+                // handle exception
+            }
+
+            foreach ($this->request->getHeaders() as $name => $value) {
+                $this->response->setHeader($name, $value);
+            }
+
+            return $this->respond($body);
+        } else {
+            // handle invalid token
+        }
+    }
+```
 
 For more detailed information about the Doku Snap SDK and its features, please refer to the official documentation. 
 ```
