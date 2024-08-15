@@ -47,7 +47,10 @@ class DirectDebitController
             $clientId,
             $externalId,
             $paymentJumpAppRequestDto->additionalInfo->channel,
-            $tokenB2B
+            $tokenB2B,
+            null,
+            null,
+            null
         );
         return $this->directDebitServices->doPaymentJumpAppProcess($header, $paymentJumpAppRequestDto, $isProduction);
     }
@@ -83,6 +86,7 @@ class DirectDebitController
             $tokenB2B,
             $ipAddress,
             $deviceId,
+            null
         );
 
         return $this->directDebitServices->doAccountBindingProcess($header, $accountBindingRequestDto, $isProduction);
@@ -153,7 +157,9 @@ class DirectDebitController
             $externalId, 
             null, 
             $tokenB2B, 
-            $ipAddress
+            $ipAddress,
+            null,
+            null
         );
 
         return $this->directDebitServices->doAccountUnbindingProcess($header, $accountUnbindingRequestDto, $isProduction);

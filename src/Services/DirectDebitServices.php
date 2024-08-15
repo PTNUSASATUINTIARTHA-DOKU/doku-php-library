@@ -58,7 +58,7 @@ class DirectDebitServices
         $response = Helper::doHitAPI($apiEndpoint, $headers, $requestBody, 'POST');
         $responseObject = json_decode($response, true);
 
-        if (isset($responseObject['responseCode'])) {
+        if (isset($responseObject['responseCode']) && $responseObject['responseCode'] === '2000500') {
             return new AccountBindingResponseDto(
                 $responseObject['responseCode'],
                 $responseObject['responseMessage'],

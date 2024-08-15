@@ -26,13 +26,23 @@ class VaController
         $externalId = Helper::generateExternalId();;
         $timestamp = $this->tokenServices->getTimestamp();
         $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
-        $requestHeaderDto = Helper::generateRequestHeaderDto($timestamp, $signature, $clientId, $externalId, $createVaRequestDto->additionalInfo->channel, $tokenB2B);
+        $requestHeaderDto = Helper::generateRequestHeaderDto(
+            $timestamp, 
+            $signature,
+            $clientId, 
+            $externalId,
+            $createVaRequestDto->additionalInfo->channel, 
+            $tokenB2B, 
+            null,
+            null,
+            null
+        );
         $createVaResponseDto = $this->vaServices->createVa($requestHeaderDto, $createVaRequestDto, $isProduction);
         return $createVaResponseDto;
     }
 
     public function doUpdateVa(
-        UpdateVaRequestDto $UpdateVaRequestDto,
+        UpdateVaRequestDto $updateVaRequestDto,
         string $privateKey,
         string $clientId,
         string $tokenB2B,
@@ -47,21 +57,24 @@ class VaController
             'POST',
             $apiEndpoint,
             $tokenB2B,
-            $UpdateVaRequestDto->generateJSONBody(),
+            $updateVaRequestDto->generateJSONBody(),
             $timestamp,
             $secretKey
         );
         $externalId = Helper::generateExternalId();;
         $header = Helper::generateRequestHeaderDto(
-            $UpdateVaRequestDto->additionalInfo->channel,
-            $clientId,
-            $tokenB2B,
-            $timestamp,
+            $timestamp, 
             $signature,
-            $externalId
+            $clientId, 
+            $externalId,
+            $updateVaRequestDto->additionalInfo->channel, 
+            $tokenB2B, 
+            null,
+            null,
+            null
         );
 
-        return $this->vaServices->doUpdateVa($header, $UpdateVaRequestDto);
+        return $this->vaServices->doUpdateVa($header, $updateVaRequestDto);
     }
 
     public function doDeletePaymentCode(
@@ -94,6 +107,9 @@ class VaController
             $externalId,
             $deleteVaRequestDto->additionalInfo->channel, 
             $tokenB2B, 
+            null,
+            null,
+            null
         );
 
         $response = $this->vaServices->doDeletePaymentCode($requestHeaderDto, $deleteVaRequestDto);

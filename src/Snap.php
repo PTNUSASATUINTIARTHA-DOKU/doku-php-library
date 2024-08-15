@@ -50,8 +50,8 @@ class Snap
     private string $publicKey;
     private string $issuer;
     private ?string $secretKey;
-    private ?string $deviceId;
-    private ?string $ipAddress;
+    private ?string $deviceId = "";
+    private ?string $ipAddress = "";
 
     public function __construct(string $privateKey, string $publicKey, string $clientId, string $issuer, bool $isProduction, string $secretKey)
     {
@@ -342,7 +342,7 @@ class Snap
 
     public function doPaymentJumpApp(
         PaymentJumpAppRequestDto $requestDto,
-        string $authCode,
+        string $authCode, //TODO change
         string $privateKey,
         string $clientId,
         string $secretKey,
@@ -354,7 +354,6 @@ class Snap
             $tokenB2BResponse = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
             $this->setTokenB2B($tokenB2BResponse);
         }
-
         
         $response = $this->directDebitController->doPaymentJumpApp($requestDto, $privateKey, $clientId, $this->tokenB2B, $secretKey, $isProduction);
         return $response;
@@ -432,7 +431,7 @@ class Snap
     ): AccountUnbindingResponseDto {
         $accountUnbindingRequestDto->validateAccountUnbindingRequestDto();
 
-        $isTokenInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenExpiresIn, $this->tokenGeneratedTimestamp);
+        $isTokenInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
 
         if ($isTokenInvalid) {
             $tokenB2BResponse = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);

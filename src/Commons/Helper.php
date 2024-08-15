@@ -96,11 +96,11 @@ class Helper
         string $signature,
         string $clientId,
         string $externalId,
-        ?string $channelId = null,
+        ?string $channelId,
         string $tokenB2B,
-        ?string $ipAddress = null,
-        ?string $deviceId = null,
-        ?string $tokenB2B2C = null
+        ?string $ipAddress,
+        ?string $deviceId,
+        ?string $tokenB2B2C
     ): RequestHeaderDto {
         $requestHeaderDto = new RequestHeaderDto(
             $timestamp,

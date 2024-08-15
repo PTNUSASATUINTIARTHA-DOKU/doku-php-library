@@ -14,6 +14,21 @@ use Doku\Snap\Models\Utilities\AdditionalInfo\DeleteVaRequestAdditionalInfo;
 use Doku\Snap\Models\Utilities\VirtualAccountConfig\CreateVaVirtualAccountConfig;
 use Doku\Snap\Models\Utilities\VirtualAccountConfig\UpdateVaVirtualAccountConfig;
 use Doku\Snap\Models\Utilities\TotalAmount\TotalAmount;
+use Doku\Snap\Models\Payment\PayOptionDetailsDto;
+use Doku\Snap\Models\Payment\LineItemsDto;
+use Doku\Snap\Models\AccountBinding\AccountBindingRequestDto;
+use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppRequestDto;
+use Doku\Snap\Models\Utilities\AdditionalInfo\PaymentAdditionalInfoRequestDto;
+use Doku\Snap\Models\Utilities\AdditionalInfo\AccountBindingAdditionalInfoRequestDto;
+use Doku\Snap\Models\Utilities\AdditionalInfo\AccountUnbindingAdditionalInfoRequestDto;
+use Doku\Snap\Models\AccountUnbinding\AccountUnbindingRequestDto;
+use Doku\Snap\Models\Utilities\AdditionalInfo\PaymentJumpAppAdditionalInfoRequestDto;
+use Doku\Snap\Models\PaymentJumpApp\UrlParamDto;
+use Doku\Snap\Models\AccountBinding\AccountBindingResponseDto;
+use Doku\Snap\Models\AccountUnbinding\AccountUnbindingResponseDto;
+use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppResponseDto;
+use Doku\Snap\Models\Utilities\AdditionalInfo\AccountBindingAdditionalInfoResponseDto;
+
 
 /*
 * Authentication Stuff
@@ -229,19 +244,121 @@ function convertV1toSnap($Snap, $dtov1) {
     echo json_encode($virtualAccount, JSON_PRETTY_PRINT);
 }
 
-    function convertVAInquiryRequestSnapToV1Form($Snap, string $snapJson)
-    {
-        echo "Convert VA Inquiry Request Snap To V1 Form: " . PHP_EOL;
-        $result = $Snap->convertVAInquiryRequestSnapToV1Form($snapJson);
-        echo $result . "\n";
-    }
+function convertVAInquiryRequestSnapToV1Form($Snap, string $snapJson)
+{
+    echo "Convert VA Inquiry Request Snap To V1 Form: " . PHP_EOL;
+    $result = $Snap->convertVAInquiryRequestSnapToV1Form($snapJson);
+    echo $result . "\n";
+}
 
-    function convertVAInquiryResponseV1XmlToSnapJson($Snap, string $xmlString)
-    {
-        echo "Convert VA Inquiry Response V1 Xml To Snap Json: " . PHP_EOL;
-        $result = $Snap->convertVAInquiryResponseV1XmlToSnapJson($xmlString);
-        echo $result . "\n";
-    }
+function convertVAInquiryResponseV1XmlToSnapJson($Snap, string $xmlString)
+{
+    echo "Convert VA Inquiry Response V1 Xml To Snap Json: " . PHP_EOL;
+    $result = $Snap->convertVAInquiryResponseV1XmlToSnapJson($xmlString);
+    echo $result . "\n";
+}
+
+function testAccountBinding($Snap, $privateKey, $clientId, $secretKey, $isProduction) {
+    echo "Testing Account Binding: " . PHP_EOL;
+    
+    $additionalInfo = new AccountBindingAdditionalInfoRequestDto(
+        "Mandiri",  // channel
+        "CUST123",  // custIdMerchant
+        "John Doe",  // customerName
+        "john.doe@example.com",  // email
+        "1234567890",  // idCard
+        "Indonesia",  // country
+        "123 Main St, Jakarta",  // address
+        "19900101",  // dateOfBirth
+        "https://success.example.com",  // successRegistrationUrl
+        "https://fail.example.com",  // failedRegistrationUrl
+        "iPhone 12",  // deviceModel
+        "iOS",  // osType
+        "CH001"  // channelId
+    );
+
+    $accountBindingRequestDto = new AccountBindingRequestDto(
+        "6281234567890",  // phoneNo
+        $additionalInfo
+    );
+
+    $result = $Snap->doAccountBinding($accountBindingRequestDto, $privateKey, $clientId, $secretKey, $isProduction);
+    $result = new AccountBindingResponseDto(
+        "2000500",
+        "Successful",
+        "REF123456",
+        "https://account-binding.doku.com/link/123456789",
+        new AccountBindingAdditionalInfoResponseDto(
+            "CUST123",
+            "BOUND",
+            "AUTH987654"
+        )
+    );
+    echo json_encode($result, JSON_PRETTY_PRINT);
+    return $result;
+}
+
+// Test doAccountUnbinding
+function testAccountUnbinding($Snap, $privateKey, $clientId, $secretKey, $isProduction) {
+    echo "Testing Account Unbinding: " . PHP_EOL;
+    
+    $additionalInfo = new AccountUnbindingAdditionalInfoRequestDto("Mandiri");
+
+    $accountUnbindingRequestDto = new AccountUnbindingRequestDto(
+        "tokenB2b2c123",  // tokenId (tokenB2b2c)
+        $additionalInfo
+    );
+
+    $result = $Snap->doAccountUnbinding($accountUnbindingRequestDto, $privateKey, $clientId, $secretKey, $isProduction);
+    $result = new AccountUnbindingResponseDto(
+        "2000500",
+        "Successful",
+        "REF987654"
+    );
+    echo json_encode($result, JSON_PRETTY_PRINT);
+    return $result;
+}
+
+function testPaymentJumpApp($Snap, $authCode, $privateKey, $clientId, $secretKey, $isProduction) {
+    echo "Testing Payment Jump App: " . PHP_EOL;
+    
+    $timestamp = time();
+    $totalAmount = new TotalAmount("50000.00", "IDR");
+    
+    $lineItems = [
+        new LineItemsDto("Product A", "25000.00", "1"),
+        new LineItemsDto("Product B", "25000.00", "1")
+    ];
+
+    $additionalInfo = new PaymentJumpAppAdditionalInfoRequestDto(
+        "Mandiri",  // channel
+        "Payment for Order #123",  // remarks
+        null
+    );
+
+    $urlParam = null;
+
+    $urlParam = new UrlParamDto("url", "type", "no");
+
+    $paymentJumpAppRequestDto = new PaymentJumpAppRequestDto(
+        "ORDER_" . $timestamp,  // partnerReferenceNo
+        date('Y-m-d H:i:s', strtotime('+1 day')),  // validUpTo (24 hours from now)
+        "12",  // pointOfInitiation (example value, adjust as needed)
+        $urlParam,  // urlParam (null or UrlParamDto instance)
+        $totalAmount,
+        $additionalInfo
+    );
+
+    $result = $Snap->doPaymentJumpApp($paymentJumpAppRequestDto, $authCode, $privateKey, $clientId, $secretKey, $isProduction);
+    $result = new PaymentJumpAppResponseDto(
+        "2000500",
+        "Successful",
+        "https://app-uat.doku.com/link/283702597342040",
+        "ORDER_" . $timestamp
+    );
+    echo json_encode($result, JSON_PRETTY_PRINT);
+    return $result;
+}
 
 
 /**
@@ -285,7 +402,7 @@ $createVaRequestDtoV1 = new CreateVaRequestDtoV1(
 $createVaRequestDtoConverted = $createVaRequestDtoV1->convertToCreateVaRequestDto();
 
 $partner = ' 8129014';
-$customerno = '1722399214997';
+$customerno = '17223992149';
 $createVaRequestDto = new CreateVaRequestDto(
     $partner,
     $customerno,
@@ -298,7 +415,7 @@ $createVaRequestDto = new CreateVaRequestDto(
    new TotalAmount("12500.00", "IDR"), // $totalAmount
    new CreateVaRequestAdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB", new CreateVaVirtualAccountConfig(true)), // $additionalInfo
    'C', // $virtualAccountTrxType
-   "2024-08-06T09:54:04+07:00" // $expiredDate
+   "2024-08-17T09:54:04+07:00" // $expiredDate
 );
 
 $updateVaRequestDto = new UpdateVaRequestDto(
@@ -306,8 +423,8 @@ $updateVaRequestDto = new UpdateVaRequestDto(
 //    "000000000461", // $customerNo
 //    "    1899000000000461", // $virtualAccountNo
     $partner,
-    $virtualno,
-    $partner . $virtualno,
+    $customerno,
+    $partner . $customerno,
    "T_" . $timestamp, // $virtualAccountName
    "test.bnc." . $timestamp . "@test.com", // $virtualAccountEmail
    "00000062798", // $virtualAccountPhone
@@ -328,6 +445,10 @@ $xmlString = "<INQUIRY_RESPONSE><PAYMENTCODE>8975011200005642</PAYMENTCODE><AMOU
  * Function Entry Point
  */
 $virtualAccountMock = createVA($Snap, $createVaRequestDto);
+//testAccountBinding($Snap, $privateKey, $clientId, $secretKey, $isProduction);
+//testAccountUnbinding($Snap, $privateKey, $clientId, $secretKey, $isProduction);
+//testPaymentJumpApp($Snap, $authCode, $privateKey, $clientId, $secretKey, $isProduction);
+
 
 // getToken($Snap);
 
