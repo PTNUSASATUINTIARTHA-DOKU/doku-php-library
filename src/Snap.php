@@ -549,14 +549,14 @@ class Snap
         $checkStatusRequestDto->validateCheckStatusRequestDto();
 
         // Check token B2B
-        $isTokenB2bInvalid = $this->tokenController->isTokenInvalid(
+        $isTokenB2bInvalid = $this->tokenB2BController->isTokenInvalid(
             $this->tokenB2B,
             $this->tokenB2BExpiresIn,
             $this->tokenB2BGeneratedTimestamp
         );
 
         if ($isTokenB2bInvalid) {
-            $tokenB2BResponse = $this->tokenController->getTokenB2B($privateKey, $clientId, $isProduction);
+            $tokenB2BResponse = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
             $this->setTokenB2B($tokenB2BResponse);
         }
 
