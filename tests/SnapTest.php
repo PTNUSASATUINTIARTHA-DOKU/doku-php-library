@@ -76,9 +76,9 @@ OrzKGlO90/6sNzIDd2DbRSM=
             "test.bnc." . $timestamp . "@test.com", // $virtualAccountEmail
             "621722399214895", // $virtualAccountPhone
             "INV_CIMB_" . $timestamp, // $trxId
-            new Models\Utilities\TotalAmount\TotalAmount("12500.00", "IDR"), // $totalAmount
-            new Models\Utilities\AdditionalInfo\CreateVaRequestAdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB", 
-            new Models\Utilities\VirtualAccountConfig\CreateVaVirtualAccountConfig(true)), // $additionalInfo
+            new Models\TotalAmount\TotalAmount("12500.00", "IDR"), // $totalAmount
+            new Models\AdditionalInfo\CreateVaRequestAdditionalInfo("VIRTUAL_ACCOUNT_BANK_CIMB", 
+            new Models\VA\VirtualAccountConfig\CreateVaVirtualAccountConfig(true)), // $additionalInfo
             'C', // $virtualAccountTrxType
             "2024-08-01T09:54:04+07:00" // $expiredDate
             );
@@ -94,10 +94,10 @@ OrzKGlO90/6sNzIDd2DbRSM=
             'test@example.com',
             '628123456789',
             '23219829713',
-            new Models\Utilities\TotalAmount\TotalAmount('1000', 'IDR'),
-            new Models\Utilities\AdditionalInfo\UpdateVaRequestAdditionalInfo(
+            new Models\TotalAmount\TotalAmount('1000', 'IDR'),
+            new Models\AdditionalInfo\UpdateVaRequestAdditionalInfo(
                 'VIRTUAL_ACCOUNT_BANK_MANDIRI', 
-                new Models\Utilities\VirtualAccountConfig\UpdateVaVirtualAccountConfig('ACTIVE')),
+                new Models\VA\VirtualAccountConfig\UpdateVaVirtualAccountConfig('ACTIVE')),
             'C',
             "2024-08-24T15:54:04+07:00"
         );
@@ -108,10 +108,10 @@ OrzKGlO90/6sNzIDd2DbRSM=
         // $request->virtualAccountEmail = 'test@example.com';
         // $request->virtualAccountPhone = '628123456789';
         // $request->trxId = '23219829713';
-        //$request->totalAmount = new Models\Utilities\TotalAmount\TotalAmount('1000', 'IDR');
-        //$request->additionalInfo = new Models\Utilities\AdditionalInfo\UpdateVaRequestAdditionalInfo('VIRTUAL_ACCOUNT_BANK_MANDIRI', new Models\Utilities\VirtualAccountConfig\UpdateVaVirtualAccountConfig('ACTIVE'));
+        //$request->totalAmount = new Models\TotalAmount\TotalAmount('1000', 'IDR');
+        //$request->additionalInfo = new Models\AdditionalInfo\UpdateVaRequestAdditionalInfo('VIRTUAL_ACCOUNT_BANK_MANDIRI', new Models\VA\VirtualAccountConfig\UpdateVaVirtualAccountConfig('ACTIVE'));
         //$request->additionalInfo->channel = 'VIRTUAL_ACCOUNT_MANDIRI';
-        //$request->additionalInfo->virtualAccountConfig = new Models\Utilities\VirtualAccountConfig\UpdateVaVirtualAccountConfig('ACTIVE');
+        //$request->additionalInfo->virtualAccountConfig = new Models\VA\VirtualAccountConfig\UpdateVaVirtualAccountConfig('ACTIVE');
         //$request->additionalInfo->virtualAccountConfig->status = 'ACTIVE';
         // $request->virtualAccountTrxType = 'C';
         // $request->expiredDate = '2023-01-01T10:55:00+07:00';
@@ -125,13 +125,13 @@ OrzKGlO90/6sNzIDd2DbRSM=
             "00000000000000000001",
             "  88899400000000000000000001",
             "validTrxId",
-            new Models\Utilities\AdditionalInfo\DeleteVaRequestAdditionalInfo("VIRTUAL_ACCOUNT_BANK_MANDIRI")
+            new Models\AdditionalInfo\DeleteVaRequestAdditionalInfo("VIRTUAL_ACCOUNT_BANK_MANDIRI")
         );
         // $request->partnerServiceId = " 888994";
         // $request->customerNo = "00000000000000000001";
         // $request->virtualAccountNo = " 88899400000000000000000001";
         // $request->trxId = "validTrxId";
-        //$request->additionalInfo = new Models\Utilities\AdditionalInfo\DeleteVaRequestAdditionalInfo("validChannel");
+        //$request->additionalInfo = new Models\AdditionalInfo\DeleteVaRequestAdditionalInfo("validChannel");
         // $request->additionalInfo->channel = "validChannel";
         return $request;
     }

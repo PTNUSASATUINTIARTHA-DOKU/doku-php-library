@@ -1,7 +1,7 @@
 <?php
 namespace Doku\Snap\Models\VA\Request;
-use Doku\Snap\Models\Utilities\TotalAmount\TotalAmount;
-use Doku\Snap\Models\Utilities\AdditionalInfo\UpdateVaRequestAdditionalInfo;
+use Doku\Snap\Models\TotalAmount\TotalAmount;
+use Doku\Snap\Models\AdditionalInfo\UpdateVaRequestAdditionalInfo;
 use Doku\Snap\Commons\VaChannels;
 use DateTime;
 use InvalidArgumentException;

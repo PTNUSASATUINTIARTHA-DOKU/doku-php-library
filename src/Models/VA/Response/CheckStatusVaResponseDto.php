@@ -1,6 +1,6 @@
 <?php
 namespace Doku\Snap\Models\VA\Response;
-use Doku\Snap\Models\Utilities\VirtualAccountData\CheckStatusVirtualAccountData;
+use Doku\Snap\Models\VA\VirtualAccountData\CheckStatusVirtualAccountData;
 class CheckStatusVaResponseDto
 {
     public ?string $responseCode;

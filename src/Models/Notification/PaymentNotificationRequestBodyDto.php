@@ -1,7 +1,7 @@
 <?php
 namespace Doku\Snap\Models\Notification;
-use Doku\Snap\Models\Utilities\TotalAmount\TotalAmount;
-use Doku\Snap\Models\Utilities\AdditionalInfo\PaymentNotificationRequestAdditionalInfo;
+use Doku\Snap\Models\TotalAmount\TotalAmount;
+use Doku\Snap\Models\AdditionalInfo\PaymentNotificationRequestAdditionalInfo;
 class PaymentNotificationRequestBodyDto
 {
     public string $partnerServiceId;

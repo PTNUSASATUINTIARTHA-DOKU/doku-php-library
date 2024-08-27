@@ -1,6 +1,6 @@
 <?php
 namespace Doku\Snap\Models\CardRegistration;
-use Doku\Snap\Models\Utilities\AdditionalInfo\CardRegistrationAdditionalInfoResponseDto;
+use Doku\Snap\Models\AdditionalInfo\CardRegistrationAdditionalInfoResponseDto;
 class CardRegistrationResponseDto
 {
     public ?string $responseCode;

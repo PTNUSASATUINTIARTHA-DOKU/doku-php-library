@@ -49,9 +49,9 @@ $Snap = new Snap($privateKey, $publicKey, $clientId, $issuer, $isProduction, $se
 
 ```php
 use Doku\Snap\Models\VA\Request\CreateVaRequestDto;
-use Doku\Snap\Models\Utilities\TotalAmount;
-use Doku\Snap\Models\Utilities\AdditionalInfo\CreateVaRequestAdditionalInfo;
-use Doku\Snap\Models\Utilities\VirtualAccountConfig\CreateVaVirtualAccountConfig;
+use Doku\Snap\Models\TotalAmount;
+use Doku\Snap\Models\AdditionalInfo\CreateVaRequestAdditionalInfo;
+use Doku\Snap\Models\VA\VirtualAccountConfig\CreateVaVirtualAccountConfig;
 
 $createVaRequestDto = new CreateVaRequestDto(
     $partner,
@@ -74,8 +74,8 @@ $virtualAccount = $Snap->createVa($createVaRequestDto);
 
 ```php
 use Doku\Snap\Models\VA\Request\UpdateVaRequestDto;
-use Doku\Snap\Models\Utilities\AdditionalInfo\UpdateVaRequestAdditionalInfo;
-use Doku\Snap\Models\Utilities\VirtualAccountConfig\UpdateVaVirtualAccountConfig;
+use Doku\Snap\Models\AdditionalInfo\UpdateVaRequestAdditionalInfo;
+use Doku\Snap\Models\VA\VirtualAccountConfig\UpdateVaVirtualAccountConfig;
 
 $updateVaRequestDto = new UpdateVaRequestDto(
     $partnerServiceId,
@@ -98,7 +98,7 @@ $updatedVirtualAccount = $Snap->updateVa($updateVaRequestDto);
 
 ```php
 use Doku\Snap\Models\VA\Request\DeleteVaRequestDto;
-use Doku\Snap\Models\Utilities\AdditionalInfo\DeleteVaRequestAdditionalInfo;
+use Doku\Snap\Models\AdditionalInfo\DeleteVaRequestAdditionalInfo;
 
 $deleteVaRequestDto = new DeleteVaRequestDto(
     $partnerServiceId,

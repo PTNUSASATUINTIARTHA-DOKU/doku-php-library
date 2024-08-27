@@ -1,6 +1,6 @@
 <?php
 namespace Doku\Snap\Models\VA\Response;
-use Doku\Snap\Models\Utilities\VirtualAccountData\UpdateVaResponseVirtualAccountData;
+use Doku\Snap\Models\VA\VirtualAccountData\UpdateVaResponseVirtualAccountData;
 class UpdateVaResponseDto
 {
     public ?string $responseCode;

@@ -8,26 +8,26 @@ use Doku\Snap\Models\VA\Request\UpdateVaRequestDto;
 use Doku\Snap\Models\VA\Request\DeleteVaRequestDto;
 use Doku\Snap\Models\VA\Request\CheckStatusVaRequestDto;
 use Doku\Snap\Models\VA\Request\CreateVARequestDtoV1;
-use Doku\Snap\Models\Utilities\AdditionalInfo\CreateVaRequestAdditionalInfo;
-use Doku\Snap\Models\Utilities\AdditionalInfo\UpdateVaRequestAdditionalInfo;
-use Doku\Snap\Models\Utilities\AdditionalInfo\DeleteVaRequestAdditionalInfo;
-use Doku\Snap\Models\Utilities\VirtualAccountConfig\CreateVaVirtualAccountConfig;
-use Doku\Snap\Models\Utilities\VirtualAccountConfig\UpdateVaVirtualAccountConfig;
-use Doku\Snap\Models\Utilities\TotalAmount\TotalAmount;
+use Doku\Snap\Models\AdditionalInfo\CreateVaRequestAdditionalInfo;
+use Doku\Snap\Models\AdditionalInfo\UpdateVaRequestAdditionalInfo;
+use Doku\Snap\Models\AdditionalInfo\DeleteVaRequestAdditionalInfo;
+use Doku\Snap\Models\VA\VirtualAccountConfig\CreateVaVirtualAccountConfig;
+use Doku\Snap\Models\VA\VirtualAccountConfig\UpdateVaVirtualAccountConfig;
+use Doku\Snap\Models\TotalAmount\TotalAmount;
 use Doku\Snap\Models\Payment\PayOptionDetailsDto;
 use Doku\Snap\Models\Payment\LineItemsDto;
 use Doku\Snap\Models\AccountBinding\AccountBindingRequestDto;
 use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppRequestDto;
-use Doku\Snap\Models\Utilities\AdditionalInfo\PaymentAdditionalInfoRequestDto;
-use Doku\Snap\Models\Utilities\AdditionalInfo\AccountBindingAdditionalInfoRequestDto;
-use Doku\Snap\Models\Utilities\AdditionalInfo\AccountUnbindingAdditionalInfoRequestDto;
+use Doku\Snap\Models\AdditionalInfo\PaymentAdditionalInfoRequestDto;
+use Doku\Snap\Models\AdditionalInfo\AccountBindingAdditionalInfoRequestDto;
+use Doku\Snap\Models\AdditionalInfo\AccountUnbindingAdditionalInfoRequestDto;
 use Doku\Snap\Models\AccountUnbinding\AccountUnbindingRequestDto;
-use Doku\Snap\Models\Utilities\AdditionalInfo\PaymentJumpAppAdditionalInfoRequestDto;
+use Doku\Snap\Models\AdditionalInfo\PaymentJumpAppAdditionalInfoRequestDto;
 use Doku\Snap\Models\PaymentJumpApp\UrlParamDto;
 use Doku\Snap\Models\AccountBinding\AccountBindingResponseDto;
 use Doku\Snap\Models\AccountUnbinding\AccountUnbindingResponseDto;
 use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppResponseDto;
-use Doku\Snap\Models\Utilities\AdditionalInfo\AccountBindingAdditionalInfoResponseDto;
+use Doku\Snap\Models\AdditionalInfo\AccountBindingAdditionalInfoResponseDto;
 
 
 /*
@@ -402,7 +402,8 @@ $createVaRequestDtoV1 = new CreateVaRequestDtoV1(
 $createVaRequestDtoConverted = $createVaRequestDtoV1->convertToCreateVaRequestDto();
 
 $partner = ' 8129014';
-$customerno = '17223992149';
+// $partner = '    1899';
+$customerno = '17223992155';
 $createVaRequestDto = new CreateVaRequestDto(
     $partner,
     $customerno,

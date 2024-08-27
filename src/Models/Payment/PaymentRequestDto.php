@@ -1,7 +1,7 @@
 <?php
 namespace Doku\Snap\Models\Payment;
-use Doku\Snap\Models\Utilities\AdditionalInfo\PaymentAdditionalInfoRequestDto;
-use Doku\Snap\Models\Utilities\TotalAmount\TotalAmount;
+use Doku\Snap\Models\AdditionalInfo\PaymentAdditionalInfoRequestDto;
+use Doku\Snap\Models\TotalAmount\TotalAmount;
 class PaymentRequestDto
 {
     public ?string $partnerReferenceNo;

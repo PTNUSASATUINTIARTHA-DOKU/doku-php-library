@@ -1,6 +1,6 @@
 <?php
 namespace Doku\Snap\Models\VA\Response;
-use Doku\Snap\Models\Utilities\VirtualAccountData\DeleteVaResponseVirtualAccountData;
+use Doku\Snap\Models\VA\VirtualAccountData\DeleteVaResponseVirtualAccountData;
 class DeleteVaResponseDto
 {
     public ?string $responseCode;

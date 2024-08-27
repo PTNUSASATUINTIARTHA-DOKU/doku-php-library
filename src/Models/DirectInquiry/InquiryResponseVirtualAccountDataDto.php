@@ -1,6 +1,6 @@
 <?php
 namespace Doku\Snap\Models\DirectInquiry;
-use Doku\Snap\Models\Utilities\TotalAmount\TotalAmount;
+use Doku\Snap\Models\TotalAmount\TotalAmount;
 class InquiryResponseVirtualAccountDataDto
 {
     public string $partnerServiceId;

@@ -7,11 +7,23 @@ use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppRequestDto;
 use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppResponseDto;
 use Doku\Snap\Models\AccountBinding\AccountBindingRequestDto;
 use Doku\Snap\Models\AccountBinding\AccountBindingResponseDto;
-use Doku\Snap\Models\Utilities\AdditionalInfo\AccountBindingAdditionalInfoResponseDto;
+use Doku\Snap\Models\AdditionalInfo\AccountBindingAdditionalInfoResponseDto;
 use Doku\Snap\Models\Payment\PaymentRequestDto;
 use Doku\Snap\Models\Payment\PaymentResponseDto;
 use Doku\Snap\Models\AccountUnbinding\AccountUnbindingRequestDto;
 use Doku\Snap\Models\AccountUnbinding\AccountUnbindingResponseDto;
+use Doku\Snap\Models\CardRegistration\CardRegistrationRequestDto;
+use Doku\Snap\Models\CardRegistration\CardRegistrationResponseDto;
+use Doku\Snap\Models\AdditionalInfo\CardRegistrationAdditionalInfoResponseDto;
+use Doku\Snap\Models\Refund\RefundRequestDto;
+use Doku\Snap\Models\Refund\RefundResponseDto;
+use Doku\Snap\Models\BalanceInquiry\BalanceInquiryRequestDto;
+use Doku\Snap\Models\BalanceInquiry\BalanceInquiryResponseDto;
+use Doku\Snap\Models\TotalAmount\TotalAmount;
+use Doku\Snap\Models\CheckStatus\CheckStatusRequestDto;
+use Doku\Snap\Models\CheckStatus\CheckStatusResponseDto;
+use Doku\Snap\Models\CheckStatus\RefundHistoryDto;
+use Doku\Snap\Models\AdditionalInfo\CheckStatusAdditionalInfoResponseDto;
 
 class DirectDebitServices
 {
@@ -137,5 +149,177 @@ class DirectDebitServices
                 ''
             );
         }
+    }
+
+    public function doCardRegistrationProcess(
+        RequestHeaderDto $requestHeaderDto,
+        CardRegistrationRequestDto $requestDto,
+        bool $isProduction
+    ): CardRegistrationResponseDto {
+        $baseUrl = Config::getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . Config::CARD_REGISTRATION_URL;
+        $requestBody = json_encode($requestDto);
+        $headers = Helper::prepareHeaders($requestHeaderDto);
+        
+        $response = Helper::doHitAPI($apiEndpoint, $headers, $requestBody, 'POST');
+        $responseObject = json_decode($response, true);
+
+        if (isset($responseObject['responseCode']) && $responseObject['responseCode'] === '2000500') {
+            $additionalInfo = new CardRegistrationAdditionalInfoResponseDto(
+                $responseObject['additionalInfo']['custIdMerchant'] ?? null,
+                $responseObject['additionalInfo']['status'] ?? null,
+                $responseObject['additionalInfo']['authCode'] ?? null
+            );
+
+            return new CardRegistrationResponseDto(
+                $responseObject['responseCode'],
+                $responseObject['responseMessage'],
+                $responseObject['referenceNo'] ?? null,
+                $responseObject['redirectUrl'] ?? null,
+                $additionalInfo
+            );
+        } else {
+            return new CardRegistrationResponseDto(
+                $responseObject['responseCode'] ?? '5000500',
+                'Error registering card: ' . ($responseObject['responseMessage'] ?? 'Unknown error'),
+                null,
+                null,
+                null
+            );
+        }
+    }
+
+    public function doRefundProcess(
+        RequestHeaderDto $header, 
+        RefundRequestDto $refundRequestDto, 
+        bool $isProduction
+    ): RefundResponseDto {
+        $baseUrl = Config::getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_REFUND_URL;
+        
+        $headers = Helper::prepareHeaders($header);
+        $requestBody = $refundRequestDto->generateJSONBody();
+        
+        $response = Helper::doHitAPI($apiEndpoint, $headers, $requestBody, 'POST');
+        $responseObject = json_decode($response, true);
+
+        // Validate the response
+        if (!isset($responseObject['responseCode']) || !isset($responseObject['responseMessage'])) {
+            throw new \Exception("Invalid response from refund API");
+        }
+
+        // Create TotalAmount from response
+        $refundAmount = new TotalAmount(
+            $responseObject['refundAmount']['value'] ?? '',
+            $responseObject['refundAmount']['currency'] ?? ''
+        );
+
+        return new RefundResponseDto(
+            $responseObject['responseCode'],
+            $responseObject['responseMessage'],
+            $refundAmount,
+            $responseObject['originalPartnerReferenceNo'] ?? '',
+            $responseObject['originalReferenceNo'] ?? '',
+            $responseObject['refundNo'] ?? '',
+            $responseObject['partnerRefundNo'] ?? '',
+            $responseObject['refundTime'] ?? ''
+        );
+    }
+
+    public function doBalanceInquiryProcess(
+        RequestHeaderDto $requestHeaderDto, 
+        BalanceInquiryRequestDto $balanceInquiryRequestDto, 
+        bool $isProduction
+    ): BalanceInquiryResponseDto {
+        $baseUrl = Config::getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_BALANCE_INQUIRY_URL;
+        $requestBody = $balanceInquiryRequestDto->generateJSONBody();
+        $headers = Helper::prepareHeaders($requestHeaderDto);
+
+        $response = Helper::doHitAPI($apiEndpoint, $headers, $requestBody, 'POST');
+        $responseObject = json_decode($response, true);
+
+        if (isset($responseObject['responseCode']) && $responseObject['responseCode'] === '2000500') {
+            return new BalanceInquiryResponseDto(
+                $responseObject['responseCode'],
+                $responseObject['responseMessage'],
+                $responseObject['accountInfos']
+            );
+        } else {
+            return new BalanceInquiryResponseDto(
+                $responseObject['responseCode'] ?? '5000500',
+                'Error performing balance inquiry: ' . ($responseObject['responseMessage'] ?? 'Unknown error'),
+                []
+            );
+        }
+    }
+
+    public function doCheckStatus(
+        RequestHeaderDto $requestHeaderDto,
+        CheckStatusRequestDto $checkStatusRequestDto,
+        bool $isProduction
+    ): CheckStatusResponseDto {
+        $baseUrl = Config::getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_CHECK_STATUS_URL;
+        $requestBody = $checkStatusRequestDto->generateJSONBody();
+        $headers = Helper::prepareHeaders($requestHeaderDto);
+
+        $response = Helper::doHitAPI($apiEndpoint, $headers, $requestBody, 'POST');
+        $responseObject = json_decode($response, true);
+
+        if (isset($responseObject['responseCode']) && $responseObject['responseCode'] === '0000') {
+            return new CheckStatusResponseDto(
+                $responseObject['responseCode'],
+                $responseObject['responseMessage'],
+                $responseObject['originalPartnerReferenceNo'],
+                $responseObject['originalReferenceNo'],
+                $responseObject['approvalCode'],
+                $responseObject['originalExternalId'],
+                $responseObject['serviceCode'],
+                $responseObject['latestTransactionStatus'],
+                $responseObject['transactionStatusDesc'],
+                $responseObject['originalResponseCode'],
+                $responseObject['originalResponseMessage'],
+                $responseObject['sessionId'],
+                $responseObject['requestId'],
+                $this->parseRefundHistory($responseObject['refundHistory']),
+                new TotalAmount($responseObject['transAmount']['value'], $responseObject['transAmount']['currency']),
+                new TotalAmount($responseObject['feeAmount']['value'], $responseObject['feeAmount']['currency']),
+                $responseObject['paidTime'],
+                new CheckStatusAdditionalInfoResponseDto(
+                    $responseObject['additionalInfo']['deviceId'],
+                    $responseObject['additionalInfo']['channel'],
+                    $responseObject['additionalInfo']['acquirer'] ?? null
+                )
+            );
+        } else {
+            return new CheckStatusResponseDto(
+                $responseObject['responseCode'],
+                'Error checking direct debit status: ' . $responseObject['responseMessage'],
+                $checkStatusRequestDto->originalPartnerReferenceNo,
+                '', '', '', '', '', '', '', '', '', '',
+                [],
+                new TotalAmount('0', 'IDR'),
+                new TotalAmount('0', 'IDR'),
+                '',
+                new CheckStatusAdditionalInfoResponseDto('', '')
+            );
+        }
+    }
+
+    private function parseRefundHistory(array $refundHistoryData): array
+    {
+        $refundHistory = [];
+        foreach ($refundHistoryData as $refund) {
+            $refundHistory[] = new RefundHistoryDto(
+                $refund['refundNo'],
+                $refund['partnerReferenceNo'],
+                new TotalAmount($refund['refundAmount']['value'], $refund['refundAmount']['currency']),
+                $refund['refundStatus'],
+                $refund['refundDate'],
+                $refund['reason']
+            );
+        }
+        return $refundHistory;
     }
 }

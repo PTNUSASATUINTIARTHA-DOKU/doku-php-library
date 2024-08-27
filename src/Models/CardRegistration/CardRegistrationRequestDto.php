@@ -1,6 +1,6 @@
 <?php
 namespace Doku\Snap\Models\CardRegistration;
-use Doku\Snap\Models\Utilities\AdditionalInfo\CardRegistrationAdditionalInfoRequestDto;
+use Doku\Snap\Models\AdditionalInfo\CardRegistrationAdditionalInfoRequestDto;
 class CardRegistrationRequestDto
 {
     public ?string $cardData;
@@ -32,5 +32,15 @@ class CardRegistrationRequestDto
             throw new \InvalidArgumentException("Phone number is required");
         }
         $this->additionalInfo->validate();
+    }
+
+    public function generateJSONBody(): string
+    {
+        return json_encode([
+            'cardData' => $this->cardData,
+            'custIdMerchant' => $this->custIdMerchant,
+            'phoneNo' => $this->phoneNo,
+            'additionalInfo' => $this->additionalInfo->generateJSONBody()
+        ]);
     }
 }
