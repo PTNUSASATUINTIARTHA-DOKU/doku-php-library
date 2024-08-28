@@ -97,15 +97,15 @@ class NotificationServices
         }
 
         $formData = [
-            'AMOUNT' => $notificationData['AMOUNT'] ?? '',
-            'TRANSIDMERCHANT' => $notificationData['TRANSIDMERCHANT'] ?? '',
+            'AMOUNT' => $notificationData['paidAmount']['value'] ?? '',
+            'TRANSIDMERCHANT' => $notificationData['trxId'] ?? '',
             'WORDS' => $notificationData['WORDS'] ?? '',
             'STATUSTYPE' => $notificationData['STATUSTYPE'] ?? '',
             'RESPONSECODE' => $notificationData['RESPONSECODE'] ?? '',
             'APPROVALCODE' => $notificationData['APPROVALCODE'] ?? '',
             'RESULTMSG' => $notificationData['RESULTMSG'] ?? '',
             'PAYMENTCHANNEL' => $notificationData['PAYMENTCHANNEL'] ?? '',
-            'PAYMENTCODE' => $notificationData['PAYMENTCODE'] ?? '',
+            'PAYMENTCODE' => $notificationData['virtualAccountNo'] ?? '',
             'SESSIONID' => $notificationData['SESSIONID'] ?? '',
             'BANK' => $notificationData['BANK'] ?? '',
             'MCN' => $notificationData['MCN'] ?? '',
@@ -113,14 +113,14 @@ class NotificationServices
             'VERIFYID' => $notificationData['VERIFYID'] ?? '',
             'VERIFYSCORE' => $notificationData['VERIFYSCORE'] ?? '',
             'VERIFYSTATUS' => $notificationData['VERIFYSTATUS'] ?? '',
-            'CURRENCY' => $notificationData['CURRENCY'] ?? '',
-            'PURCHASECURRENCY' => $notificationData['PURCHASECURRENCY'] ?? '',
+            'CURRENCY' => $notificationData['paidAmount']['currency'] ?? '',
+            'PURCHASECURRENCY' => $notificationData['paidAmount']['currency'] ?? '',
             'BRAND' => $notificationData['BRAND'] ?? '',
             'CHNAME' => $notificationData['CHNAME'] ?? '',
             'THREEDSECURESTATUS' => $notificationData['THREEDSECURESTATUS'] ?? '',
             'LIABILITY' => $notificationData['LIABILITY'] ?? '',
             'EDUSTATUS' => $notificationData['EDUSTATUS'] ?? '',
-            'CUSTOMERID' => $notificationData['CUSTOMERID'] ?? '',
+            'CUSTOMERID' => $notificationData['customerNo'] ?? '',
             'TOKENID' => $notificationData['TOKENID'] ?? '',
         ];
 
