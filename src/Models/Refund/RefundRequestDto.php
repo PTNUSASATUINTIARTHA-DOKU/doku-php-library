@@ -2,7 +2,6 @@
 
 namespace Doku\Snap\Models\Refund;
 use Doku\Snap\Models\TotalAmount\TotalAmount;
-use Doku\Snap\Models\AdditionalInfo\RefundAdditionalInfoRequestDto;
 class RefundRequestDto
 {
     public $additionalInfo;

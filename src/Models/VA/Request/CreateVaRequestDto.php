@@ -2,13 +2,25 @@
 namespace Doku\Snap\Models\VA\Request;
 
 use Doku\Snap\Models\TotalAmount\TotalAmount;
-use Doku\Snap\Models\AdditionalInfo\CreateVaRequestAdditionalInfo;
+use Doku\Snap\Models\VA\AdditionalInfo\CreateVaRequestAdditionalInfo;
 use Doku\Snap\Commons\VaChannels;
 use DateTime;
 use InvalidArgumentException;
 
 class CreateVaRequestDto
 {
+    private $data = [];
+
+    public function __get($name) {
+        if (isset($this->data[$name])) {
+            return $this->data[$name];
+        }
+        throw new \Exception("Property $name does not exist.");
+    }
+
+    public function __set($name, $value) {
+        $this->data[$name] = $value;
+    }
     public ?string $partnerServiceId;
     public ?string $customerNo;
     public ?string $virtualAccountNo;
@@ -16,8 +28,8 @@ class CreateVaRequestDto
     public ?string $virtualAccountEmail;
     public ?string $virtualAccountPhone;
     public ?string $trxId;
-    public TotalAmount $totalAmount;
-    public CreateVaRequestAdditionalInfo $additionalInfo;
+    public ?TotalAmount $totalAmount;
+    public ?CreateVaRequestAdditionalInfo $additionalInfo;
     public ?string $virtualAccountTrxType;
     public ?string $expiredDate;
 
@@ -29,8 +41,8 @@ class CreateVaRequestDto
         ?string $virtualAccountEmail,
         ?string $virtualAccountPhone,
         ?string $trxId,
-        TotalAmount $totalAmount,
-        CreateVaRequestAdditionalInfo $createVaAdditionalInfoDTO,
+        ?TotalAmount $totalAmount,
+        ?CreateVaRequestAdditionalInfo $createVaAdditionalInfoDTO,
         ?string $virtualAccountTrxType,
         ?string $expiredDate
     ) {

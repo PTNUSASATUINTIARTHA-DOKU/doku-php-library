@@ -8,9 +8,9 @@ use Doku\Snap\Models\VA\Request\UpdateVaRequestDto;
 use Doku\Snap\Models\VA\Request\DeleteVaRequestDto;
 use Doku\Snap\Models\VA\Request\CheckStatusVaRequestDto;
 use Doku\Snap\Models\VA\Request\CreateVARequestDtoV1;
-use Doku\Snap\Models\AdditionalInfo\CreateVaRequestAdditionalInfo;
-use Doku\Snap\Models\AdditionalInfo\UpdateVaRequestAdditionalInfo;
-use Doku\Snap\Models\AdditionalInfo\DeleteVaRequestAdditionalInfo;
+use Doku\Snap\Models\VA\AdditionalInfo\CreateVaRequestAdditionalInfo;
+use Doku\Snap\Models\VA\AdditionalInfo\UpdateVaRequestAdditionalInfo;
+use Doku\Snap\Models\VA\AdditionalInfo\DeleteVaRequestAdditionalInfo;
 use Doku\Snap\Models\VA\VirtualAccountConfig\CreateVaVirtualAccountConfig;
 use Doku\Snap\Models\VA\VirtualAccountConfig\UpdateVaVirtualAccountConfig;
 use Doku\Snap\Models\TotalAmount\TotalAmount;
@@ -18,16 +18,16 @@ use Doku\Snap\Models\Payment\PayOptionDetailsDto;
 use Doku\Snap\Models\Payment\LineItemsDto;
 use Doku\Snap\Models\AccountBinding\AccountBindingRequestDto;
 use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppRequestDto;
-use Doku\Snap\Models\AdditionalInfo\PaymentAdditionalInfoRequestDto;
-use Doku\Snap\Models\AdditionalInfo\AccountBindingAdditionalInfoRequestDto;
-use Doku\Snap\Models\AdditionalInfo\AccountUnbindingAdditionalInfoRequestDto;
+use Doku\Snap\Models\VA\AdditionalInfo\PaymentAdditionalInfoRequestDto;
+use Doku\Snap\Models\VA\AdditionalInfo\AccountBindingAdditionalInfoRequestDto;
+use Doku\Snap\Models\VA\AdditionalInfo\AccountUnbindingAdditionalInfoRequestDto;
 use Doku\Snap\Models\AccountUnbinding\AccountUnbindingRequestDto;
-use Doku\Snap\Models\AdditionalInfo\PaymentJumpAppAdditionalInfoRequestDto;
+use Doku\Snap\Models\VA\AdditionalInfo\PaymentJumpAppAdditionalInfoRequestDto;
 use Doku\Snap\Models\PaymentJumpApp\UrlParamDto;
 use Doku\Snap\Models\AccountBinding\AccountBindingResponseDto;
 use Doku\Snap\Models\AccountUnbinding\AccountUnbindingResponseDto;
 use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppResponseDto;
-use Doku\Snap\Models\AdditionalInfo\AccountBindingAdditionalInfoResponseDto;
+use Doku\Snap\Models\VA\AdditionalInfo\AccountBindingAdditionalInfoResponseDto;
 
 
 /*

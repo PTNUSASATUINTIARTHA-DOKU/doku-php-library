@@ -9,18 +9,18 @@ use Doku\Snap\Models\TotalAmount\TotalAmount;
 use Doku\Snap\Models\VA\Request\CreateVaRequestDto;
 use Doku\Snap\Models\VA\Response\CreateVaResponseDto;
 use Doku\Snap\Models\VA\VirtualAccountData\CreateVaResponseVirtualAccountData;
-use Doku\Snap\Models\AdditionalInfo\CreateVaResponseAdditionalInfo;
+use Doku\Snap\Models\VA\AdditionalInfo\CreateVaResponseAdditionalInfo;
 use Doku\Snap\Models\VA\Request\UpdateVaRequestDto;
 use Doku\Snap\Models\VA\Response\UpdateVaResponseDto;
 use Doku\Snap\Models\VA\VirtualAccountConfig\UpdateVaVirtualAccountConfig;
-use Doku\Snap\Models\AdditionalInfo\UpdateVaRequestAdditionalInfo;
+use Doku\Snap\Models\VA\AdditionalInfo\UpdateVaRequestAdditionalInfo;
 use Doku\Snap\Models\VA\Request\DeleteVaRequestDto;
 use Doku\Snap\Models\VA\Response\DeleteVaResponseDto;
 use Doku\Snap\Models\VA\VirtualAccountData\DeleteVaResponseVirtualAccountData;
-use Doku\Snap\Models\AdditionalInfo\DeleteVaResponseAdditionalInfo;  
+use Doku\Snap\Models\VA\AdditionalInfo\DeleteVaResponseAdditionalInfo;  
 use Doku\Snap\Models\VA\Request\CheckStatusVaRequestDto;
 use Doku\Snap\Models\VA\Response\CheckStatusVaResponseDto;
-use Doku\Snap\Models\AdditionalInfo\CheckStatusResponseAdditionalInfo;
+use Doku\Snap\Models\VA\AdditionalInfo\CheckStatusResponseAdditionalInfo;
 use Doku\Snap\Models\VA\VirtualAccountData\CheckStatusResponsePaymentFlagReason;
 use Doku\Snap\Models\VA\VirtualAccountData\CheckStatusVirtualAccountData;
 
@@ -302,67 +302,6 @@ class VaServices
         ];
 
         return json_encode($snapJson, JSON_PRETTY_PRINT);
-    }
-
-
-    public function convertDOKUNotificationToForm($notificationJson): string
-    {
-        $notificationData = json_decode($notificationJson, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception("Failed to decode JSON: " . json_last_error_msg());
-        }
-
-        $formData = [
-            'AMOUNT' => $notificationData['AMOUNT'] ?? '',
-            'TRANSIDMERCHANT' => $notificationData['TRANSIDMERCHANT'] ?? '',
-            'WORDS' => $notificationData['WORDS'] ?? '',
-            'STATUSTYPE' => $notificationData['STATUSTYPE'] ?? '',
-            'RESPONSECODE' => $notificationData['RESPONSECODE'] ?? '',
-            'APPROVALCODE' => $notificationData['APPROVALCODE'] ?? '',
-            'RESULTMSG' => $notificationData['RESULTMSG'] ?? '',
-            'PAYMENTCHANNEL' => $notificationData['PAYMENTCHANNEL'] ?? '',
-            'PAYMENTCODE' => $notificationData['PAYMENTCODE'] ?? '',
-            'SESSIONID' => $notificationData['SESSIONID'] ?? '',
-            'BANK' => $notificationData['BANK'] ?? '',
-            'MCN' => $notificationData['MCN'] ?? '',
-            'PAYMENTDATETIME' => $notificationData['PAYMENTDATETIME'] ?? '',
-            'VERIFYID' => $notificationData['VERIFYID'] ?? '',
-            'VERIFYSCORE' => $notificationData['VERIFYSCORE'] ?? '',
-            'VERIFYSTATUS' => $notificationData['VERIFYSTATUS'] ?? '',
-            'CURRENCY' => $notificationData['CURRENCY'] ?? '',
-            'PURCHASECURRENCY' => $notificationData['PURCHASECURRENCY'] ?? '',
-            'BRAND' => $notificationData['BRAND'] ?? '',
-            'CHNAME' => $notificationData['CHNAME'] ?? '',
-            'THREEDSECURESTATUS' => $notificationData['THREEDSECURESTATUS'] ?? '',
-            'LIABILITY' => $notificationData['LIABILITY'] ?? '',
-            'EDUSTATUS' => $notificationData['EDUSTATUS'] ?? '',
-            'CUSTOMERID' => $notificationData['CUSTOMERID'] ?? '',
-            'TOKENID' => $notificationData['TOKENID'] ?? '',
-        ];
-
-        return http_build_query($formData);
-    }
-    public function generateDOKUNotificationResponse(): string
-    {
-        $response = [
-            'status' => 'success',
-            'message' => 'Notification received successfully'
-        ];
-
-        return json_encode($response);
-    }
-
-    public function doConvertDOKUNotificationResponse($notificationJson): string
-    {
-        try {
-            $formData = $this->convertDOKUNotificationToForm($notificationJson);
-            
-        } catch (Exception $e) {
-            $formData = null;
-        }
-        $this->generateDOKUNotificationResponse();
-        return $formData;
     }
 
 }

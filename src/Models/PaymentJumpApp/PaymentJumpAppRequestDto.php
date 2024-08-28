@@ -1,7 +1,6 @@
 <?php
 namespace Doku\Snap\Models\PaymentJumpApp;
 use Doku\Snap\Models\TotalAmount\TotalAmount;
-use Doku\Snap\Models\AdditionalInfo\PaymentJumpAppAdditionalInfoRequestDto;
 
 class PaymentJumpAppRequestDto
 {

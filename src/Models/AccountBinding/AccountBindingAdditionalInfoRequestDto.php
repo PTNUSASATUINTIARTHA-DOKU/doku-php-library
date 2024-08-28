@@ -1,5 +1,5 @@
 <?php
-namespace Doku\Snap\Models\AdditionalInfo;
+namespace Doku\Snap\Models\AccountBinding;
 class AccountBindingAdditionalInfoRequestDto
 {
     public ?string $channel;

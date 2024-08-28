@@ -2,28 +2,28 @@
 namespace Doku\Snap\Services;
 use Doku\Snap\Commons\Helper;
 use Doku\Snap\Commons\Config;
+use Doku\Snap\Models\TotalAmount\TotalAmount;
 use Doku\Snap\Models\RequestHeader\RequestHeaderDto;
 use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppRequestDto;
 use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppResponseDto;
 use Doku\Snap\Models\AccountBinding\AccountBindingRequestDto;
 use Doku\Snap\Models\AccountBinding\AccountBindingResponseDto;
-use Doku\Snap\Models\AdditionalInfo\AccountBindingAdditionalInfoResponseDto;
+use Doku\Snap\Models\AccountBinding\AccountBindingAdditionalInfoResponseDto;
 use Doku\Snap\Models\Payment\PaymentRequestDto;
 use Doku\Snap\Models\Payment\PaymentResponseDto;
 use Doku\Snap\Models\AccountUnbinding\AccountUnbindingRequestDto;
 use Doku\Snap\Models\AccountUnbinding\AccountUnbindingResponseDto;
 use Doku\Snap\Models\CardRegistration\CardRegistrationRequestDto;
 use Doku\Snap\Models\CardRegistration\CardRegistrationResponseDto;
-use Doku\Snap\Models\AdditionalInfo\CardRegistrationAdditionalInfoResponseDto;
+use Doku\Snap\Models\CardRegistration\CardRegistrationAdditionalInfoResponseDto;
 use Doku\Snap\Models\Refund\RefundRequestDto;
 use Doku\Snap\Models\Refund\RefundResponseDto;
 use Doku\Snap\Models\BalanceInquiry\BalanceInquiryRequestDto;
 use Doku\Snap\Models\BalanceInquiry\BalanceInquiryResponseDto;
-use Doku\Snap\Models\TotalAmount\TotalAmount;
 use Doku\Snap\Models\CheckStatus\CheckStatusRequestDto;
 use Doku\Snap\Models\CheckStatus\CheckStatusResponseDto;
 use Doku\Snap\Models\CheckStatus\RefundHistoryDto;
-use Doku\Snap\Models\AdditionalInfo\CheckStatusAdditionalInfoResponseDto;
+use Doku\Snap\Models\CheckStatus\CheckStatusAdditionalInfoResponseDto;
 
 class DirectDebitServices
 {

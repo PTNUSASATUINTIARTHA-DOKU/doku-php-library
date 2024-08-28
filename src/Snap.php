@@ -22,7 +22,7 @@ use Doku\Snap\Models\Notification\PaymentNotificationRequestBodyDto;
 use Doku\Snap\Models\Notification\PaymentNotificationResponseDto;
 use Doku\Snap\Models\VA\Request\CheckStatusVaRequestDto;
 use Doku\Snap\Models\VA\Response\CheckStatusVaResponseDto;
-use Doku\Snap\Models\AdditionalInfo\Origin;
+use Doku\Snap\Models\VA\AdditionalInfo\Origin;
 use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppRequestDto;
 use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppResponseDto;
 use Doku\Snap\Models\AccountBinding\AccountBindingRequestDto;
@@ -39,7 +39,7 @@ use Doku\Snap\Models\BalanceInquiry\BalanceInquiryRequestDto;
 use Doku\Snap\Models\BalanceInquiry\BalanceInquiryResponseDto;
 use Doku\Snap\Models\CheckStatus\CheckStatusResponseDto;
 use Doku\Snap\Models\CheckStatus\CheckStatusRequestDto;
-use Doku\Snap\Models\TotalAmount\TotalAmount;
+
 class Snap
 {
     private VaController $vaController;
@@ -346,6 +346,11 @@ class Snap
     public function convertVAInquiryResponseV1XmlToSnapJson($xmlString): string
     {
         return $this->vaController->convertVAInquiryResponseV1XmlToSnapJson($xmlString);
+    }
+
+    public function convertDOKUNotificationToForm($notification): string
+    {
+        return $this->notificationController->convertDOKUNotificationToForm($notification);
     }
 
     public function doPaymentJumpApp(

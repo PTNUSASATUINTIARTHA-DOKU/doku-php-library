@@ -1,24 +1,28 @@
 <?php
 namespace Doku\Snap\Models\Payment;
-use Doku\Snap\Models\AdditionalInfo\PaymentAdditionalInfoRequestDto;
 use Doku\Snap\Models\TotalAmount\TotalAmount;
 class PaymentRequestDto
 {
     public ?string $partnerReferenceNo;
     public ?TotalAmount $amount;
+    // Only AlloBank
     public ?array $payOptionDetails;
     public ?PaymentAdditionalInfoRequestDto $additionalInfo;
+    // Only for OVO
+    public ?string $feeType;
 
     public function __construct(
         ?string $partnerReferenceNo,
         ?TotalAmount $amount,
         ?array $payOptionDetails,
-        ?PaymentAdditionalInfoRequestDto $additionalInfo
+        ?PaymentAdditionalInfoRequestDto $additionalInfo,
+        ?string $feeType
     ) {
         $this->partnerReferenceNo = $partnerReferenceNo;
         $this->amount = $amount;
         $this->payOptionDetails = $payOptionDetails;
         $this->additionalInfo = $additionalInfo;
+        $this->feeType = $feeType;
     }
 
     public function validatePaymentRequestDto(): void

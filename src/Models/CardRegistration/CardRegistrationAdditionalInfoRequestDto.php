@@ -1,5 +1,5 @@
 <?php
-namespace Doku\Snap\Models\AdditionalInfo;
+namespace Doku\Snap\Models\CardRegistration;
 class CardRegistrationAdditionalInfoRequestDto
 {
     public ?string $channel;

@@ -1,5 +1,5 @@
 <?php
-namespace Doku\Snap\Models\AdditionalInfo;
+namespace Doku\Snap\Models\DirectInquiry;
 class InquiryRequestAdditionalInfo
 {
     public ?string $channel;

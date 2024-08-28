@@ -1,6 +1,6 @@
 <?php
 namespace Doku\Snap\Models\VA\Request;
-use Doku\Snap\Models\AdditionalInfo\DeleteVaRequestAdditionalInfo;
+use Doku\Snap\Models\VA\AdditionalInfo\DeleteVaRequestAdditionalInfo;
 use Doku\Snap\Commons\VaChannels;
 use InvalidArgumentException;
 class DeleteVaRequestDto

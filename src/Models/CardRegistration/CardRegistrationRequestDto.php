@@ -1,6 +1,5 @@
 <?php
 namespace Doku\Snap\Models\CardRegistration;
-use Doku\Snap\Models\AdditionalInfo\CardRegistrationAdditionalInfoRequestDto;
 class CardRegistrationRequestDto
 {
     public ?string $cardData;

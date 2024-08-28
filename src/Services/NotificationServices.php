@@ -10,6 +10,7 @@ use Doku\Snap\Models\Notification\PaymentNotificationResponseDto;
 use Doku\Snap\Models\Notification\PaymentNotificationResponseHeaderDto;
 use Doku\Snap\Models\Notification\PaymentNotificationResponseBodyDto;
 use Doku\Snap\Commons\Helper;
+use Exception;
 
 class NotificationServices
 {
@@ -85,5 +86,44 @@ class NotificationServices
         );
 
         return new PaymentNotificationResponseDto($header, $body); 
+    }
+
+    public function convertDOKUNotificationToForm($notificationJson): string
+    {
+        $notificationData = json_decode($notificationJson, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception("Failed to decode JSON: " . json_last_error_msg());
+        }
+
+        $formData = [
+            'AMOUNT' => $notificationData['AMOUNT'] ?? '',
+            'TRANSIDMERCHANT' => $notificationData['TRANSIDMERCHANT'] ?? '',
+            'WORDS' => $notificationData['WORDS'] ?? '',
+            'STATUSTYPE' => $notificationData['STATUSTYPE'] ?? '',
+            'RESPONSECODE' => $notificationData['RESPONSECODE'] ?? '',
+            'APPROVALCODE' => $notificationData['APPROVALCODE'] ?? '',
+            'RESULTMSG' => $notificationData['RESULTMSG'] ?? '',
+            'PAYMENTCHANNEL' => $notificationData['PAYMENTCHANNEL'] ?? '',
+            'PAYMENTCODE' => $notificationData['PAYMENTCODE'] ?? '',
+            'SESSIONID' => $notificationData['SESSIONID'] ?? '',
+            'BANK' => $notificationData['BANK'] ?? '',
+            'MCN' => $notificationData['MCN'] ?? '',
+            'PAYMENTDATETIME' => $notificationData['PAYMENTDATETIME'] ?? '',
+            'VERIFYID' => $notificationData['VERIFYID'] ?? '',
+            'VERIFYSCORE' => $notificationData['VERIFYSCORE'] ?? '',
+            'VERIFYSTATUS' => $notificationData['VERIFYSTATUS'] ?? '',
+            'CURRENCY' => $notificationData['CURRENCY'] ?? '',
+            'PURCHASECURRENCY' => $notificationData['PURCHASECURRENCY'] ?? '',
+            'BRAND' => $notificationData['BRAND'] ?? '',
+            'CHNAME' => $notificationData['CHNAME'] ?? '',
+            'THREEDSECURESTATUS' => $notificationData['THREEDSECURESTATUS'] ?? '',
+            'LIABILITY' => $notificationData['LIABILITY'] ?? '',
+            'EDUSTATUS' => $notificationData['EDUSTATUS'] ?? '',
+            'CUSTOMERID' => $notificationData['CUSTOMERID'] ?? '',
+            'TOKENID' => $notificationData['TOKENID'] ?? '',
+        ];
+
+        return http_build_query($formData);
     }
 }

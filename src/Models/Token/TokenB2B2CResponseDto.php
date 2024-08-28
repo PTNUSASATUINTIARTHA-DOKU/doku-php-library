@@ -1,6 +1,6 @@
 <?php
 namespace Doku\Snap\Models\Token;
-class TokenB2b2cResponseDto
+class TokenB2B2CResponseDto
 {
     public ?string $responseCode;
     public ?string $responseMessage;

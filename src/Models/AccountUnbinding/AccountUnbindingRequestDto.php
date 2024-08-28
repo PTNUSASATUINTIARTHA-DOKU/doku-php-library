@@ -1,6 +1,5 @@
 <?php
 namespace Doku\Snap\Models\AccountUnbinding;
-use Doku\Snap\Models\AdditionalInfo\AccountUnbindingAdditionalInfoRequestDto;
 class AccountUnbindingRequestDto
 {
     public ?string $tokenId;

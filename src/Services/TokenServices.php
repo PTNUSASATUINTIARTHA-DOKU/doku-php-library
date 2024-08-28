@@ -43,6 +43,16 @@ class TokenServices
         return $base64Signature;
     }
 
+    public function generateAsymmetricSignature(
+        string $privateKey,
+        string $clientId,
+        string $timestamp
+    ): string {
+        $stringToSign = $clientId . "|" . $timestamp;
+        $signature = hash_hmac('sha512', $stringToSign, $privateKey, true);
+        return base64_encode($signature);
+    }
+
     public function createTokenB2BRequestDto(string $signature, string $timestamp, string $clientId): TokenB2BRequestDto
     {
         try {
@@ -266,16 +276,6 @@ class TokenServices
         $bodyHashHex = strtolower($bodyHash);
         $stringToSign = $httpMethod . ":" . $endpointUrl . ":" . $tokenB2B . ":" . $bodyHashHex . ":" . $timestamp;
         $signature = hash_hmac('sha512', $stringToSign, $secretKey, true);
-        return base64_encode($signature);
-    }
-
-    public function generateAsymmetricSignature(
-        string $privateKey,
-        string $clientId,
-        string $timestamp
-    ): string {
-        $stringToSign = $clientId . "|" . $timestamp;
-        $signature = hash_hmac('sha512', $stringToSign, $privateKey, true);
         return base64_encode($signature);
     }
 }

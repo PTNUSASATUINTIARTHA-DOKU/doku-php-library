@@ -90,7 +90,10 @@ class TokenController
             $clientId,
             $externalId,
             $channelId,
-            $tokenB2B
+            $tokenB2B,
+            null,
+            null,
+            null
         );
     }
 

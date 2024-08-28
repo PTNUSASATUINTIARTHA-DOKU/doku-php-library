@@ -1,5 +1,5 @@
 <?php
-namespace Doku\Snap\Models\AdditionalInfo;
+namespace Doku\Snap\Models\VA\AdditionalInfo;
 class Origin
 {
     public string $product = "SDK";

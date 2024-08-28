@@ -1,6 +1,5 @@
 <?php
 namespace Doku\Snap\Models\AccountBinding;
-use Doku\Snap\Models\AdditionalInfo\AccountBindingAdditionalInfoRequestDto;
 class AccountBindingRequestDto
 {
     public ?string $phoneNo;

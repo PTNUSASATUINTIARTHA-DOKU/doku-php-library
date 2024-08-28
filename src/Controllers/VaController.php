@@ -147,6 +147,9 @@ class VaController
             $externalId,
             "SDK", // Use 'SDK' as the channel ID
             $tokenB2B, 
+            null,
+            null,
+            null
         );
 
         return $this->vaServices->doCheckStatusVa($header, $checkVARequestDto);
@@ -161,4 +164,6 @@ class VaController
     {
         return $this->vaServices->convertVAInquiryResponseV1XmlToSnapJson($xmlString);
     }
+
+    
 }

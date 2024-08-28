@@ -1,6 +1,6 @@
 <?php
-namespace Doku\Snap\Models\AdditionalInfo;
-class CheckStatusResponseAdditionalInfo
+namespace Doku\Snap\Models\VA\AdditionalInfo;
+class CheckStatusVaResponseAdditionalInfo
 {
     public $acquirer;
 

@@ -1,6 +1,6 @@
 <?php
 namespace Doku\Snap\Models\VA\VirtualAccountData;
-use Doku\Snap\Models\AdditionalInfo\DeleteVaResponseAdditionalInfo;
+use Doku\Snap\Models\VA\AdditionalInfo\DeleteVaResponseAdditionalInfo;
 class DeleteVaResponseVirtualAccountData
 {
     public ?string $partnerServiceId;

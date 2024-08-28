@@ -1,5 +1,5 @@
 <?php
-namespace Doku\Snap\Models\AdditionalInfo;
+namespace Doku\Snap\Models\AccountUnbinding;
 class AccountUnbindingAdditionalInfoRequestDto
 {
     public string $channel;

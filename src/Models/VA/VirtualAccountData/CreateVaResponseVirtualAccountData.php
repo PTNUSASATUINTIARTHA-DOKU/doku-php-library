@@ -1,7 +1,7 @@
 <?php
 namespace Doku\Snap\Models\VA\VirtualAccountData;
 use Doku\Snap\Models\TotalAmount\TotalAmount;
-use Doku\Snap\Models\AdditionalInfo\CreateVaResponseAdditionalInfo;
+use Doku\Snap\Models\VA\AdditionalInfo\CreateVaResponseAdditionalInfo;
 class CreateVaResponseVirtualAccountData
 {
     public ?string $partnerServiceId;

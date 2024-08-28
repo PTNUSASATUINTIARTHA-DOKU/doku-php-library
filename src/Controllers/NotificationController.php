@@ -34,4 +34,10 @@ class NotificationController
         return $this->notificationServices->generateInvalidTokenNotificationResponse($paymentNotificationRequestBodyDto);
     }
 
+    public function convertDOKUNotificationToForm($notificationJson)
+    {
+        return $this->notificationServices->convertDOKUNotificationToForm($notificationJson);
+    }
+
+
 }

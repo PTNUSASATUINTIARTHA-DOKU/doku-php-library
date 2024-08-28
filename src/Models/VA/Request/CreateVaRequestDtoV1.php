@@ -1,7 +1,7 @@
 <?php
 namespace Doku\Snap\Models\VA\Request;
 use Doku\Snap\Models\TotalAmount\TotalAmount;
-use Doku\Snap\Models\AdditionalInfo\CreateVaRequestAdditionalInfo;
+use Doku\Snap\Models\VA\AdditionalInfo\CreateVaRequestAdditionalInfo;
 use Doku\Snap\Models\VA\VirtualAccountConfig\CreateVaVirtualAccountConfig;
 class CreateVaRequestDtoV1
 {

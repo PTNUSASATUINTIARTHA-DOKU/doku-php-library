@@ -1,6 +1,6 @@
 <?php
-namespace Doku\Snap\Models\AdditionalInfo;
-class AccountBindingAdditionalInfoResponseDto
+namespace Doku\Snap\Models\CardRegistration;
+class CardRegistrationAdditionalInfoResponseDto
 {
     public ?string $custIdMerchant;
     public ?string $status;

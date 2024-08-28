@@ -1,7 +1,7 @@
 <?php
 namespace Doku\Snap\Models\VA\VirtualAccountData;
 use Doku\Snap\Models\TotalAmount\TotalAmount;
-use Doku\Snap\Models\AdditionalInfo\CheckStatusResponseAdditionalInfo;
+use Doku\Snap\Models\VA\AdditionalInfo\CheckStatusVaResponseAdditionalInfo;
 class CheckStatusVirtualAccountData
 {
     public ?CheckStatusResponsePaymentFlagReason $paymentFlagReason;
@@ -13,7 +13,7 @@ class CheckStatusVirtualAccountData
     public ?string $trxId;
     public ?TotalAmount $paidAmount;
     public ?TotalAmount $billAmount;
-    public ?CheckStatusResponseAdditionalInfo $additionalInfo;
+    public ?CheckStatusVaResponseAdditionalInfo $additionalInfo;
 
     public function __construct(
         ?CheckStatusResponsePaymentFlagReason $paymentFlagReason,

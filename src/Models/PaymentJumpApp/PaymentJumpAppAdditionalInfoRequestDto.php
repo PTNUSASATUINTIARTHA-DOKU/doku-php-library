@@ -1,9 +1,11 @@
 <?php
-namespace Doku\Snap\Models\AdditionalInfo;
+namespace Doku\Snap\Models\PaymentJumpApp;
 class PaymentJumpAppAdditionalInfoRequestDto
 {
     public ?string $channel;
+    // Dana
     public ?string $orderTitle;
+    // Shopeepay
     public ?string $metadata;
 
     public function __construct(
@@ -12,7 +14,7 @@ class PaymentJumpAppAdditionalInfoRequestDto
         ?string $metadata
     ) {
         $this->channel = $channel;
-        $this->orderTitle = $orderTitle; // dana
-        $this->metadata = $metadata; // shoppe pay
+        $this->orderTitle = $orderTitle;
+        $this->metadata = $metadata;
     }
 }

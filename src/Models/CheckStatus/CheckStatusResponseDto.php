@@ -2,7 +2,6 @@
 
 namespace Doku\Snap\Models\CheckStatus;
 use Doku\Snap\Models\TotalAmount\TotalAmount;
-use Doku\Snap\Models\AdditionalInfo\CheckStatusAdditionalInfoResponseDto;
 
 class CheckStatusResponseDto
 {

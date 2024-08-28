@@ -1,7 +1,6 @@
 <?php
 
 namespace Doku\Snap\Models\BalanceInquiry;
-use Doku\Snap\Models\AdditionalInfo\BalanceInquiryAdditionalInfoRequestDto;
 
 class BalanceInquiryRequestDto
 {

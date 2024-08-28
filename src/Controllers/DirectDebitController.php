@@ -1,11 +1,11 @@
 <?php
 namespace Doku\Snap\Controllers;
-use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppRequestDto;
-use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppResponseDto;
 use Doku\Snap\Commons\Helper;
 use Doku\Snap\Commons\Config;
 use Doku\Snap\Services\DirectDebitServices;
 use Doku\Snap\Services\TokenServices;
+use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppRequestDto;
+use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppResponseDto;
 use Doku\Snap\Models\AccountBinding\AccountBindingRequestDto;
 use Doku\Snap\Models\AccountBinding\AccountBindingResponseDto;
 use Doku\Snap\Models\Payment\PaymentRequestDto;

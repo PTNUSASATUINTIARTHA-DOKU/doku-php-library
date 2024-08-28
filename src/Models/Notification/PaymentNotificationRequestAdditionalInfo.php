@@ -1,5 +1,5 @@
 <?php
-namespace Doku\Snap\Models\AdditionalInfo;
+namespace Doku\Snap\Models\Notification;
 class PaymentNotificationRequestAdditionalInfo {
     public ?string $channel;
     public ?string $senderName;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Doku\Snap\Models\AdditionalInfo;
+namespace Doku\Snap\Models\Refund;
 
 class RefundAdditionalInfoRequestDto
 {
