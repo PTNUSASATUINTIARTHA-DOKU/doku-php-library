@@ -28,6 +28,17 @@ use Doku\Snap\Models\AccountBinding\AccountBindingResponseDto;
 use Doku\Snap\Models\AccountUnbinding\AccountUnbindingResponseDto;
 use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppResponseDto;
 use Doku\Snap\Models\AccountBinding\AccountBindingAdditionalInfoResponseDto;
+use Doku\Snap\Models\CheckStatus\CheckStatusRequestDto;
+use Doku\Snap\Models\CheckStatus\CheckStatusAdditionalInfoRequestDto;
+use Doku\Snap\Models\Refund\RefundAdditionalInfoRequestDto;
+use Doku\Snap\Models\Refund\RefundRequestDto;
+use Doku\Snap\Models\CardRegistration\CardRegistrationRequestDto;
+use Doku\Snap\Models\CardRegistration\CardRegistrationResponseDto;
+use Doku\Snap\Models\CardRegistration\CardRegistrationAdditionalInfoRequestDto;
+use Doku\Snap\Models\CardRegistration\CardRegistrationAdditionalInfoResponseDto;
+use Doku\Snap\Models\BalanceInquiry\BalanceInquiryAdditionalInfoRequestDto;
+use Doku\Snap\Models\BalanceInquiry\BalanceInquiryRequestDto;
+
 
 // Authentication and configuration
 $privateKey = "-----BEGIN PRIVATE KEY-----
@@ -66,9 +77,10 @@ $publicKey = "-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr7gNEvkfERhKE8WWH5LHTWpt/4jays2P0ahmzeBn9I7iDfF51DPHRr+A1apl0METDHkNzf2NuqTAydb/4uhOQcFmrAQL3kpO25lAUGDFEc8a7wW730TbyMLWA2vnMd/R2pn4mGDh6uIWVUuhtpvEqgxITjcYR0JhD/RTx0joz0FikpYMa09wSiPREqUKH3MSkV94cn4ejHnVk5WaV1CayPW3egM4NxXecKXx0JS3CkkfF69hKx+3TUuCNtQ0x0fuqsdNk6HL+Q99Dg2pgOshvYcZxRES1RPvBpyROdmI47JuaLRkcIx0uJ4EkoXPwJNWcpLGgkxZdMRMEydaHhEn3wIDAQAB
 -----END PUBLIC KEY-----";
 $secretKey = "SK-tDzY6MSLBWlNXy3qCsUU";
+$authCode = "";
 
 // Initialize Snap
-$Snap = new Snap($privateKey, $publicKey, $clientId, $issuer, $isProduction, $secretKey);
+$Snap = new Snap($privateKey, $publicKey, $clientId, $issuer, $isProduction, $secretKey, $authCode);
 
 function createVA($Snap, $privateKey, $clientId, $secretKey, $isProduction) {
     echo "Create VA B2B: " . PHP_EOL;
@@ -251,7 +263,7 @@ function testPaymentJumpApp($Snap, $privateKey, $clientId, $secretKey, $isProduc
     $additionalInfo = new PaymentJumpAppAdditionalInfoRequestDto(
         "Mandiri",  // channel
         "Payment for Order #123",  // remarks
-        null
+        "merchantId"
     );
 
     $urlParam = new UrlParamDto("url", "type", "no");
@@ -264,10 +276,137 @@ function testPaymentJumpApp($Snap, $privateKey, $clientId, $secretKey, $isProduc
         $totalAmount,
         $additionalInfo
     );
-
-    $result = $Snap->doPaymentJumpApp($paymentJumpAppRequestDto, $privateKey, $clientId, $secretKey, $isProduction);
+    $deviceId = "";
+    $result = $Snap->doPaymentJumpApp($paymentJumpAppRequestDto, $deviceId, $privateKey, $clientId, $secretKey, $isProduction);
     echo json_encode($result, JSON_PRETTY_PRINT);
     return $result;
+}
+
+function testCheckStatus($snap, $privateKey, $clientId, $secretKey, $isProduction) {
+        echo "Testing Check Status: " . PHP_EOL;
+
+        // Create the CheckStatusRequestDto
+        $checkStatusRequestDto = new CheckStatusRequestDto(
+            "originalPartnerRefNo123",     // originalPartnerReferenceNo
+            "originalRefNo456",            // originalReferenceNo
+            "originalExtId789",            // originalExternalId
+            "SERVICE_CODE_001",            // serviceCode
+            "2023-08-29T12:00:00+07:00",   // transactionDate
+            new TotalAmount(100000, "IDR"),// totalAmount
+            "MERCHANT_001",                // merchantId
+            "SUBMERCHANT_001",             // subMerchantId
+            "STORE_001",                   // externalStoreId
+            new CheckStatusAdditionalInfoRequestDto("DEVICE_001", "DIRECT_DEBIT_MANDIRI") // additionalInfo
+        );
+
+        // Assume we have an authCode (you might need to obtain this separately)
+        $authCode = "exampleAuthCode456";
+
+        try {
+            // Call the doCheckStatus method
+            $response = $snap->doCheckStatus(
+                $checkStatusRequestDto,
+                $authCode,
+                $privateKey,
+                $clientId,
+                $secretKey,
+                $isProduction
+            );
+
+            // Print the response
+            echo json_encode($response, JSON_PRETTY_PRINT) . PHP_EOL;
+            return $response;
+        } catch (Exception $e) {
+            echo "Error: " . $e->getMessage() . PHP_EOL;
+            return null;
+        }
+    }
+
+function testRefund($snap, $authCode, $privateKey, $clientId, $secretKey, $isProduction) {
+    $additionalInfo = new RefundAdditionalInfoRequestDto("WEB");
+    $refundAmount = new TotalAmount("100.00", "USD");
+    $refundRequest = new RefundRequestDto(
+        $additionalInfo,
+        "ORIG123",
+        "EXT456",
+        $refundAmount,
+        "Customer request",
+        "REF789"
+    );
+    $result = $snap->doRefund($refundRequest, $authCode, $privateKey, $clientId, $secretKey, $isProduction);
+    echo json_encode($result, JSON_PRETTY_PRINT);
+    return $result;
+}
+
+function testCardRegistration($snap, $deviceId, $privateKey, $clientId, $secretKey, $isProduction) {
+    $additionalInfo = new CardRegistrationAdditionalInfoRequestDto(
+        'Mandiri',
+        'John Doe',
+        'john@example.com',
+        '1234567890',
+        'ID',
+        '123 Main St',
+        '19900101',
+        'http://success.url',
+        'http://failed.url'
+    );
+
+    $cardRegistrationRequestDto = new CardRegistrationRequestDto(
+        'encrypted_card_data',
+        'cust123',
+        '081234567890',
+        $additionalInfo
+    );
+
+    $response = $snap->doCardRegistration(
+        $cardRegistrationRequestDto,
+        $deviceId,
+        $privateKey,
+        $clientId,
+        $secretKey,
+        $isProduction
+    );
+
+    echo json_encode($response, JSON_PRETTY_PRINT);
+    return $response;
+}
+
+function testBalanceInquiry($Snap, $privateKey, $clientId, $secretKey, $isProduction) {
+    echo "Testing Balance Inquiry: " . PHP_EOL;
+
+    // Create the BalanceInquiryAdditionalInfoRequestDto
+    $additionalInfo = new BalanceInquiryAdditionalInfoRequestDto(
+        "DIRECT_DEBIT_MANDIRI"  // channel
+    );
+
+    // Create the BalanceInquiryRequestDto
+    $balanceInquiryRequestDto = new BalanceInquiryRequestDto($additionalInfo);
+
+    // Assume we have an authCode (you might need to obtain this separately)
+    $authCode = "exampleAuthCode123";
+
+    try {
+        // Call the doBalanceInquiry method
+        $result = $Snap->doBalanceInquiry($balanceInquiryRequestDto, $authCode);
+
+        // Print the result
+        echo "Response Code: " . $result->responseCode . PHP_EOL;
+        echo "Response Message: " . $result->responseMessage . PHP_EOL;
+        echo "Account Infos: " . PHP_EOL;
+        
+        foreach ($result->accountInfos as $accountInfo) {
+            echo "  Balance Type: " . $accountInfo->balanceType . PHP_EOL;
+            echo "  Amount: " . $accountInfo->amount->value . " " . $accountInfo->amount->currency . PHP_EOL;
+            echo "  Flat Amount: " . $accountInfo->flatAmount->value . " " . $accountInfo->flatAmount->currency . PHP_EOL;
+            echo "  Hold Amount: " . $accountInfo->holdAmount->value . " " . $accountInfo->holdAmount->currency . PHP_EOL;
+            echo "---" . PHP_EOL;
+        }
+
+        return $result;
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage() . PHP_EOL;
+        return null;
+    }
 }
 
 function convertV1toSnap($Snap, $dtov1) {
@@ -290,10 +429,22 @@ function convertVAInquiryResponseV1XmlToSnapJson($Snap, string $xmlString)
     echo $result . "\n";
 }
 
-function convertDOKUNotificationToForm($Snap, string $notification){
+function convertDOKUNotificationToForm($Snap){
     echo "Convert DOKU Notification To Form: " . PHP_EOL;
+    $notification = '{
+        "partnerServiceId": "1899",
+        "customerNo": "20240709001",
+        "virtualAccountNo": "189920240709001",
+        "virtualAccountName": "Toru Yamashita",
+        "trxId": "23219829713",
+        "paidAmount": {
+                "value": "10000.00",
+                "currency": "840"
+            }
+        }';
     $result = $Snap->convertDOKUNotificationToForm($notification);
     echo $result . "\n";
+    return $result;
 }
 
 
@@ -307,4 +458,9 @@ function convertDOKUNotificationToForm($Snap, string $notification){
 // $result = testAccountBinding($Snap, $privateKey, $clientId, $secretKey, $isProduction);
 // $result = testAccountUnbinding($Snap, $privateKey, $clientId, $secretKey, $isProduction);
 // $result = testPaymentJumpApp($Snap, $privateKey, $clientId, $secretKey, $isProduction);
-$result = convertDOKUNotificationToForm($Snap, $notification);
+$result = testBalanceInquiry($Snap, $privateKey, $clientId, $secretKey, $isProduction);
+// $result = testCardRegistration($snap, $deviceId, $privateKey, $clientId, $secretKey, $isProduction);
+// $result = testRefund($Snap, $privateKey, $clientId, $secretKey, $isProduction);
+// $result = testCheckStatus($Snap, $privateKey, $clientId, $secretKey, $isProduction);
+// $result = testPaymentJumpApp($Snap, $privateKey, $clientId, $secretKey, $isProduction);
+// $result = convertDOKUNotificationToForm($Snap);

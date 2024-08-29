@@ -61,7 +61,7 @@ class Snap
     private ?string $deviceId = "";
     private ?string $ipAddress = "";
 
-    public function __construct(string $privateKey, string $publicKey, string $clientId, string $issuer, bool $isProduction, string $secretKey)
+    public function __construct(string $privateKey, string $publicKey, string $clientId, string $issuer, bool $isProduction, string $secretKey, string $authCode)
     {
         $this->privateKey = $privateKey;
         $this->publicKey = $publicKey;
@@ -77,6 +77,8 @@ class Snap
 
         $tokenB2BResponseDto = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
         $this->setTokenB2B($tokenB2BResponseDto);
+        $tokenB2B2CResponseDto = $this->tokenB2BController->getTokenB2B2C($authCode, $privateKey, $clientId, $isProduction);
+        $this->setTokenB2B2C($tokenB2B2CResponseDto);
     }
 
     private function validateString(string $input): string

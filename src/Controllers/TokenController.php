@@ -72,7 +72,7 @@ class TokenController
 
     public function getTokenB2B2C(string $authCode, string $privateKey, string $clientId, bool $isProduction): TokenB2B2CResponseDto
     {
-        $timestamp = $this->tokenServices->getTimestamp() - 7;
+        $timestamp = $this->tokenServices->getTimestamp(-7);
         $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
         $tokenB2b2cRequestDto = $this->tokenServices->createTokenB2B2CRequestDto($authCode);
         return $this->tokenServices->hitTokenB2B2CApi($tokenB2b2cRequestDto, $timestamp, $signature, $clientId, $isProduction);

@@ -95,7 +95,10 @@ class NotificationServices
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new Exception("Failed to decode JSON: " . json_last_error_msg());
         }
-
+        $currency = $notificationData['paidAmount']['currency'] ?? '';
+        if($currency == "IDR") {
+            $currency = "360";
+        }
         $formData = [
             'AMOUNT' => $notificationData['paidAmount']['value'] ?? '',
             'TRANSIDMERCHANT' => $notificationData['trxId'] ?? '',
@@ -113,7 +116,7 @@ class NotificationServices
             'VERIFYID' => $notificationData['VERIFYID'] ?? '',
             'VERIFYSCORE' => $notificationData['VERIFYSCORE'] ?? '',
             'VERIFYSTATUS' => $notificationData['VERIFYSTATUS'] ?? '',
-            'CURRENCY' => $notificationData['paidAmount']['currency'] ?? '',
+            'CURRENCY' => $currency,
             'PURCHASECURRENCY' => $notificationData['paidAmount']['currency'] ?? '',
             'BRAND' => $notificationData['BRAND'] ?? '',
             'CHNAME' => $notificationData['CHNAME'] ?? '',

@@ -21,9 +21,9 @@ class TokenServices
     private string $tokenB2B;
     private string $tokenExpiresIn;
 
-    public function getTimestamp(): string
+    public function getTimestamp($buffer = 0): string
     {
-       return Helper::getTimestamp();
+       return Helper::getTimestamp($buffer);
     }
 
     public function createSignature(string $privateKey, string $clientId, string $timestamp): string

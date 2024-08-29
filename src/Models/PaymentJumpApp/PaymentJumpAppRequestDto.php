@@ -32,23 +32,11 @@ class PaymentJumpAppRequestDto
         if (empty($this->partnerReferenceNo)) {
             throw new \InvalidArgumentException('Partner Reference Number is required');
         }
-        if (empty($this->merchantId)) {
-            throw new \InvalidArgumentException('Merchant ID is required');
-        }
-        if (empty($this->merchantTradeNo)) {
-            throw new \InvalidArgumentException('Merchant Trade No is required');
-        }
-        if (empty($this->amount) || !is_numeric($this->amount)) {
+        if (empty($this->amount)) {
             throw new \InvalidArgumentException('Valid amount is required');
-        }
-        if (empty($this->currency)) {
-            throw new \InvalidArgumentException('Currency is required');
         }
         if (!in_array($this->additionalInfo->channel, ['EMONEY_SHOPEE_PAY_SNAP', 'EMONEY_DANA_SNAP'])) {
             throw new \InvalidArgumentException('Invalid channel');
-        }
-        if (empty($this->deviceId)) {
-            throw new \InvalidArgumentException('Device ID is required');
         }
     }
 
