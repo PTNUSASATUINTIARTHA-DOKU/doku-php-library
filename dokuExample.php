@@ -439,7 +439,7 @@ function convertDOKUNotificationToForm($Snap){
         "trxId": "23219829713",
         "paidAmount": {
                 "value": "10000.00",
-                "currency": "840"
+                "currency": "IDR"
             }
         }';
     $result = $Snap->convertDOKUNotificationToForm($notification);
@@ -458,9 +458,9 @@ function convertDOKUNotificationToForm($Snap){
 // $result = testAccountBinding($Snap, $privateKey, $clientId, $secretKey, $isProduction);
 // $result = testAccountUnbinding($Snap, $privateKey, $clientId, $secretKey, $isProduction);
 // $result = testPaymentJumpApp($Snap, $privateKey, $clientId, $secretKey, $isProduction);
-$result = testBalanceInquiry($Snap, $privateKey, $clientId, $secretKey, $isProduction);
+// $result = testBalanceInquiry($Snap, $privateKey, $clientId, $secretKey, $isProduction);
 // $result = testCardRegistration($snap, $deviceId, $privateKey, $clientId, $secretKey, $isProduction);
 // $result = testRefund($Snap, $privateKey, $clientId, $secretKey, $isProduction);
 // $result = testCheckStatus($Snap, $privateKey, $clientId, $secretKey, $isProduction);
 // $result = testPaymentJumpApp($Snap, $privateKey, $clientId, $secretKey, $isProduction);
-// $result = convertDOKUNotificationToForm($Snap);
+$result = convertDOKUNotificationToForm($Snap);

@@ -104,7 +104,7 @@ class NotificationServices
             'TRANSIDMERCHANT' => $notificationData['trxId'] ?? '',
             'WORDS' => $notificationData['WORDS'] ?? '',
             'STATUSTYPE' => $notificationData['STATUSTYPE'] ?? '',
-            'RESPONSECODE' => $notificationData['RESPONSECODE'] ?? '',
+            'RESPONSECODE' => $notificationData['RESPONSECODE'] ?? '000',
             'APPROVALCODE' => $notificationData['APPROVALCODE'] ?? '',
             'RESULTMSG' => $notificationData['RESULTMSG'] ?? '',
             'PAYMENTCHANNEL' => $notificationData['PAYMENTCHANNEL'] ?? '',
