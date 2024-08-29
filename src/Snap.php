@@ -92,12 +92,6 @@ class Snap
         $this->tokenB2B = $tokenB2BResponseDto->accessToken;
         $this->tokenB2BExpiresIn = $tokenB2BResponseDto->expiresIn - 10; // Subtract 10 seconds as in diagram requirements
         $this->tokenB2BGeneratedTimestamp = time();
-
-        // TODO
-        // The code should be more efficient
-        // kalau belum expire jangan lanjutin / tembak lagi 
-        // persistent token should be handled
-        // redis?
     }
 
 
@@ -163,11 +157,8 @@ class Snap
 
     public function createVa($createVaRequestDto): CreateVaResponseDto
     {
-        $status = $createVaRequestDto->validateCreateVaRequestDto();
+        $createVaRequestDto->validateCreateVaRequestDto();
         $createVaRequestDto->additionalInfo->origin = new Origin();
-        // TODO review is it referring to the same token or not
-        // what if there are 2 merchant in same time hitting API
-        // async or not
         $checkTokenInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
         if($checkTokenInvalid){
             $tokenB2BResponseDto = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
