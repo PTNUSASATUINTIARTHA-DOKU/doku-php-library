@@ -100,8 +100,15 @@ class Snap
      */
     public function getTokenAndTime(): string
     {
-        $string = $this->tokenB2B . PHP_EOL;
-        $string = $string . "Generated timestamp: " . $this->tokenB2BGeneratedTimestamp . PHP_EOL;
+        $env = '';
+        if ($this->isProduction) {
+            $env = 'Production';
+        } else {
+            $env = 'Sandbox';
+        }
+        $string = "Environment: " . $env . PHP_EOL;
+        $string = $string . "TokenB2B: " . $this->tokenB2B . PHP_EOL;
+        //$string = $string . "Generated timestamp: " . $this->tokenB2BGeneratedTimestamp . PHP_EOL;
         return $string  . "Expired In: " . $this->tokenB2BExpiresIn . PHP_EOL;
     }
 

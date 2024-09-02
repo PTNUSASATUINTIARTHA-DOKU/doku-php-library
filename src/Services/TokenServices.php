@@ -87,7 +87,7 @@ class TokenServices
                 $responseData['responseMessage'] ?? '',
                 $responseData['accessToken'] ?? '',
                 $responseData['tokenType'] ?? '',
-                $responseData['expiresIn'] ?? '',
+                $responseData['expiresIn'] ?? -1,
                 $responseData['additionalInfo'] ?? ''
             );
         } catch (Error $e) {

@@ -1,2 +1,4 @@
 .DS_Store
 composer.lock
+example.php
+dokuExample.php
