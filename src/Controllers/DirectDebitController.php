@@ -20,6 +20,8 @@ use Doku\Snap\Models\BalanceInquiry\BalanceInquiryRequestDto;
 use Doku\Snap\Models\BalanceInquiry\BalanceInquiryResponseDto;
 use Doku\Snap\Models\CheckStatus\CheckStatusRequestDto;
 use Doku\Snap\Models\CheckStatus\CheckStatusResponseDto;
+use Doku\Snap\Models\NotifyPayment\NotifyPaymentDirectDebitRequestDto;
+use Doku\Snap\Models\NotifyPayment\NotifyPaymentDirectDebitResponseDto;
 class DirectDebitController
 {
     private TokenServices $tokenServices;
@@ -173,6 +175,42 @@ class DirectDebitController
         return $this->directDebitServices->doAccountUnbindingProcess($header, $accountUnbindingRequestDto, $isProduction);
     }
 
+    public function doCardUnbinding(
+        AccountUnbindingRequestDto $accountUnbindingRequestDto,
+        string $privateKey,
+        string $clientId,
+        string $tokenB2B,
+        string $ipAddress,
+        string $secretKey,
+        bool $isProduction
+    ): AccountUnbindingResponseDto {
+        $timestamp = Helper::getTimestamp();
+        $baseUrl = Config::getBaseURL($isProduction);
+        $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_ACCOUNT_UNBINDING_URL;
+        $httpMethod = 'POST';
+        $signature = $this->tokenServices->generateSymmetricSignature(
+            $httpMethod, 
+            $apiEndpoint, 
+            $tokenB2B, 
+            $accountUnbindingRequestDto->generateJSONBody(), 
+            $timestamp, 
+            $secretKey);
+        $externalId =  Helper::generateExternalId();
+        $header =  Helper::generateRequestHeaderDto(
+            $timestamp, 
+            $signature, 
+            $clientId, 
+            $externalId, 
+            null, 
+            $tokenB2B, 
+            $ipAddress,
+            null,
+            null
+        );
+
+        return $this->directDebitServices->doCardUnbindingProcess($header, $accountUnbindingRequestDto, $isProduction);
+    }
+
     public function doCardRegistration(
         CardRegistrationRequestDto $cardRegistrationRequestDto,
         string $deviceId,
@@ -313,5 +351,19 @@ class DirectDebitController
         );
 
         return $this->directDebitServices->doCheckStatus($header, $checkStatusRequestDto, $isProduction);
+    }
+
+    public function handleDirectDebitNotification(
+        NotifyPaymentDirectDebitRequestDto $requestDto,
+        string $xSignature,
+        string $xTimestamp,
+        string $clientSecret
+    ): NotifyPaymentDirectDebitResponseDto {
+        return $this->directDebitServices->handleDirectDebitNotification(
+            $requestDto,
+            $xSignature,
+            $xTimestamp,
+            $clientSecret
+        );
     }
 }

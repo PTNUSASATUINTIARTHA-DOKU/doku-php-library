@@ -451,8 +451,34 @@ class Snap
             $this->setTokenB2B($tokenB2BResponse);
         }
 
-        
         return $this->directDebitController->doAccountUnbinding(
+            $accountUnbindingRequestDto,
+            $privateKey,
+            $clientId,
+            $this->tokenB2B,
+            $this->ipAddress,
+            $secretKey,
+            $isProduction
+        );
+    }
+
+    public function doCardUnbinding(
+        AccountUnbindingRequestDto $accountUnbindingRequestDto,
+        string $privateKey,
+        string $clientId,
+        string $secretKey,
+        bool $isProduction
+    ): AccountUnbindingResponseDto {
+        $accountUnbindingRequestDto->validateAccountUnbindingRequestDto();
+
+        $isTokenInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
+
+        if ($isTokenInvalid) {
+            $tokenB2BResponse = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
+            $this->setTokenB2B($tokenB2BResponse);
+        }
+
+        return $this->directDebitController->doCardUnbinding(
             $accountUnbindingRequestDto,
             $privateKey,
             $clientId,
@@ -572,6 +598,19 @@ class Snap
             $this->tokenB2B,
             $secretKey,
             $isProduction
+        );
+    }
+
+    public function handleDirectDebitNotification(
+        NotifyPaymentDirectDebitRequestDto $requestDto,
+        string $xSignature,
+        string $xTimestamp
+    ): NotifyPaymentDirectDebitResponseDto {
+        return $this->directDebitController->handleDirectDebitNotification(
+            $requestDto,
+            $xSignature,
+            $xTimestamp,
+            $this->secretKey
         );
     }
 }

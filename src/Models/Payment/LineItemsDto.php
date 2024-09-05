@@ -12,4 +12,13 @@ class LineItemsDto
         $this->price = $price;
         $this->quantity = $quantity;
     }
+
+    public function generateJSONBody()
+    {
+        return [
+            'name' => $this->name,
+            'price' => $this->price,
+            'quantity' => $this->quantity
+        ];
+    }
 }

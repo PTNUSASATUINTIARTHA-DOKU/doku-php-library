@@ -14,10 +14,12 @@ class Config {
     const DIRECT_DEBIT_PAYMENT_URL = '/direct-debit/core/v1/debit/payment-host-to-host';
     const DIRECT_DEBIT_ACCOUNT_BINDING_URL = '/direct-debit/core/v1/registration-account-binding';
     const DIRECT_DEBIT_ACCOUNT_UNBINDING_URL = '/direct-debit/core/v1/registration-account-unbinding';
+    const DIRECT_DEBIT_CARD_UNBINDING_URL = '/direct-debit/core/v1/registration-card-unbind';
     const CARD_REGISTRATION_URL = '/direct-debit/v2/card-registration';
     const DIRECT_DEBIT_REFUND_URL = '/direct-debit/v1/refund';
     const DIRECT_DEBIT_BALANCE_INQUIRY_URL= '/direct-debit/core/v1/balance-inquiry';
     const DIRECT_DEBIT_CHECK_STATUS_URL = '/orders/v1.0/debit/status';
+    const DIRECT_DEBIT_PAYMENT_NOTIF_URL = '/v1.0/debit/notify';
 
     public static function getBaseURL($isProduction) {
             $url = $isProduction ? Config::PRODUCTION_BASE_URL : Config::SANDBOX_BASE_URL;

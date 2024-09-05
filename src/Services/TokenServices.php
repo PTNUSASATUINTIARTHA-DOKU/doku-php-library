@@ -236,7 +236,7 @@ class TokenServices
         }
     }
 
-    function generateToken(int $expiredIn, string $issuer, string $privateKey, string $clientId): string
+    public function generateToken(int $expiredIn, string $issuer, string $privateKey, string $clientId): string
     {
         $issuedAt = time();
         $expiredAt = $issuedAt + $expiredIn;
