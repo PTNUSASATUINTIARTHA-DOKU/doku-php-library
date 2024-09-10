@@ -39,6 +39,16 @@ use Doku\Snap\Models\BalanceInquiry\BalanceInquiryRequestDto;
 use Doku\Snap\Models\BalanceInquiry\BalanceInquiryResponseDto;
 use Doku\Snap\Models\CheckStatus\CheckStatusResponseDto;
 use Doku\Snap\Models\CheckStatus\CheckStatusRequestDto;
+use Doku\Snap\Models\TotalAmount\TotalAmount;
+use Doku\Snap\Models\VA\VirtualAccountData\CreateVaResponseVirtualAccountData;
+use Doku\Snap\Models\VA\AdditionalInfo\CreateVaResponseAdditionalInfo;
+use Doku\Snap\Models\VA\VirtualAccountData\UpdateVaResponseVirtualAccountData;
+use Doku\Snap\Models\VA\VirtualAccountData\DeleteVaResponseVirtualAccountData;
+use Doku\Snap\Models\VA\VirtualAccountData\CheckStatusVirtualAccountData;
+use Doku\Snap\Models\VA\AdditionalInfo\CheckStatusVaResponseAdditionalInfo;
+use Doku\Snap\Models\VA\VirtualAccountData\CheckStatusResponsePaymentFlagReason;
+use Doku\Snap\Models\NotifyPayment\NotifyPaymentDirectDebitRequestDto;
+use Doku\Snap\Models\NotifyPayment\NotifyPaymentDirectDebitResponseDto;
 
 class Snap
 {
@@ -60,6 +70,7 @@ class Snap
     private ?string $secretKey;
     private ?string $deviceId = "";
     private ?string $ipAddress = "";
+    private bool $isSimulation = true;
 
     public function __construct(string $privateKey, string $publicKey, string $clientId, string $issuer, bool $isProduction, string $secretKey, string $authCode)
     {
@@ -166,6 +177,35 @@ class Snap
     {
         $createVaRequestDto->validateCreateVaRequestDto();
         $createVaRequestDto->additionalInfo->origin = new Origin();
+
+        // Check if we're in sandbox mode and use simulation if so
+        if (!$this->isProduction && $this->isSimulation) {
+            $simulatedResponse = $this->simulateTransferVA($createVaRequestDto->trxId, 'createVa');
+            return new CreateVaResponseDto(
+                $simulatedResponse['responseCode'],
+                $simulatedResponse['responseMessage'],
+                isset($simulatedResponse['virtualAccountData']) ? new CreateVaResponseVirtualAccountData(
+                    $simulatedResponse['virtualAccountData']['partnerServiceId'],
+                    $simulatedResponse['virtualAccountData']['customerNo'],
+                    $simulatedResponse['virtualAccountData']['virtualAccountNo'],
+                    $simulatedResponse['virtualAccountData']['virtualAccountName'],
+                    $simulatedResponse['virtualAccountData']['virtualAccountEmail'],
+                    $simulatedResponse['virtualAccountData']['trxId'],
+                    new TotalAmount(
+                        $simulatedResponse['virtualAccountData']['totalAmount']['value'],
+                        $simulatedResponse['virtualAccountData']['totalAmount']['currency']
+                    ),
+                    $simulatedResponse['virtualAccountData']['virtualAccountTrxType'],
+                    $simulatedResponse['virtualAccountData']['expiredDate'],
+                    new CreateVaResponseAdditionalInfo(
+                        'VIRTUAL_ACCOUNT_BNC',
+                        '',
+                        ''
+                    )
+                ) : null
+            );
+        }
+
         $checkTokenInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
         if($checkTokenInvalid){
             $tokenB2BResponseDto = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
@@ -267,7 +307,33 @@ class Snap
         if (!$updateVaRequestDto->validateUpdateVaRequestDto()) {
             return new UpdateVaResponseDto('400', 'Invalid request data', null);
         }
-
+        // Check if we're in sandbox mode and use simulation if so
+        if (!$this->isProduction && $this->isSimulation) {
+            $simulatedResponse = $this->simulateTransferVA($updateVaRequestDto->trxId, 'updateVa');
+            return new UpdateVaResponseDto(
+                $simulatedResponse['responseCode'],
+                $simulatedResponse['responseMessage'],
+                isset($simulatedResponse['virtualAccountData']) ? new UpdateVaResponseVirtualAccountData(
+                    $simulatedResponse['virtualAccountData']['partnerServiceId'],
+                    $simulatedResponse['virtualAccountData']['customerNo'],
+                    $simulatedResponse['virtualAccountData']['virtualAccountNo'],
+                    $simulatedResponse['virtualAccountData']['virtualAccountName'],
+                    $simulatedResponse['virtualAccountData']['virtualAccountEmail'],
+                    $simulatedResponse['virtualAccountData']['virtualAccountPhone'],
+                    $simulatedResponse['virtualAccountData']['trxId'],
+                    new TotalAmount(
+                        $simulatedResponse['virtualAccountData']['totalAmount']['value'],
+                        $simulatedResponse['virtualAccountData']['totalAmount']['currency']
+                    ),
+                    new \Doku\Snap\Models\VA\AdditionalInfo\UpdateVaRequestAdditionalInfo(
+                        'VIRTUAL_ACCOUNT_BNC',
+                        new \Doku\Snap\Models\VA\VirtualAccountConfig\UpdateVaVirtualAccountConfig('ACTIVE')
+                    ),
+                    $simulatedResponse['virtualAccountData']['virtualAccountTrxType'],
+                    $simulatedResponse['virtualAccountData']['expiredDate']
+                ) : null
+            );
+        }
         $isTokenInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
 
         if ($isTokenInvalid) {
@@ -283,6 +349,26 @@ class Snap
     public function deletePaymentCode(DeleteVaRequestDto $deleteVaRequestDto)
     {
         $deleteVaRequestDto->validateDeleteVaRequestDto();
+
+        // Check if we're in sandbox mode and use simulation if so
+        if (!$this->isProduction && $this->isSimulation) {
+            $simulatedResponse = $this->simulateTransferVA($deleteVaRequestDto->trxId, 'deleteVa');
+            return new \Doku\Snap\Models\VA\Response\DeleteVaResponseDto(
+                $simulatedResponse['responseCode'],
+                $simulatedResponse['responseMessage'],
+                isset($simulatedResponse['virtualAccountData']) ? new DeleteVaResponseVirtualAccountData(
+                    $simulatedResponse['virtualAccountData']['partnerServiceId'],
+                    $simulatedResponse['virtualAccountData']['customerNo'],
+                    $simulatedResponse['virtualAccountData']['virtualAccountNo'],
+                    $simulatedResponse['virtualAccountData']['trxId'],
+                    new \Doku\Snap\Models\VA\AdditionalInfo\DeleteVaResponseAdditionalInfo(
+                        $simulatedResponse['virtualAccountData']['additionalInfo']['channel'],
+                        ''
+                    )
+                ) : null
+            );
+        }
+
         $isTokenInvalid = $this->tokenB2BController->isTokenInvalid(
             $this->tokenB2B,
             $this->tokenB2BExpiresIn,
@@ -312,6 +398,34 @@ class Snap
     public function checkStatusVa(CheckStatusVaRequestDto $checkStatusVaRequestDto): CheckStatusVaResponseDto
     {
         $checkStatusVaRequestDto->validateCheckStatusVaRequestDto();
+
+        // Check if we're in sandbox mode and use simulation if so
+        if (!$this->isProduction && $this->isSimulation) {
+            $simulatedResponse = $this->simulateTransferVA($checkStatusVaRequestDto->trxId ?? '1113', 'checkStatusVa');
+            return new CheckStatusVaResponseDto(
+                $simulatedResponse['responseCode'],
+                $simulatedResponse['responseMessage'],
+                isset($simulatedResponse['virtualAccountData']) ? new CheckStatusVirtualAccountData(
+                    new CheckStatusResponsePaymentFlagReason('Success', 'Sukses'),
+                    $simulatedResponse['virtualAccountData']['partnerServiceId'],
+                    $simulatedResponse['virtualAccountData']['customerNo'],
+                    $simulatedResponse['virtualAccountData']['virtualAccountNo'],
+                    $simulatedResponse['virtualAccountData']['trxId'],
+                    $simulatedResponse['virtualAccountData']['trxId'],
+                    $simulatedResponse['virtualAccountData']['trxId'],
+                    new TotalAmount(
+                        $simulatedResponse['virtualAccountData']['totalAmount']['value'],
+                        $simulatedResponse['virtualAccountData']['totalAmount']['currency']
+                    ),
+                    new TotalAmount(
+                        $simulatedResponse['virtualAccountData']['totalAmount']['value'],
+                        $simulatedResponse['virtualAccountData']['totalAmount']['currency']
+                    ),
+                    new CheckStatusVaResponseAdditionalInfo('VIRTUAL_ACCOUNT_BNC')
+                ) : null
+            );
+        }
+
         $isTokenInvalid = $this->tokenB2BController->isTokenInvalid(
             $this->tokenB2B,
             $this->tokenB2BExpiresIn,
@@ -362,6 +476,18 @@ class Snap
         bool $isProduction
     ): PaymentJumpAppResponseDto {
         $requestDto->validatePaymentJumpAppRequestDto();
+
+        // Check if we're in sandbox mode and use simulation if so
+        if (!$this->isProduction && $this->isSimulation) {
+            $simulatedResponse = $this->simulateTransferVA($requestDto->partnerReferenceNo, 'paymentJumpApp');
+            return new PaymentJumpAppResponseDto(
+                $simulatedResponse['responseCode'],
+                $simulatedResponse['responseMessage'],
+                $simulatedResponse['responseCode'] === '2000500' ? 'https://example.com/redirect' : null,
+                $requestDto->partnerReferenceNo
+            );
+        }
+
         $isTokenB2bInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
         if ($isTokenB2bInvalid) {
             $tokenB2BResponse = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
@@ -381,6 +507,21 @@ class Snap
         bool $isProduction
     ): AccountBindingResponseDto {
         $accountBindingRequestDto->validateAccountBindingRequestDto();
+        // Check if we're in sandbox mode and use simulation if so
+        if (!$this->isProduction && $this->isSimulation) {
+            $simulatedResponse = $this->simulateTransferVA($accountBindingRequestDto->phoneNo, 'accountBinding');
+            return new AccountBindingResponseDto(
+                $simulatedResponse['responseCode'],
+                $simulatedResponse['responseMessage'],
+                $simulatedResponse['responseCode'] === '2000500' ? 'REF123' : null,
+                $simulatedResponse['responseCode'] === '2000500' ? 'https://example.com/redirect' : null,
+                new \Doku\Snap\Models\AccountBinding\AccountBindingAdditionalInfoResponseDto(
+                    'CUST123',
+                    'SUCCESS',
+                    'AUTH123'
+                )
+            );
+        }
         $isTokenInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
 
         if ($isTokenInvalid) {
@@ -579,6 +720,34 @@ class Snap
     ): CheckStatusResponseDto {
         $checkStatusRequestDto->validateCheckStatusRequestDto();
 
+        // Check if we're in sandbox mode and use simulation if so
+        if (!$this->isProduction && $this->isSimulation) {
+            $simulatedResponse = $this->simulateTransferVA($checkStatusRequestDto->originalPartnerReferenceNo, 'checkStatus');
+            return new CheckStatusResponseDto(
+                $simulatedResponse['responseCode'],
+                $simulatedResponse['responseMessage'],
+                $checkStatusRequestDto->originalPartnerReferenceNo,
+                'REF123',
+                'APPROVAL123',
+                $checkStatusRequestDto->originalExternalId,
+                $checkStatusRequestDto->serviceCode,
+                'SUCCESS',
+                'Transaction successful',
+                $simulatedResponse['responseCode'],
+                $simulatedResponse['responseMessage'],
+                'SESSION123',
+                'REQUEST123',
+                [],
+                $checkStatusRequestDto->amount,
+                new TotalAmount('1000.00', 'IDR'),
+                '2023-01-01T12:00:00+07:00',
+                new \Doku\Snap\Models\CheckStatus\CheckStatusAdditionalInfoResponseDto(
+                    'DEVICE123',
+                    'CHANNEL123'
+                )
+            );
+        }
+
         // Check token B2B
         $isTokenB2bInvalid = $this->tokenB2BController->isTokenInvalid(
             $this->tokenB2B,
@@ -613,4 +782,134 @@ class Snap
             $this->secretKey
         );
     }
+
+    public function simulateTransferVA(string $trxId, string $action): array
+    {
+        // Only run simulations in sandbox environment
+        if ($this->isProduction) {
+            throw new Exception("Simulations can only be run in sandbox environment");
+        }
+
+        $scenarios = [
+            '111' => [
+                'responseCode' => '401xx01',
+                'responseMessage' => 'Access Token Invalid'
+            ],
+            '112' => [
+                'responseCode' => '401xx00',
+                'responseMessage' => 'Unauthorized . Signature Not Match'
+            ],
+            '113' => [
+                'responseCode' => '400xx02',
+                'responseMessage' => 'Missing Mandatory Field {partnerServiceId}'
+            ],
+            '114' => [
+                'responseCode' => '400xx01',
+                'responseMessage' => 'Invalid Field Format {totalAmount.currency}'
+            ],
+            '115' => [
+                'responseCode' => '409xx00',
+                'responseMessage' => 'Conflict'
+            ],
+            '116' => [
+                'responseCode' => '2002400',
+                'responseMessage' => 'success'
+            ],
+            '117' => [
+                'responseCode' => '4042414',
+                'responseMessage' => 'Bill has been paid'
+            ],
+            '118' => [
+                'responseCode' => '4042419',
+                'responseMessage' => 'Bill expired'
+            ],
+            '119' => [
+                'responseCode' => '4042412',
+                'responseMessage' => 'Bill not found'
+            ],
+            '1110' => [
+                'responseCode' => '2002500',
+                'responseMessage' => 'success'
+            ],
+            '1111' => [
+                'responseCode' => '4042512',
+                'responseMessage' => 'Bill not found'
+            ],
+            '1112' => [
+                'responseCode' => '4042513',
+                'responseMessage' => 'Invalid Amount'
+            ],
+            '1113' => [
+                'responseCode' => '2002600',
+                'responseMessage' => 'success'
+            ],
+            '1114' => [
+                'responseCode' => '2002700',
+                'responseMessage' => 'success'
+            ],
+            '1115' => [
+                'responseCode' => '2002800',
+                'responseMessage' => 'success'
+            ],
+            '1116' => [
+                'responseCode' => '2002900',
+                'responseMessage' => 'success'
+            ],
+            '1117' => [
+                'responseCode' => '2003000',
+                'responseMessage' => 'success'
+            ],
+            '1118' => [
+                'responseCode' => '2003100',
+                'responseMessage' => 'success'
+            ],
+        ];
+
+        if (!isset($scenarios[$trxId])) {
+            throw new Exception("Unknown simulation scenario");
+        }
+
+        $response = $scenarios[$trxId];
+
+        // Add additional data based on the action
+        switch ($action) {
+            case 'createVa':
+            case 'updateVa':
+            case 'checkStatusVa':
+                if (in_array($response['responseCode'], ['2002700', '2002800', '2002600'])) {
+                    $response['virtualAccountData'] = [
+                        'partnerServiceId' => '90341589',
+                        'customerNo' => '00000077',
+                        'virtualAccountNo' => '9034153700000077',
+                        'virtualAccountName' => 'Jokul Doe 001',
+                        'virtualAccountEmail' => 'jokul@email.com',
+                        'virtualAccountPhone' => '',
+                        'trxId' => $trxId,
+                        'totalAmount' => [
+                            'value' => '13000.00',
+                            'currency' => 'IDR'
+                        ],
+                        'virtualAccountTrxType' => 'C',
+                        'expiredDate' => '2024-02-02T15:02:29+07:00'
+                    ];
+                }
+                break;
+            case 'deleteVa':
+                if ($response['responseCode'] === '2003100') {
+                    $response['virtualAccountData'] = [
+                        'partnerServiceId' => '90341589',
+                        'customerNo' => '00000077',
+                        'virtualAccountNo' => '9034153700000077',
+                        'trxId' => $trxId,
+                        'additionalInfo' => [
+                            'channel' => 'VIRTUAL_ACCOUNT_BNC'
+                        ]
+                    ];
+                }
+                break;
+        }
+
+        return $response;
+    }
+
 }

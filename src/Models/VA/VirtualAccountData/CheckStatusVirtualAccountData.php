@@ -25,7 +25,7 @@ class CheckStatusVirtualAccountData
         ?string $trxId,
         ?TotalAmount $paidAmount,
         ?TotalAmount $billAmount,
-        ?CheckStatusResponseAdditionalInfo $additionalInfo
+        ?CheckStatusVaResponseAdditionalInfo $additionalInfo
     ) {
         $this->paymentFlagReason = $paymentFlagReason;
         $this->partnerServiceId = $partnerServiceId;

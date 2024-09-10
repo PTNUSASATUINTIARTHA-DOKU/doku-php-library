@@ -1,13 +1,32 @@
 <?php
 
+// To run : ./vendor/bin/phpunit tests/SnapTest.php
+
 namespace Doku\Snap;
 use PHPUnit\Framework\TestCase;
+use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppRequestDto;
+use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppResponseDto;
+use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppAdditionalInfoRequestDto;
+use Doku\Snap\Models\PaymentJumpApp\UrlParamDto;
+use Doku\Snap\Models\BalanceInquiry\BalanceInquiryRequestDto;
+use Doku\Snap\Models\BalanceInquiry\BalanceInquiryResponseDto;
+use Doku\Snap\Models\BalanceInquiry\BalanceInquiryAdditionalInfoRequestDto;
+use Doku\Snap\Models\Refund\RefundRequestDto;
+use Doku\Snap\Models\Refund\RefundResponseDto;
+use Doku\Snap\Models\Refund\RefundAdditionalInfoRequestDto;
+use Doku\Snap\Models\CheckStatus\CheckStatusRequestDto;
+use Doku\Snap\Models\CheckStatus\CheckStatusResponseDto;
+use Doku\Snap\Models\CheckStatus\CheckStatusAdditionalInfoRequestDto;
+use Doku\Snap\Models\CheckStatus\CheckStatusAdditionalInfoResponseDto;
+use Doku\Snap\Models\TotalAmount\TotalAmount;
+use Doku\Snap\Controllers\DirectDebitController;
 
 class SnapTest extends TestCase
 {
     private Snap $snap;
     private $tokenController;
-    private string $privateKey = "-----BEGIN PRIVATE KEY-----
+
+        private const PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCvuA0S+R8RGEoT
 xZYfksdNam3/iNrKzY/RqGbN4Gf0juIN8XnUM8dGv4DVqmXQwRMMeQ3N/Y26pMDJ
 1v/i6E5BwWasBAveSk7bmUBQYMURzxrvBbvfRNvIwtYDa+cx39HamfiYYOHq4hZV
@@ -35,18 +54,26 @@ r4GK50j9BoPSJhiM6k236LSc5+iZRKRVUCFEfyMPx6AY+jD2flfGxUv2iULp92XG
 2eE1H6V1gDZ4JJw3s5847z4MNW3dj9nIi2bpFssnmoS5qP2IpmJW0QQmRmJZ8j2j
 OrzKGlO90/6sNzIDd2DbRSM=
 -----END PRIVATE KEY-----";
-    private string $clientId = "BRN-0221-1693209567392";
+    private const CLIENT_ID = "BRN-0221-1693209567392";
+    private const IP_ADDRESS = "127.0.0.1";
+    private const SECRET_KEY = "SK-tDzY6MSLBWlNXy3qCsUU";
+    private string $privateKey = self::PRIVATE_KEY;
+    private string $clientId = self::CLIENT_ID;
     private string $publicKey = "";
     private string $issuer = "";
     private bool $isProduction = false;
     private int $timestamp;
-    private string $secretKey = "SK-tDzY6MSLBWlNXy3qCsUU";
+    private string $secretKey = self::SECRET_KEY;
+    private string $authCode = "123456789";
+    private $directDebitController;
+
 
     protected function setUp(): void
     {
         $this->tokenController = $this->createMock(Controllers\TokenController::class);
+        $this->directDebitController = $this->createMock(DirectDebitController::class);
         $this->timestamp = time();
-        $this->snap = new Snap($this->privateKey, $this->publicKey, $this->clientId, $this->issuer, $this->isProduction, $this->secretKey);
+        $this->snap = new Snap($this->privateKey, $this->publicKey, $this->clientId, $this->issuer, $this->isProduction, $this->secretKey, $this->authCode);
     }
 
     private function getTokenB2BResponseDto(string $responseCode): Models\Token\TokenB2BResponseDto
@@ -1030,5 +1057,225 @@ OrzKGlO90/6sNzIDd2DbRSM=
         $request = $this->getCheckStatusVaRequestDto();
         $request->paymentRequestId = "CI wxu2v0XgURbX2RYclSfsw4N6fd29YIgvgv1LJpkmSPItG7jrC8ARlKyRhfkgiVnSJvKWRBAu8u0wPyGg0N8mWA8vcSCEvcYsVWut7NNctBkNLT6Le2rBRiEMchWfv4z";
         $this->snap->checkStatusVa($request);
+    }
+
+    public function testDirectDebitPaymentJumpApp_Success(): void
+    {
+        $this->directDebitController->method('doPaymentJumpApp')
+            ->willReturn($this->getPaymentJumpAppResponseDto("2005400"));
+
+        $response = $this->snap->doPaymentJumpApp(
+            $this->getPaymentJumpAppRequestDto(),
+            "deviceId",
+            self::PRIVATE_KEY,
+            self::CLIENT_ID,
+            self::SECRET_KEY,
+            false
+        );
+
+        $this->assertEquals("2005400", $response->responseCode);
+    }
+
+    public function testDirectDebitPaymentJumpApp_Failed(): void
+    {
+        $request = $this->getPaymentJumpAppRequestDto();
+        $request->additionalInfo->channel = null;
+
+        $response = $this->snap->doPaymentJumpApp(
+            $request,
+            "deviceId",
+            self::PRIVATE_KEY,
+            self::CLIENT_ID,
+            self::SECRET_KEY,
+            false
+        );
+
+        $this->assertEquals("5005400", $response->responseCode);
+    }
+
+    public function testDirectDebitBalanceInquiry_Success(): void
+    {
+        $this->directDebitController->method('doBalanceInquiry')
+            ->willReturn($this->getBalanceInquiryResponseDto("2001100"));
+
+        $response = $this->snap->doBalanceInquiry(
+            $this->getBalanceInquiryRequestDto(),
+            "authCode"
+        );
+
+        $this->assertEquals("2001100", $response->responseCode);
+    }
+
+    public function testDirectDebitBalanceInquiry_Failed(): void
+    {
+        $request = $this->getBalanceInquiryRequestDto();
+        $request->additionalInfo->channel = null;
+
+        $response = $this->snap->doBalanceInquiry($request, "authCode");
+
+        $this->assertEquals("5001100", $response->responseCode);
+    }
+
+    public function testDirectDebitRefund_Success(): void
+    {
+        $this->directDebitController->method('doRefund')
+            ->willReturn($this->getRefundResponseDto("2005800"));
+
+        $response = $this->snap->doRefund(
+            $this->getRefundRequestDto(),
+            "authCode",
+            self::PRIVATE_KEY,
+            self::CLIENT_ID,
+            self::SECRET_KEY,
+            false
+        );
+
+        $this->assertEquals("2005800", $response->responseCode);
+    }
+
+    public function testDirectDebitRefund_Failed(): void
+    {
+        $request = $this->getRefundRequestDto();
+        $request->additionalInfo->channel = null;
+
+        $response = $this->snap->doRefund(
+            $request,
+            "authCode",
+            self::PRIVATE_KEY,
+            self::CLIENT_ID,
+            self::SECRET_KEY,
+            false
+        );
+
+        $this->assertEquals("5005800", $response->responseCode);
+    }
+
+    public function testDirectDebitCheckStatus_Success(): void
+    {
+        $this->directDebitController->method('doCheckStatus')
+            ->willReturn($this->getCheckStatusResponseDto("2005500"));
+
+        $response = $this->snap->doCheckStatus(
+            $this->getCheckStatusRequestDto(),
+            "authCode",
+            self::PRIVATE_KEY,
+            self::CLIENT_ID,
+            self::SECRET_KEY,
+            false
+        );
+
+        $this->assertEquals("2005500", $response->responseCode);
+    }
+
+    public function testDirectDebitCheckStatus_Failed(): void
+    {
+        $request = $this->getCheckStatusRequestDto();
+        $request->serviceCode = null;
+
+        $response = $this->snap->doCheckStatus(
+            $request,
+            "authCode",
+            self::PRIVATE_KEY,
+            self::CLIENT_ID,
+            self::SECRET_KEY,
+            false
+        );
+
+        $this->assertEquals("5005500", $response->responseCode);
+    }
+
+    private function getPaymentJumpAppRequestDto(): PaymentJumpAppRequestDto
+    {
+        return new PaymentJumpAppRequestDto(
+            "ORDER_" . time(),
+            date('Y-m-d\TH:i:sP', strtotime('+1 day')),
+            "12",
+            new UrlParamDto("https://example.com", "PAY_RETURN", "N"),
+            new TotalAmount("50000.00", "IDR"),
+            new PaymentJumpAppAdditionalInfoRequestDto("EMONEY_OVO_SNAP", null, null)
+        );
+    }
+
+    private function getPaymentJumpAppResponseDto(string $responseCode): PaymentJumpAppResponseDto
+    {
+        return new PaymentJumpAppResponseDto($responseCode, "message", "http://example.com", "REF123");
+    }
+
+    private function getBalanceInquiryRequestDto(): BalanceInquiryRequestDto
+    {
+        return new BalanceInquiryRequestDto(
+            new BalanceInquiryAdditionalInfoRequestDto("DIRECT_DEBIT_MANDIRI")
+        );
+    }
+
+    private function getBalanceInquiryResponseDto(string $responseCode): BalanceInquiryResponseDto
+    {
+        return new BalanceInquiryResponseDto($responseCode, "message", []);
+    }
+
+    private function getRefundRequestDto(): RefundRequestDto
+    {
+        return new RefundRequestDto(
+            new RefundAdditionalInfoRequestDto("EMONEY_OVO_SNAP"),
+            "ORIG123",
+            "EXT456",
+            new TotalAmount("100.00", "IDR"),
+            "Customer request",
+            "REF789"
+        );
+    }
+
+    private function getRefundResponseDto(string $responseCode): RefundResponseDto
+    {
+        return new RefundResponseDto(
+            $responseCode,
+            "message",
+            new TotalAmount("100.00", "IDR"),
+            "ORIG123",
+            "REF456",
+            "REFUND789",
+            "PARTNER_REF123",
+            "2023-01-01T12:00:00+07:00"
+        );
+    }
+
+    private function getCheckStatusRequestDto(): CheckStatusRequestDto
+    {
+        return new CheckStatusRequestDto(
+            "ORIG123",
+            "REF456",
+            "EXT789",
+            "SERVICE001",
+            date('Y-m-d\TH:i:sP'),
+            new TotalAmount("100000.00", "IDR"),
+            "MERCHANT001",
+            "SUBMERCHANT001",
+            "STORE001",
+            new CheckStatusAdditionalInfoRequestDto("DEVICE001", "DIRECT_DEBIT_MANDIRI")
+        );
+    }
+
+    private function getCheckStatusResponseDto(string $responseCode): CheckStatusResponseDto
+    {
+        return new CheckStatusResponseDto(
+            $responseCode,
+            "message",
+            "ORIG123",
+            "REF456",
+            "APPROVAL789",
+            "EXT123",
+            "SERVICE001",
+            "COMPLETED",
+            "Transaction completed",
+            "0000",
+            "Success",
+            "SESSION123",
+            "REQ123",
+            [],
+            new TotalAmount("100.00", "IDR"),
+            new TotalAmount("10.00", "IDR"),
+            "2023-01-01T12:00:00+07:00",
+            new CheckStatusAdditionalInfoResponseDto("DEVICE123", "CHANNEL001")
+        );
     }
 }
