@@ -70,7 +70,7 @@ class Snap
     private ?string $secretKey;
     private ?string $deviceId = "";
     private ?string $ipAddress = "";
-    private bool $isSimulation = true;
+    private bool $isSimulation = false;
 
     public function __construct(string $privateKey, string $publicKey, string $clientId, string $issuer, bool $isProduction, string $secretKey, string $authCode)
     {
