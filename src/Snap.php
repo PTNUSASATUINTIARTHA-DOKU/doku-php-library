@@ -773,13 +773,18 @@ class Snap
     public function handleDirectDebitNotification(
         NotifyPaymentDirectDebitRequestDto $requestDto,
         string $xSignature,
-        string $xTimestamp
+        string $xTimestamp,
+        string $secretKey,
+        string $tokenB2B,
+        bool $isProduction
     ): NotifyPaymentDirectDebitResponseDto {
         return $this->directDebitController->handleDirectDebitNotification(
             $requestDto,
             $xSignature,
             $xTimestamp,
-            $this->secretKey
+            $secretKey,
+            $tokenB2B,
+            $isProduction
         );
     }
 

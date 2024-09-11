@@ -363,24 +363,24 @@ class DirectDebitServices
         NotifyPaymentDirectDebitRequestDto $requestDto,
         string $xSignature,
         string $xTimestamp,
-        string $clientSecret
+        string $clientSecret,
+        string $tokenB2B,
+        bool $isProduction
     ): NotifyPaymentDirectDebitResponseDto {
         // Validate the X-SIGNATURE
         $stringToSign = $this->createStringToSign($requestDto, $xTimestamp);
-        $isValidSignature = $this->validateSignature($xSignature, $stringToSign, $clientSecret);
-
+        $isValidSignature = $this->validateSymmetricSignature($xSignature, $stringToSign, $clientSecret. $tokenB2B);
+        
         if (!$isValidSignature) {
             return new NotifyPaymentDirectDebitResponseDto(
-                '4017300',
-                '',
-                'Invalid signature'
+                "4010000",
+                Helper::generateExternalId(),
+                "Unauthorized. Invalid Signature"
             );
         }
 
-        // Process the notification (you may want to add more complex logic here)
-        // For now, we'll just return a successful response
         return new NotifyPaymentDirectDebitResponseDto(
-            '2007300',
+            '2005600',
             Helper::generateExternalId(),
             'Notification processed successfully'
         );
@@ -392,7 +392,7 @@ class DirectDebitServices
         return "POST:/v1.0/debit/notify:$xTimestamp:$requestBody";
     }
 
-    private function validateSignature(string $xSignature, string $stringToSign, string $clientSecret): bool
+    private function validateSymmetricSignature(string $xSignature, string $stringToSign, string $clientSecret): bool
     {
         $tokenServices = new TokenServices();
         $generatedSignature = $tokenServices->generateSymmetricSignature(

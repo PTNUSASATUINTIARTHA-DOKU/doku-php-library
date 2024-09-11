@@ -357,13 +357,17 @@ class DirectDebitController
         NotifyPaymentDirectDebitRequestDto $requestDto,
         string $xSignature,
         string $xTimestamp,
-        string $clientSecret
+        string $clientSecret,
+        string $tokenB2B,
+        bool $isProduction
     ): NotifyPaymentDirectDebitResponseDto {
         return $this->directDebitServices->handleDirectDebitNotification(
             $requestDto,
             $xSignature,
             $xTimestamp,
-            $clientSecret
+            $clientSecret,
+            $tokenB2B,
+            $isProduction
         );
     }
 }
