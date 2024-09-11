@@ -40,7 +40,7 @@ class PaymentNotificationAdditionalInfoRequestDto
             'custIdMerchant' => $this->custIdMerchant,
             'accountType' => $this->accountType,
             'lineItems' => array_map(function ($item) {
-                return $item->generateJSONBody();
+                return $item;
             }, $this->lineItems),
             'origin' => $this->origin->toArray(),
         ];
