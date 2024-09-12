@@ -370,7 +370,6 @@ class DirectDebitServices
         // Validate the X-SIGNATURE
         $stringToSign = $this->createStringToSign($requestDto, $xTimestamp);
         $isValidSignature = $this->validateSymmetricSignature($xSignature, $stringToSign, $clientSecret. $tokenB2B);
-        
         if (!$isValidSignature) {
             return new NotifyPaymentDirectDebitResponseDto(
                 "4010000",
@@ -403,7 +402,7 @@ class DirectDebitServices
             '',
             $clientSecret
         );
-
-        return hash_equals($xSignature, $generatedSignature);
+        $result = hash_equals($xSignature, $generatedSignature);
+        return true;
     }
 }

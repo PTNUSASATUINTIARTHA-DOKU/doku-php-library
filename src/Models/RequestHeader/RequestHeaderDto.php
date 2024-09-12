@@ -7,7 +7,7 @@ class RequestHeaderDto
     public string $xPartnerId;
     public string $xRequestId;
     public ?string $channelId;
-    public string $authorization;
+    public ?string $authorization;
     public ?string $ipAddress;
     public ?string $deviceId;
     public ?string $tokenB2B2C;
@@ -18,7 +18,7 @@ class RequestHeaderDto
         string $xPartnerId,
         string $xRequestId,
         ?string $channelId = "SDK",
-        string $authorization,
+        ?string $authorization,
         ?string $ipAddress,
         ?string $deviceId,
         ?string $tokenB2B2C,
