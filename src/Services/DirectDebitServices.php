@@ -403,6 +403,6 @@ class DirectDebitServices
             $clientSecret
         );
         $result = hash_equals($xSignature, $generatedSignature);
-        return true;
+        return $result;
     }
 }
