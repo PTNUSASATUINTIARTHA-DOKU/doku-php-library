@@ -415,10 +415,6 @@ try {
 }
 ```
 
-# Doku Snap SDK Integration Guide
-
-[... previous content remains unchanged ...]
-
 ## Advanced Usage
 
 ### Handling Token Requests
