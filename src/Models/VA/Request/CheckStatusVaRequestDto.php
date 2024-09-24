@@ -10,6 +10,7 @@ class CheckStatusVaRequestDto
     public ?string $paymentRequestId;
     public ?string $additionalInfo;
 
+    
     public function __construct(
         ?string $partnerServiceId,
         ?string $customerNo,
