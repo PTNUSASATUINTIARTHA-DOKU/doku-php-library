@@ -27,7 +27,7 @@ class VaController
         $timestamp = $this->tokenServices->getTimestamp();
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::CREATE_VA;
-        $signature = $this->tokenServices->generateSymmetricSignature(
+        $result = $this->tokenServices->generateSymmetricSignature2(
             'POST',
             $apiEndpoint,
             $tokenB2B,
@@ -35,6 +35,10 @@ class VaController
             $timestamp,
             $secretKey
         );
+        $signature = $result['signature']; 
+        $minifiedBody = $result['minifiedBody'];    // Body yang telah dimodifikasi
+        $bodyHash = $result['bodyHash'];            // Hash body
+        $stringToSign = $result['stringToSign'];
         $requestHeaderDto = Helper::generateRequestHeaderDto(
             $timestamp, 
             $signature,
@@ -47,7 +51,13 @@ class VaController
             null
         );
         $createVaResponseDto = $this->vaServices->createVa($requestHeaderDto, $createVaRequestDto, $isProduction);
-        return $createVaResponseDto;
+        return [
+            'minifiedBody' => $minifiedBody,
+            'bodyHash' => $bodyHash,
+            'stringToSign' => $stringToSign,
+            'signature' => $signature,
+            'createVaResponseDto'=> $createVaResponseDto
+        ];
     }
 
     public function doUpdateVa(

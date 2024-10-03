@@ -15,6 +15,7 @@ use Doku\Snap\Models\Token\TokenB2B2CResponseDto;
 use Doku\Snap\Models\Notification\NotificationTokenDto;
 use Doku\Snap\Models\Notification\NotificationTokenHeaderDto;
 use Doku\Snap\Models\Notification\NotificationTokenBodyDto;
+use Monolog\Logger;
 
 class TokenServices
 {
@@ -253,19 +254,39 @@ class TokenServices
         return $jwt;
     }
 
-    public function generateSymmetricSignature(
-        string $httpMethod,
-        string $endpointUrl,
-        string $tokenB2B,
-        string $requestBody,
-        string $timestamp,
-        string $secretKey
-    ): string {
-        $minifiedBody = json_encode(json_decode($requestBody), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        $bodyHash = hash('sha256', $minifiedBody);
-        $bodyHashHex = strtolower($bodyHash);
-        $stringToSign = $httpMethod . ":" . $endpointUrl . ":" . $tokenB2B . ":" . $bodyHashHex . ":" . $timestamp;
-        $signature = hash_hmac('sha512', $stringToSign, $secretKey, true);
-        return base64_encode($signature);
-    }
+        public function generateSymmetricSignature(
+            string $httpMethod,
+            string $endpointUrl,
+            string $tokenB2B,
+            string $requestBody,
+            string $timestamp,
+            string $secretKey
+        ): string {
+            $minifiedBody = json_encode(json_decode($requestBody), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            $bodyHash = hash('sha256', $minifiedBody);
+            $bodyHashHex = strtolower($bodyHash);
+            $stringToSign = $httpMethod . ":" . $endpointUrl . ":" . $tokenB2B . ":" . $bodyHashHex . ":" . $timestamp;
+            $signature = hash_hmac('sha512', $stringToSign, $secretKey, true);
+            return base64_encode($signature);
+        }
+        public function generateSymmetricSignature2(
+            string $httpMethod,
+            string $endpointUrl,
+            string $tokenB2B,
+            string $requestBody,
+            string $timestamp,
+            string $secretKey
+        ): string {
+            $minifiedBody = json_encode(json_decode($requestBody), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            $bodyHash = hash('sha256', $minifiedBody);
+            $bodyHashHex = strtolower($bodyHash);
+            $stringToSign = $httpMethod . ":" . $endpointUrl . ":" . $tokenB2B . ":" . $bodyHashHex . ":" . $timestamp;
+            $signature = hash_hmac('sha512', $stringToSign, $secretKey, true);
+            return [
+                'minifiedBody' => $minifiedBody,
+                'bodyHash' => $bodyHashHex,
+                'stringToSign' => $stringToSign,
+                'signature' => base64_encode($signature), // Encoding signature ke base64
+            ];
+        }
 }
