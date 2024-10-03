@@ -25,8 +25,7 @@ class VaController
     {
         $externalId = Helper::generateExternalId();;
         $timestamp = $this->tokenServices->getTimestamp();
-        $baseUrl = Config::getBaseURL($isProduction);
-        $apiEndpoint = $baseUrl . Config::CREATE_VA;
+        $apiEndpoint = Config::CREATE_VA;
         $signature = $this->tokenServices->generateSymmetricSignature(
             'POST',
             $apiEndpoint,
@@ -60,8 +59,7 @@ class VaController
     ): UpdateVaResponseDto
     {
         $timestamp = $this->tokenServices->getTimestamp();
-        $baseUrl = Config::getBaseURL($isProduction);
-        $apiEndpoint = $baseUrl . Config::UPDATE_VA_URL;
+        $apiEndpoint = Config::UPDATE_VA_URL;
         $signature = $this->tokenServices->generateSymmetricSignature(
             'POST',
             $apiEndpoint,
@@ -96,9 +94,8 @@ class VaController
     ): DeleteVaResponseDto
     {
         $timestamp = $this->tokenServices->getTimestamp();
-        $baseUrl = Config::getBaseURL(false);
 
-        $apiEndpoint = $baseUrl . Config::DELETE_VA_URL;
+        $apiEndpoint =Config::DELETE_VA_URL;
         $signature = $this->tokenServices->generateSymmetricSignature(
             "DELETE",
             $apiEndpoint,
@@ -135,8 +132,7 @@ class VaController
     ): CheckStatusVAResponseDto
     {
         $timestamp = $this->tokenServices->getTimestamp();
-        $baseUrl = Config::getBaseURL($isProduction);
-        $apiEndpoint = $baseUrl . Config::UPDATE_VA_URL;
+        $apiEndpoint = Config::UPDATE_VA_URL;
 
         $signature = $this->tokenServices->generateSymmetricSignature(
             "POST",
