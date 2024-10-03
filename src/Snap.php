@@ -124,7 +124,7 @@ class Snap
     public function getB2BToken(): TokenB2BResponseDto
     {
         try {
-            $result = $this->tokenB2BController->getTokenB2B2($this->privateKey, $this->clientId, $this->isProduction);
+            $result = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
             $this->setTokenB2B($result);
             return $result;
         } catch (Exception $e) {
