@@ -121,12 +121,12 @@ class Snap
         return $string  . "Expired In: " . $this->tokenB2BExpiresIn . PHP_EOL;
     }
 
-    public function getB2BToken(string $privateKey, string $clientId, bool $isProduction): TokenB2BResponseDto
+    public function getB2BToken(): TokenB2BResponseDto
     {
         try {
-            $tokenB2BResponseDto = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
-            $this->setTokenB2B($tokenB2BResponseDto);
-            return $tokenB2BResponseDto;
+            $result = $this->tokenB2BController->getTokenB2B2($this->privateKey, $this->clientId, $this->isProduction);
+            $this->setTokenB2B($result);
+            return $result;
         } catch (Exception $e) {
             return new TokenB2BResponseDto(
                 "5007300",
