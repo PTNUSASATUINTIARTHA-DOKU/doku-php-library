@@ -25,6 +25,7 @@ class VaController
     {
         $externalId = Helper::generateExternalId();;
         $timestamp = $this->tokenServices->getTimestamp();
+        $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::CREATE_VA;
         $signature = $this->tokenServices->generateSymmetricSignature(
             'POST',
