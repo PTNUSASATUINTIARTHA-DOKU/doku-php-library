@@ -132,7 +132,7 @@ class VaController
     ): CheckStatusVAResponseDto
     {
         $timestamp = $this->tokenServices->getTimestamp();
-        $apiEndpoint = Config::UPDATE_VA_URL;
+        $apiEndpoint = Config::CHECK_VA;
 
         $signature = $this->tokenServices->generateSymmetricSignature(
             "POST",
