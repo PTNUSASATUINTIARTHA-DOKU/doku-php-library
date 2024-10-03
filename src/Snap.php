@@ -209,7 +209,7 @@ class Snap
             $tokenB2BResponseDto = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
             $this->setTokenB2B($tokenB2BResponseDto);
         }	
-        $createVaResponseDto = $this->vaController->createVa($createVaRequestDto, $this->privateKey, $this->clientId, $this->tokenB2B, $this->isProduction);
+        $createVaResponseDto = $this->vaController->createVa($createVaRequestDto, $this->privateKey, $this->clientId, $this->tokenB2B,$this->secretKey, $this->isProduction);
         return $createVaResponseDto;
     }
 
@@ -399,7 +399,7 @@ class Snap
 
         // Check if we're in sandbox mode and use simulation if so
         if (!$this->isProduction && $this->isSimulation) {
-            $simulatedResponse = $this->simulateTransferVA($checkStatusVaRequestDto->trxId ?? '1113', 'checkStatusVa');
+            $simulatedResponse = $this->simulateTransferVA($checkStatusVaRequestDto->virtualAccountNo ?? '1113', 'checkStatusVa');
             return new CheckStatusVaResponseDto(
                 $simulatedResponse['responseCode'],
                 $simulatedResponse['responseMessage'],

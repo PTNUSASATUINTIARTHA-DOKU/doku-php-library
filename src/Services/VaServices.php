@@ -9,18 +9,20 @@ use Doku\Snap\Models\TotalAmount\TotalAmount;
 use Doku\Snap\Models\VA\Request\CreateVaRequestDto;
 use Doku\Snap\Models\VA\Response\CreateVaResponseDto;
 use Doku\Snap\Models\VA\VirtualAccountData\CreateVaResponseVirtualAccountData;
+use Doku\Snap\Models\VA\VirtualAccountData\UpdateVaResponseVirtualAccountData;
 use Doku\Snap\Models\VA\AdditionalInfo\CreateVaResponseAdditionalInfo;
 use Doku\Snap\Models\VA\Request\UpdateVaRequestDto;
 use Doku\Snap\Models\VA\Response\UpdateVaResponseDto;
 use Doku\Snap\Models\VA\VirtualAccountConfig\UpdateVaVirtualAccountConfig;
 use Doku\Snap\Models\VA\AdditionalInfo\UpdateVaRequestAdditionalInfo;
+use Doku\Snap\Models\VA\AdditionalInfo\UpdateVaResponseAdditionalInfo;
 use Doku\Snap\Models\VA\Request\DeleteVaRequestDto;
 use Doku\Snap\Models\VA\Response\DeleteVaResponseDto;
 use Doku\Snap\Models\VA\VirtualAccountData\DeleteVaResponseVirtualAccountData;
 use Doku\Snap\Models\VA\AdditionalInfo\DeleteVaResponseAdditionalInfo;  
 use Doku\Snap\Models\VA\Request\CheckStatusVaRequestDto;
 use Doku\Snap\Models\VA\Response\CheckStatusVaResponseDto;
-use Doku\Snap\Models\VA\AdditionalInfo\CheckStatusResponseAdditionalInfo;
+use Doku\Snap\Models\VA\AdditionalInfo\CheckStatusVaResponseAdditionalInfo;
 use Doku\Snap\Models\VA\VirtualAccountData\CheckStatusResponsePaymentFlagReason;
 use Doku\Snap\Models\VA\VirtualAccountData\CheckStatusVirtualAccountData;
 
@@ -84,29 +86,27 @@ class VaServices
 
         if (isset($responseObject['responseCode']) && $responseObject['responseCode'] === '2002800') {
             $responseData = $responseObject["virtualAccountData"];
-            $totalAmount = new TotalAmount(
-                $responseData['totalAmount']['value'] ?? null, 
-                $responseData['totalAmount']['currency'] ?? null
-            );
+           
             $virtualAccountConfig = new UpdateVaVirtualAccountConfig(
                 $responseData['additionalInfo']['virtualAccountConfig']['reusableStatus'] ?? null
             );
-            $additionalInfo = new UpdateVaRequestAdditionalInfo(
+           $totalAmount = new TotalAmount(
+                $responseData['totalAmount']['value'] ?? null, 
+                $responseData['totalAmount']['currency'] ?? null
+            );
+            $additionalInfo = new UpdateVaResponseAdditionalInfo(
                 $responseData['additionalInfo']['channel'] ?? null,
                 $virtualAccountConfig
             );
-            $virtualAccountData = new UpdateVaRequestDto(
+            $virtualAccountData = new UpdateVaResponseVirtualAccountData(
                 $responseData['partnerServiceId'],
                 $responseData['customerNo'],
                 $responseData['virtualAccountNo'],
                 $responseData['virtualAccountName'],
                 $responseData['virtualAccountEmail'],
-                $responseData['virtualAccountPhone'],
                 $responseData['trxId'],
                 $totalAmount,
                 $additionalInfo,
-                $responseData['virtualAccountTrxType'],
-                $responseData['expiredDate'],
             );
             return new UpdateVaResponseDto(
                 $responseObject['responseCode'],
@@ -208,7 +208,7 @@ class VaServices
                         $responseData['virtualAccountData']['billAmount']['value'] ?? 0,
                         $responseData['virtualAccountData']['billAmount']['currency'] ?? ''
                     ),
-                    new CheckStatusResponseAdditionalInfo(
+                    new CheckStatusVaResponseAdditionalInfo(
                         $responseData['virtualAccountData']['additionalInfo']['acquirer'] ?? ''
                     )
                 )

@@ -21,11 +21,19 @@ class VaController
         $this->tokenServices = new TokenServices();
     }
 
-    public function createVa(CreateVaRequestDto $createVaRequestDto, string $privateKey, string $clientId, string $tokenB2B, bool $isProduction): CreateVaResponseDto
+    public function createVa(CreateVaRequestDto $createVaRequestDto, string $privateKey, string $clientId, string $tokenB2B, string $secretKey, bool $isProduction): CreateVaResponseDto
     {
         $externalId = Helper::generateExternalId();;
         $timestamp = $this->tokenServices->getTimestamp();
-        $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
+        $apiEndpoint = $baseUrl . Config::CREATE_VA;
+        $signature = $this->tokenServices->generateSymmetricSignature(
+            'POST',
+            $apiEndpoint,
+            $tokenB2B,
+            $createVaRequestDto->generateJSONBody(),
+            $timestamp,
+            $secretKey
+        );
         $requestHeaderDto = Helper::generateRequestHeaderDto(
             $timestamp, 
             $signature,
