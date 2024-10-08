@@ -207,11 +207,11 @@ class VaServices
                     new TotalAmount(
                         $responseData['virtualAccountData']['billAmount']['value'] ?? 0,
                         $responseData['virtualAccountData']['billAmount']['currency'] ?? ''
+                    )
                     ),
                     new CheckStatusVaResponseAdditionalInfo(
-                        $responseData['virtualAccountData']['additionalInfo']['acquirer'] ?? ''
+                        $responseData['additionalInfo']['acquirer'] ?? ''
                     )
-                )
             );
         } else {
             //print_r ($responseData);
