@@ -44,11 +44,10 @@ class TokenController
         }
     }
 
-    public function validateSignature(string $requestSignature, string $requestTimestamp, string $privateKey, string $clientId): bool
+    public function validateSignature(string $requestSignature, string $requestTimestamp, string $clientId, string $dokuPublicKey): bool
     {
-        $createdSignature = $this->tokenServices->createSignature($privateKey, $clientId, $requestTimestamp);
-
-        return $this->tokenServices->compareSignatures($requestSignature, $createdSignature);
+        // $createdSignature = $this->tokenServices->createSignature($privateKey, $clientId, $requestTimestamp);
+        return $this->tokenServices->compareSignatures($requestSignature, $requestTimestamp,$clientId,$dokuPublicKey);
     }
 
     public function generateInvalidSignatureResponse(): NotificationTokenDto

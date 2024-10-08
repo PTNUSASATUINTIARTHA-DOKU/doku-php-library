@@ -72,10 +72,11 @@ class Snap
     private ?string $ipAddress = "";
     private bool $isSimulation = false;
 
-    public function __construct(string $privateKey, string $publicKey, string $clientId, string $issuer, bool $isProduction, string $secretKey)
+    public function __construct(string $privateKey, string $publicKey, string $dokuPublicKey, string $clientId, string $issuer, bool $isProduction, string $secretKey)
     {
         $this->privateKey = $privateKey;
         $this->publicKey = $publicKey;
+        $this->dokuPublicKey = $dokuPublicKey;
         $this->issuer = $issuer;
         $this->clientId =$clientId;
         $this->isProduction = $isProduction;
@@ -226,9 +227,9 @@ class Snap
         }
     }
 
-    public function validateSignature(string $requestSignature, string $requestTimestamp, string $privateKey, string $clientId): bool
+    public function validateSignature(string $requestSignature, string $requestTimestamp, string $clientId): bool
     {
-        return $this->tokenB2BController->validateSignature($requestSignature, $requestTimestamp, $privateKey, $clientId);
+        return $this->tokenB2BController->validateSignature($requestSignature, $requestTimestamp, $clientId, $this->dokuPublicKey);
     }
 
     public function validateTokenAndGenerateNotificationResponse(RequestHeaderDto $requestHeaderDto, PaymentNotificationRequestBodyDto $paymentNotificationRequestBodyDto): PaymentNotificationResponseDto
@@ -242,15 +243,13 @@ class Snap
         return $this->tokenB2BController->validateTokenB2B($requestTokenB2B, $this->publicKey);
     }
 
-    public function validateSignatureAndGenerateToken(string $requestSignature, string $requestTimestamp): void
+    public function validateSignatureAndGenerateToken(string $requestSignature, string $requestTimestamp)
     {
         // Validate the signature
-        $isSignatureValid = $this->validateSignature($requestSignature, $requestTimestamp, $this->privateKey, $this->clientId);
-
+        $isSignatureValid = $this->validateSignature($requestSignature, $requestTimestamp, $this->clientId);
         // Generate a TokenB2B object based on the signature validity and set token
-        $notificationTokenDto = $this->generateTokenB2BResponse($isSignatureValid);
-        $notificationTokenBodyDto = $notificationTokenDto->body;
-        $this->tokenB2B = $notificationTokenBodyDto->accessToken;
+        return $this->generateTokenB2BResponse($isSignatureValid);
+      
     }
 
     public function generateTokenB2BResponse(bool $isSignatureValid): NotificationTokenDto
