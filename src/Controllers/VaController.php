@@ -61,7 +61,7 @@ class VaController
         $timestamp = $this->tokenServices->getTimestamp();
         $apiEndpoint = Config::UPDATE_VA_URL;
         $signature = $this->tokenServices->generateSymmetricSignature(
-            'POST',
+            'PUT',
             $apiEndpoint,
             $tokenB2B,
             $updateVaRequestDto->generateJSONBody(),
