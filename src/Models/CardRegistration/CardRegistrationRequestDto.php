@@ -2,13 +2,13 @@
 namespace Doku\Snap\Models\CardRegistration;
 class CardRegistrationRequestDto
 {
-    public ?string $cardData;
+    public ?CardRegistrationCardDataRequestDto $cardData;
     public ?string $custIdMerchant;
     public ?string $phoneNo;
     public ?CardRegistrationAdditionalInfoRequestDto $additionalInfo;
 
     public function __construct(
-        ?string $cardData,
+        ?CardRegistrationCardDataRequestDto $cardData,
         ?string $custIdMerchant,
         ?string $phoneNo,
         ?CardRegistrationAdditionalInfoRequestDto $additionalInfo
@@ -21,9 +21,7 @@ class CardRegistrationRequestDto
 
     public function validate(): void
     {
-        if (empty($this->cardData)) {
-            throw new \InvalidArgumentException("Card data is required");
-        }
+        $this->cardData->validate();
         if (empty($this->custIdMerchant)) {
             throw new \InvalidArgumentException("Customer ID Merchant is required");
         }
@@ -36,7 +34,7 @@ class CardRegistrationRequestDto
     public function generateJSONBody(): string
     {
         return json_encode([
-            'cardData' => $this->cardData,
+            'cardData' => $this->cardData->generateJSONBody(),
             'custIdMerchant' => $this->custIdMerchant,
             'phoneNo' => $this->phoneNo,
             'additionalInfo' => $this->additionalInfo->generateJSONBody()
