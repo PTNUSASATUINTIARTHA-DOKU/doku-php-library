@@ -41,6 +41,13 @@ class RefundRequestDto
         if (empty($this->partnerRefundNo)) {
             throw new \InvalidArgumentException("partnerRefundNo is required");
         }
+        if (empty($this->partnerRefundNo)) {
+            throw new \InvalidArgumentException("partnerRefundNo is required");
+        }
+        $length = strlen($this->partnerRefundNo);
+        if ($length < 32 || $length > 64) {
+            throw new \InvalidArgumentException("partnerRefundNo must be between 32 and 64 characters long");
+        }
         $this->additionalInfo->validate();
     }
 

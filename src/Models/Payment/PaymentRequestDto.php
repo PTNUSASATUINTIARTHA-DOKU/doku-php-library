@@ -30,9 +30,9 @@ class PaymentRequestDto
         if (empty($this->partnerReferenceNo)) {
             throw new \InvalidArgumentException("Partner Reference Number is required");
         }
-        if (!in_array($this->additionalInfo->channel, ['EMONEY_OVO_SNAP'])) {
-            throw new \InvalidArgumentException('Invalid channel');
-        }
+        // if (!in_array($this->additionalInfo->channel, ['EMONEY_OVO_SNAP'])) {
+        //     throw new \InvalidArgumentException('Invalid channel');
+        // }
     }
 
     public function generateJSONBody(): string

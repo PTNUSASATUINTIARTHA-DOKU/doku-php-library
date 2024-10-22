@@ -43,7 +43,7 @@ class Helper
             array_push($result, 'X-CHANNEL-ID: ' . $requestHeaderDto->xChannelId);
         }
         if($requestHeaderDto->tokenB2B2C != null) {
-            array_push($result, 'X-TOKEN-B2B-2C: ' . $requestHeaderDto->tokenB2B2C);
+            array_push($result, 'Authorization-customer: ' . $requestHeaderDto->tokenB2B2C);
         }
         return $result;
     }

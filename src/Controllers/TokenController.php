@@ -22,7 +22,7 @@ class TokenController
         $this->vaServices = new VaServices();
     }
 
-    public function getTokenB2B(string $privateKey, string $clientId, bool $isProduction): TokenB2BResponseDto
+    public function getTokenB2B(string $privateKey, string $clientId, string $isProduction): TokenB2BResponseDto
     {
         $timestamp = $this->tokenServices->getTimestamp();
         $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);
@@ -70,7 +70,7 @@ class TokenController
         return $notificationTokenDto;
     }
 
-    public function getTokenB2B2C(string $authCode, string $privateKey, string $clientId, bool $isProduction): TokenB2B2CResponseDto
+    public function getTokenB2B2C(string $authCode, string $privateKey, string $clientId, string $isProduction): TokenB2B2CResponseDto
     {
         $timestamp = $this->tokenServices->getTimestamp(-7);
         $signature = $this->tokenServices->createSignature($privateKey, $clientId, $timestamp);

@@ -62,9 +62,9 @@ class Snap
     private string $tokenB2B;
     private int $tokenB2BExpiresIn = 900; // 15 minutes (900 seconds)
     private int $tokenB2BGeneratedTimestamp; 
-    private string $tokenB2B2C;
+    private ?string $tokenB2B2C = "";
     private int $tokenB2B2CExpiresIn = 900; // 15 minutes (900 seconds)
-    private int $tokenB2B2CGeneratedTimestamp;
+    private ?int $tokenB2B2CGeneratedTimestamp = 0;
     private string $publicKey;
     private string $issuer;
     private ?string $secretKey;
@@ -72,10 +72,11 @@ class Snap
     private ?string $ipAddress = "";
     private bool $isSimulation = false;
 
-    public function __construct(string $privateKey, string $publicKey, string $clientId, string $issuer, bool $isProduction, string $secretKey)
+    public function __construct(string $privateKey, string $publicKey, string $dokuPublicKey, string $clientId, string $issuer, string $isProduction, string $secretKey)
     {
         $this->privateKey = $privateKey;
         $this->publicKey = $publicKey;
+        $this->dokuPublicKey = $dokuPublicKey;
         $this->issuer = $issuer;
         $this->clientId =$clientId;
         $this->isProduction = $isProduction;
@@ -85,7 +86,6 @@ class Snap
         $this->notificationController = new NotificationController();
         $this->vaController = new VaController();
         $this->directDebitController = new DirectDebitController();
-
         $tokenB2BResponseDto = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
         $this->setTokenB2B($tokenB2BResponseDto);
     }
@@ -542,35 +542,32 @@ class Snap
     public function doPayment(
         PaymentRequestDto $paymentRequestDto,
         string $authCode,
-        string $privateKey,
-        string $clientId,
-        string $secretKey,
-        bool $isProduction
-    ): PaymentResponseDto {
+        string $ipAddress
+    ) {
         $paymentRequestDto->validatePaymentRequestDto();
         
         // Check token B2B
         $isTokenB2bInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
         if ($isTokenB2bInvalid) {
-            $tokenB2BResponse = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
+            $tokenB2BResponse = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
             $this->setTokenB2B($tokenB2BResponse);
         }
 
         // Check token B2B2C
         $isTokenB2B2CInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B2C, $this->tokenB2B2CExpiresIn, $this->tokenB2B2CGeneratedTimestamp);
         if ($isTokenB2B2CInvalid) {
-            $tokenB2B2CResponse = $this->tokenB2BController->getTokenB2B2C($authCode, $privateKey, $clientId, $isProduction);
+            $tokenB2B2CResponse = $this->tokenB2BController->getTokenB2B2C($authCode, $this->privateKey, $this->clientId, $this->isProduction);
             $this->setTokenB2B2C($tokenB2B2CResponse);
         }
-        
         return $this->directDebitController->doPayment(
             $paymentRequestDto,
-            $privateKey,
-            $clientId,
+            $this->privateKey,
+            $this->clientId,
             $this->tokenB2B,
             $this->tokenB2B2C,
-            $secretKey,
-            $isProduction
+            $this->secretKey,
+            $ipAddress,
+            $this->isProduction
         );
     }
 
