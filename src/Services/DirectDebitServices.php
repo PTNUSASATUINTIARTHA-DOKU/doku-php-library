@@ -101,29 +101,27 @@ class DirectDebitServices
         RequestHeaderDto $requestHeaderDto,
         PaymentRequestDto $paymentRequestDto,
         bool $isProduction
-    ): PaymentResponseDto {
+    ) {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_PAYMENT_URL;
         $requestBody = $paymentRequestDto->generateJSONBody();
         $headers = Helper::prepareHeaders($requestHeaderDto);
-        
         $response = Helper::doHitAPI($apiEndpoint, $headers, $requestBody, 'POST');
         $responseObject = json_decode($response, true);
+       
 
         if (isset($responseObject['responseCode'])) {
-            return new PaymentResponseDto(
-                $responseObject['responseCode'],
-                $responseObject['responseMessage'],
-                $responseObject['webRedirectUrl'],
-                $responseObject['partnerReferenceNo']
-            );
-        } else {
-            return new PaymentResponseDto(
-                $responseObject['responseCode'],
-                'Error processing payment: ' . $responseObject['responseMessage'],
-                '',
-                $paymentRequestDto->partnerReferenceNo
-            );
+            if ($responseObject['responseCode'] === '2005400') {
+                return new PaymentResponseDto(
+                    $responseObject['responseCode'],
+                    $responseObject['responseMessage'],
+                    $responseObject['webRedirectUrl'],
+                    $responseObject['referenceNo']
+                );
+            }else{
+                return  $responseObject;
+            }
+            
         }
     }
 

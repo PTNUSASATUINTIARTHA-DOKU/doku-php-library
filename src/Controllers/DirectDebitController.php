@@ -40,8 +40,7 @@ class DirectDebitController
         bool $isProduction
     ): PaymentJumpAppResponseDto {
         $timestamp = Helper::getTimestamp();
-        $baseUrl = Config::getBaseURL($isProduction);
-        $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_PAYMENT_URL;
+        $apiEndpoint = Config::DIRECT_DEBIT_PAYMENT_URL;
         $signature = $this->tokenServices->generateSymmetricSignature(
             'POST',
             $apiEndpoint,
@@ -75,8 +74,7 @@ class DirectDebitController
         bool $isProduction
     ): AccountBindingResponseDto {
         $timestamp = Helper::getTimestamp();
-        $baseUrl = Config::getBaseURL($isProduction);
-        $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_ACCOUNT_BINDING_URL;
+        $apiEndpoint = Config::DIRECT_DEBIT_ACCOUNT_BINDING_URL;
         $httpMethod = 'POST';
         $signature = $this->tokenServices->generateSymmetricSignature(
             $httpMethod, 
@@ -109,11 +107,12 @@ class DirectDebitController
         string $tokenB2B,
         string $tokenB2b2c,
         string $secretKey,
+        string $ipAddress,
         bool $isProduction
-    ): PaymentResponseDto {
+        
+    ) {
         $timestamp = Helper::getTimestamp();
-        $baseUrl = Config::getBaseURL($isProduction);
-        $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_ACCOUNT_BINDING_URL;
+        $apiEndpoint = Config::DIRECT_DEBIT_PAYMENT_URL;
         $httpMethod = 'POST';
         $signature = $this->tokenServices->generateSymmetricSignature(
             $httpMethod, 
@@ -123,7 +122,7 @@ class DirectDebitController
             $timestamp, 
             $secretKey
         );
-        $externalId = Helper::generateExternalId();
+        $externalId = time();
         $header = Helper::generateRequestHeaderDto(
             $timestamp, 
             $signature, 
@@ -131,7 +130,7 @@ class DirectDebitController
             $externalId, 
             null, 
             $tokenB2B, 
-            null, 
+            $ipAddress, 
             null, 
             $tokenB2b2c
         );
@@ -149,8 +148,7 @@ class DirectDebitController
         bool $isProduction
     ): AccountUnbindingResponseDto {
         $timestamp = Helper::getTimestamp();
-        $baseUrl = Config::getBaseURL($isProduction);
-        $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_ACCOUNT_UNBINDING_URL;
+        $apiEndpoint = Config::DIRECT_DEBIT_ACCOUNT_UNBINDING_URL;
         $httpMethod = 'POST';
         $signature = $this->tokenServices->generateSymmetricSignature(
             $httpMethod, 
@@ -185,8 +183,7 @@ class DirectDebitController
         bool $isProduction
     ): AccountUnbindingResponseDto {
         $timestamp = Helper::getTimestamp();
-        $baseUrl = Config::getBaseURL($isProduction);
-        $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_ACCOUNT_UNBINDING_URL;
+        $apiEndpoint = Config::DIRECT_DEBIT_ACCOUNT_UNBINDING_URL;
         $httpMethod = 'POST';
         $signature = $this->tokenServices->generateSymmetricSignature(
             $httpMethod, 
@@ -223,8 +220,7 @@ class DirectDebitController
         $encryptCbc = $this->directDebitServices->encryptCbc($cardData,$secretKey);
         $cardRegistrationRequestDto->cardData = $encryptCbc;
         $timestamp = Helper::getTimestamp();
-        $baseUrl = Config::getBaseURL($isProduction);
-        $apiEndpoint = $baseUrl . Config::CARD_REGISTRATION_URL;
+        $apiEndpoint = Config::CARD_REGISTRATION_URL;
         $signature = $this->tokenServices->generateSymmetricSignature(
             'POST',
             $apiEndpoint,
@@ -291,8 +287,7 @@ class DirectDebitController
         bool $isProduction
     ): BalanceInquiryResponseDto {
         $timestamp = $this->tokenServices->getTimestamp();
-        $baseUrl = Config::getBaseURL($isProduction);
-        $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_BALANCE_INQUIRY_URL;
+        $apiEndpoint = Config::DIRECT_DEBIT_BALANCE_INQUIRY_URL;
         $httpMethod = 'POST';
         $signature = $this->tokenServices->generateSymmetricSignature(
             $httpMethod,
@@ -328,8 +323,7 @@ class DirectDebitController
         bool $isProduction
     ): CheckStatusResponseDto {
         $timestamp = Helper::getTimestamp();
-        $baseUrl = Config::getBaseURL($isProduction);
-        $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_CHECK_STATUS_URL;
+        $apiEndpoint =Config::DIRECT_DEBIT_CHECK_STATUS_URL;
 
         $signature = $this->tokenServices->generateSymmetricSignature(
             'POST',

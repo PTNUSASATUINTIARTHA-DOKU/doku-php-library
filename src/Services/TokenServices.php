@@ -53,7 +53,7 @@ class TokenServices
         }
     }
 
-    public function createTokenB2B(TokenB2BRequestDto $requestDto, bool $isProduction): TokenB2BResponseDto
+    public function createTokenB2B(TokenB2BRequestDto $requestDto, string $isProduction): TokenB2BResponseDto
     {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::ACCESS_TOKEN;
@@ -109,23 +109,21 @@ class TokenServices
     {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::ACCESS_TOKEN_B2B2C;
-
         $headers = array(
             "X-CLIENT-KEY: " . $clientId,
             "X-TIMESTAMP: " . $timestamp,
             "X-SIGNATURE: " . $signature,
             "Content-Type: application/json"
         );
-
         $body = json_encode([
             'grantType' => $tokenB2B2CRequestDto->grantType,
             'authCode' => $tokenB2B2CRequestDto->authCode,
             'additionalInfo' => $tokenB2B2CRequestDto->additionalInfo,
         ]);
-
         $response = Helper::doHitAPI($apiEndpoint, $headers, $body, 'POST');
-
         $responseData = json_decode($response, true);
+
+        // flush();
 
         if ($responseData === null) {
             throw new Exception('Null Response Data: Failed to decode JSON response');
@@ -145,7 +143,7 @@ class TokenServices
                 $responseData['accessTokenExpiryTime'] ?? '',
                 $responseData['refreshToken'] ?? '',
                 $responseData['refreshTokenExpiryTime'] ?? '',
-                $responseData['additionalInfo'] ?? null
+                (object) $responseData['additionalInfo'] ?? null
             );
         } catch (Error $e) {
             throw new Exception('Failed to create TokenB2B2CResponseDto: ' . $e->getMessage());
