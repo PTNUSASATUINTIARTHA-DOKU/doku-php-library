@@ -165,29 +165,37 @@ class TokenServices
         return $expirationTimestamp < $currentTimestamp;
     }
 
-    public function compareSignatures(string $requestSignature, string $createdSignature)
+    public function compareSignatures(string $requestSignature, string $xTimestamp, string $clientId, string $dokuPublicKey,)
     {
-        if ($requestSignature === $createdSignature) {
-            return true;
-        } else {
+        $data = $clientId . '|' . $xTimestamp;
+        $decodedSignature = base64_decode($requestSignature);
+        $publicKey = openssl_pkey_get_public($dokuPublicKey);
+
+        if (!$publicKey) {
             return false;
         }
+        $isVerified = openssl_verify($data, $decodedSignature, $publicKey, OPENSSL_ALGO_SHA256);
+        
+        openssl_free_key($publicKey);
+
+        return $isVerified === 1;
     }
+
 
     public function generateInvalidSignature(string $timestamp): NotificationTokenDto
     {
         $responseHeader = new NotificationTokenHeaderDto(
-            null,
+            "",
             $timestamp
         );
 
         $responseBody = new NotificationTokenBodyDto(
             "4017300",
             "Unauthorized. Invalid Signature",
-            null,
-            null,
-            null,
-            null
+            "",
+            "",
+            0,
+            ""
         );
 
         $response = new NotificationTokenDto(

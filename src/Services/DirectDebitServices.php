@@ -184,7 +184,38 @@ class DirectDebitServices
             );
         }
     }
+    public function encryptCbc(string $input, string $secretKey): string
+    {
+        try {
+            $secretKey = getSecretKey($secretKey);
+            $iv = generateIv(); // Menghasilkan IV
 
+            // Mengenkripsi data
+            $cipherText = openssl_encrypt($input, 'AES-128-CBC', $secretKey, 0, $iv);
+
+            // Menggabungkan ciphertext dan IV menjadi string base64
+            $ivString = base64_encode($iv);
+            return base64_encode($cipherText) . '|' . $ivString;
+        } catch (Exception $error) {
+            // Menangani kesalahan
+            echo 'Encryption error: ' . $error->getMessage();
+        }
+    }
+    public function getSecretKey(string $secretKey): string
+    {
+        if (strlen($secretKey) > 16) {
+            return substr($secretKey, 0, 16);
+        } elseif (strlen($secretKey) < 16) {
+            return str_pad($secretKey, 16, '-');
+        } else {
+            return $secretKey;
+        }
+    }
+
+    public function generateIv(): string
+    {
+        return openssl_random_pseudo_bytes(16); // 16-byte IV
+    }
     public function doCardRegistrationProcess(
         RequestHeaderDto $requestHeaderDto,
         CardRegistrationRequestDto $requestDto,

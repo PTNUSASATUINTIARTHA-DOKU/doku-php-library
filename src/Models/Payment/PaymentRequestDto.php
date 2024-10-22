@@ -10,19 +10,22 @@ class PaymentRequestDto
     public ?PaymentAdditionalInfoRequestDto $additionalInfo;
     // Only for OVO
     public ?string $feeType;
+    public ?string $chargeToken;
 
     public function __construct(
         ?string $partnerReferenceNo,
         ?TotalAmount $amount,
         ?array $payOptionDetails,
         ?PaymentAdditionalInfoRequestDto $additionalInfo,
-        ?string $feeType
+        ?string $feeType,
+        ?string $chargeToken
     ) {
         $this->partnerReferenceNo = $partnerReferenceNo;
         $this->amount = $amount;
         $this->payOptionDetails = $payOptionDetails;
         $this->additionalInfo = $additionalInfo;
         $this->feeType = $feeType;
+        $this->chargeToken = $chargeToken;
     }
 
     public function validatePaymentRequestDto(): void
@@ -30,10 +33,20 @@ class PaymentRequestDto
         if (empty($this->partnerReferenceNo)) {
             throw new \InvalidArgumentException("Partner Reference Number is required");
         }
-        // if (!in_array($this->additionalInfo->channel, ['EMONEY_OVO_SNAP'])) {
-        //     throw new \InvalidArgumentException('Invalid channel');
-        // }
+
+        // Cek channel
+        if ($this->additionalInfo->channel === 'DIRECT_DEBIT_BRI_SNAP') {
+            if (empty($this->chargeToken)) {
+                throw new \InvalidArgumentException("Invalid mandatory field chargeToken");
+            }
+            if (strlen($this->chargeToken) > 32) {
+                throw new \InvalidArgumentException("chargeToken must be at most 32 characters long");
+            }
+        } elseif (!in_array($this->additionalInfo->channel, ['EMONEY_OVO_SNAP'])) {
+            throw new \InvalidArgumentException('Invalid channel');
+        }
     }
+
 
     public function generateJSONBody(): string
     {
@@ -52,7 +65,8 @@ class PaymentRequestDto
             'partnerReferenceNo' => $this->partnerReferenceNo,
             'amount' => $totalAmountArr,
             'payOptionDetails' => $this->payOptionDetails,
-            'additionalInfo' => $additionalInfoArr
+            'additionalInfo' => $additionalInfoArr,
+            'chargeToken' => $this->chargeToken
         ]);
     }
 }
