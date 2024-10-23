@@ -37,7 +37,7 @@ class DirectDebitController
         string $clientId,
         string $tokenB2B,
         string $secretKey,
-        bool $isProduction
+        string $isProduction
     ): PaymentJumpAppResponseDto {
         $timestamp = Helper::getTimestamp();
         $apiEndpoint = Config::DIRECT_DEBIT_PAYMENT_URL;
@@ -71,7 +71,7 @@ class DirectDebitController
         string $deviceId,
         string $ipAddress,
         string $secretKey,
-        bool $isProduction
+        string $isProduction
     ): AccountBindingResponseDto {
         $timestamp = Helper::getTimestamp();
         $apiEndpoint = Config::DIRECT_DEBIT_ACCOUNT_BINDING_URL;
@@ -108,7 +108,7 @@ class DirectDebitController
         string $tokenB2b2c,
         string $secretKey,
         string $ipAddress,
-        bool $isProduction
+        string $isProduction
         
     ) {
         $timestamp = Helper::getTimestamp();
@@ -145,7 +145,7 @@ class DirectDebitController
         string $tokenB2B,
         string $ipAddress,
         string $secretKey,
-        bool $isProduction
+        string $isProduction
     ): AccountUnbindingResponseDto {
         $timestamp = Helper::getTimestamp();
         $apiEndpoint = Config::DIRECT_DEBIT_ACCOUNT_UNBINDING_URL;
@@ -180,7 +180,7 @@ class DirectDebitController
         string $tokenB2B,
         string $ipAddress,
         string $secretKey,
-        bool $isProduction
+        string $isProduction
     ): AccountUnbindingResponseDto {
         $timestamp = Helper::getTimestamp();
         $apiEndpoint = Config::DIRECT_DEBIT_ACCOUNT_UNBINDING_URL;
@@ -214,7 +214,7 @@ class DirectDebitController
         string $clientId,
         string $tokenB2B,
         string $secretKey,
-        bool $isProduction
+        string $isProduction
     ): CardRegistrationResponseDto {
         $cardData = json_encode($cardRegistrationRequestDto->cardData);
         $encryptCbc = $this->directDebitServices->encryptCbc($cardData,$secretKey);
@@ -284,7 +284,7 @@ class DirectDebitController
         string $tokenB2b2c,
         string $tokenB2B,
         string $secretKey,
-        bool $isProduction
+        string $isProduction
     ): BalanceInquiryResponseDto {
         $timestamp = $this->tokenServices->getTimestamp();
         $apiEndpoint = Config::DIRECT_DEBIT_BALANCE_INQUIRY_URL;
@@ -320,7 +320,7 @@ class DirectDebitController
         string $clientId,
         string $tokenB2B,
         string $secretKey,
-        bool $isProduction
+        string $isProduction
     ): CheckStatusResponseDto {
         $timestamp = Helper::getTimestamp();
         $apiEndpoint =Config::DIRECT_DEBIT_CHECK_STATUS_URL;
@@ -356,7 +356,7 @@ class DirectDebitController
         string $xTimestamp,
         string $clientSecret,
         string $tokenB2B,
-        bool $isProduction
+        string $isProduction
     ): NotifyPaymentDirectDebitResponseDto {
         return $this->directDebitServices->handleDirectDebitNotification(
             $requestDto,

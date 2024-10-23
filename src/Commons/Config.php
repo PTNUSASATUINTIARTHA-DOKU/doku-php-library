@@ -22,8 +22,8 @@ class Config {
     const DIRECT_DEBIT_PAYMENT_NOTIF_URL = '/v1.0/debit/notify';
 
     public static function getBaseURL($isProduction) {
-            $url = $isProduction ? Config::PRODUCTION_BASE_URL : Config::SANDBOX_BASE_URL;
-            return $url;
+        $url = $isProduction === 'true' ? Config::PRODUCTION_BASE_URL : Config::SANDBOX_BASE_URL;
+        return $url;
     }
 }
 

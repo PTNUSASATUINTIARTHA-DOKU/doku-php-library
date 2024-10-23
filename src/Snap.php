@@ -58,7 +58,7 @@ class Snap
     private DirectDebitController $directDebitController;
     private string $privateKey;
     private string $clientId;
-    private bool $isProduction;
+    private string $isProduction;
     private string $tokenB2B;
     private int $tokenB2BExpiresIn = 900; // 15 minutes (900 seconds)
     private int $tokenB2BGeneratedTimestamp; 
@@ -145,7 +145,7 @@ class Snap
         return $this->tokenB2B;
     }
 
-    public function getTokenB2B2C(string $authCode, string $privateKey, string $clientId, bool $isProduction): TokenB2B2CResponseDto
+    public function getTokenB2B2C(string $authCode, string $privateKey, string $clientId, string $isProduction): TokenB2B2CResponseDto
     {
         try {
             $tokenB2B2CResponseDto = $this->tokenB2BController->getTokenB2B2C($authCode, $privateKey, $clientId, $isProduction);
@@ -388,7 +388,7 @@ class Snap
         string $privateKey,
         string $clientId,
         string $secretKey,
-        bool $isProduction
+        string $isProduction
     ): PaymentJumpAppResponseDto {
         $requestDto->validatePaymentJumpAppRequestDto();
 
@@ -408,10 +408,8 @@ class Snap
 
     public function doAccountBinding(
         AccountBindingRequestDto $accountBindingRequestDto,
-        string $privateKey,
-        string $clientId,
-        string $secretKey,
-        bool $isProduction
+        string $ipAddress,
+        string $deviceId
     ): AccountBindingResponseDto {
         $accountBindingRequestDto->validateAccountBindingRequestDto();
         // Check if we're in sandbox mode and use simulation if so
@@ -419,19 +417,19 @@ class Snap
         $isTokenInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
 
         if ($isTokenInvalid) {
-            $tokenB2BResponse = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
+            $tokenB2BResponse = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
             $this->setTokenB2B($tokenB2BResponse);
         }
         
         return $this->directDebitController->doAccountBinding(
             $accountBindingRequestDto,
-            $privateKey,
-            $clientId,
+            $this->privateKey,
+            $this->clientId,
             $this->tokenB2B,
-            $this->deviceId,
-            $this->ipAddress,
-            $secretKey,
-            $isProduction
+            $deviceId,
+            $ipAddress,
+            $this->secretKey,
+            $this->isProduction
         );
     }
 
@@ -472,7 +470,7 @@ class Snap
         string $privateKey,
         string $clientId,
         string $secretKey,
-        bool $isProduction
+        string $isProduction
     ): AccountUnbindingResponseDto {
         $accountUnbindingRequestDto->validateAccountUnbindingRequestDto();
 
@@ -499,7 +497,7 @@ class Snap
         string $privateKey,
         string $clientId,
         string $secretKey,
-        bool $isProduction
+        string $isProduction
     ): AccountUnbindingResponseDto {
         $accountUnbindingRequestDto->validateAccountUnbindingRequestDto();
 
@@ -527,7 +525,7 @@ class Snap
         string $privateKey,
         string $clientId,
         string $secretKey,
-        bool $isProduction
+        string $isProduction
     ): CardRegistrationResponseDto {
         $cardRegistrationRequestDto->validate();
         $isTokenB2bInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
@@ -607,7 +605,7 @@ class Snap
         string $privateKey,
         string $clientId,
         string $secretKey,
-        bool $isProduction
+        string $isProduction
     ): CheckStatusResponseDto {
         $checkStatusRequestDto->validateCheckStatusRequestDto();
 
@@ -642,7 +640,7 @@ class Snap
         string $xTimestamp,
         string $secretKey,
         string $tokenB2B,
-        bool $isProduction
+        string $isProduction
     ): NotifyPaymentDirectDebitResponseDto {
         return $this->directDebitController->handleDirectDebitNotification(
             $requestDto,

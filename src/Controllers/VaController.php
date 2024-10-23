@@ -21,7 +21,7 @@ class VaController
         $this->tokenServices = new TokenServices();
     }
 
-    public function createVa(CreateVaRequestDto $createVaRequestDto, string $privateKey, string $clientId, string $tokenB2B, string $secretKey, bool $isProduction): CreateVaResponseDto
+    public function createVa(CreateVaRequestDto $createVaRequestDto, string $privateKey, string $clientId, string $tokenB2B, string $secretKey, string $isProduction): CreateVaResponseDto
     {
         $externalId = Helper::generateExternalId();;
         $timestamp = $this->tokenServices->getTimestamp();
@@ -128,7 +128,7 @@ class VaController
         string $privateKey, 
         string $clientId, 
         string $tokenB2B, 
-        bool $isProduction
+        string $isProduction
     ): CheckStatusVAResponseDto
     {
         $timestamp = $this->tokenServices->getTimestamp();
