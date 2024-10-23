@@ -216,6 +216,9 @@ class DirectDebitController
         string $secretKey,
         string $isProduction
     ): CardRegistrationResponseDto {
+        $cardData = json_encode($cardRegistrationRequestDto->cardData);
+        $encryptCbc = $this->directDebitServices->encryptCbc($cardData,$secretKey);
+        $cardRegistrationRequestDto->cardData = $encryptCbc;
         $timestamp = Helper::getTimestamp();
         $apiEndpoint = Config::CARD_REGISTRATION_URL;
         $signature = $this->tokenServices->generateSymmetricSignature(
