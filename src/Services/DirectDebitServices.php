@@ -34,7 +34,7 @@ class DirectDebitServices
     public function doPaymentJumpAppProcess(
         RequestHeaderDto $requestHeaderDto,
         PaymentJumpAppRequestDto $requestDto,
-        bool $isProduction
+        string $isProduction
     ): PaymentJumpAppResponseDto {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_PAYMENT_URL;
@@ -64,7 +64,7 @@ class DirectDebitServices
     public function doAccountBindingProcess(
         RequestHeaderDto $requestHeaderDto,
         AccountBindingRequestDto $accountBindingRequestDto,
-        bool $isProduction
+        string $isProduction
     ): AccountBindingResponseDto {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_ACCOUNT_BINDING_URL;
@@ -100,7 +100,7 @@ class DirectDebitServices
     public function doPaymentProcess(
         RequestHeaderDto $requestHeaderDto,
         PaymentRequestDto $paymentRequestDto,
-        bool $isProduction
+        string $isProduction
     ) {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_PAYMENT_URL;
@@ -128,7 +128,7 @@ class DirectDebitServices
     public function doAccountUnbindingProcess(
         RequestHeaderDto $requestHeaderDto,
         AccountUnbindingRequestDto $accountUnbindingRequestDto,
-        bool $isProduction
+        string $isProduction
     ): AccountUnbindingResponseDto {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_ACCOUNT_UNBINDING_URL;
@@ -158,7 +158,7 @@ class DirectDebitServices
     public function doCardUnbindingProcess(
         RequestHeaderDto $requestHeaderDto,
         AccountUnbindingRequestDto $accountUnbindingRequestDto,
-        bool $isProduction
+        string $isProduction
     ): AccountUnbindingResponseDto {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_CARD_UNBINDING_URL;
@@ -188,7 +188,7 @@ class DirectDebitServices
     public function doCardRegistrationProcess(
         RequestHeaderDto $requestHeaderDto,
         CardRegistrationRequestDto $requestDto,
-        bool $isProduction
+        string $isProduction
     ): CardRegistrationResponseDto {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::CARD_REGISTRATION_URL;
@@ -226,7 +226,7 @@ class DirectDebitServices
     public function doRefundProcess(
         RequestHeaderDto $header, 
         RefundRequestDto $refundRequestDto, 
-        bool $isProduction
+        string $isProduction
     ): RefundResponseDto {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_REFUND_URL;
@@ -263,7 +263,7 @@ class DirectDebitServices
     public function doBalanceInquiryProcess(
         RequestHeaderDto $requestHeaderDto, 
         BalanceInquiryRequestDto $balanceInquiryRequestDto, 
-        bool $isProduction
+        string $isProduction
     ): BalanceInquiryResponseDto {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_BALANCE_INQUIRY_URL;
@@ -291,7 +291,7 @@ class DirectDebitServices
     public function doCheckStatus(
         RequestHeaderDto $requestHeaderDto,
         CheckStatusRequestDto $checkStatusRequestDto,
-        bool $isProduction
+        string $isProduction
     ): CheckStatusResponseDto {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_CHECK_STATUS_URL;
@@ -363,7 +363,7 @@ class DirectDebitServices
         string $xTimestamp,
         string $clientSecret,
         string $tokenB2B,
-        bool $isProduction
+        string $isProduction
     ): NotifyPaymentDirectDebitResponseDto {
         // Validate the X-SIGNATURE
         $stringToSign = $this->createStringToSign($requestDto, $xTimestamp);

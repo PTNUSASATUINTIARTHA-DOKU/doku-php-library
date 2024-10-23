@@ -29,7 +29,7 @@ use Doku\Snap\Models\VA\VirtualAccountData\CheckStatusVirtualAccountData;
 use Exception;
 class VaServices
 {
-    public function createVa(RequestHeaderDto $requestHeaderDto, CreateVaRequestDto $requestDto, bool $isProduction): CreateVaResponseDto
+    public function createVa(RequestHeaderDto $requestHeaderDto, CreateVaRequestDto $requestDto, string $isProduction): CreateVaResponseDto
     {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::CREATE_VA;
@@ -75,7 +75,7 @@ class VaServices
         }
     }
 
-    public function doUpdateVa(RequestHeaderDto $requestHeaderDto, UpdateVaRequestDto $requestDto, bool $isProduction = false): UpdateVaResponseDto
+    public function doUpdateVa(RequestHeaderDto $requestHeaderDto, UpdateVaRequestDto $requestDto, string $isProduction = false): UpdateVaResponseDto
     {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::UPDATE_VA_URL;
@@ -122,7 +122,7 @@ class VaServices
         }
     }
 
-    public function doDeletePaymentCode(RequestHeaderDto $requestHeader, DeleteVaRequestDto $deleteVaRequest, bool $isProduction = false): DeleteVaResponseDto
+    public function doDeletePaymentCode(RequestHeaderDto $requestHeader, DeleteVaRequestDto $deleteVaRequest, string $isProduction = false): DeleteVaResponseDto
     {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DELETE_VA_URL;
@@ -166,7 +166,7 @@ class VaServices
         }
     }
 
-    public function doCheckStatusVa(RequestHeaderDto $requestHeader, CheckStatusVaRequestDto $checkStatusVaRequest, bool $isProduction = false): CheckStatusVaResponseDto
+    public function doCheckStatusVa(RequestHeaderDto $requestHeader, CheckStatusVaRequestDto $checkStatusVaRequest, string $isProduction = false): CheckStatusVaResponseDto
     {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::CHECK_VA;
