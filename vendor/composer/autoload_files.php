@@ -7,6 +7,8 @@ $baseDir = dirname($vendorDir);
 
 return array(
     '6124b4c8570aa390c21fafd04a26c69f' => $vendorDir . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
+    '5bb7c2eb7aa7caa8acb48047b134df4d' => $vendorDir . '/mockery/mockery/src/helpers.php',
+    '3d4759925ba47564c91be47ffdb6aaa8' => $vendorDir . '/mockery/mockery/src/Mockery.php',
     '3109cb1a231dcd04bee1f9f620d46975' => $vendorDir . '/paragonie/sodium_compat/autoload.php',
     'ec07570ca5a812141189b1fa81503674' => $vendorDir . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
 );

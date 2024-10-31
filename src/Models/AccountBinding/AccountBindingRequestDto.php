@@ -14,9 +14,22 @@ class AccountBindingRequestDto
     public function validateAccountBindingRequestDto(): void
     {
         if (empty($this->phoneNo)) {
-            throw new \InvalidArgumentException("Phone number is required");
+            throw new \InvalidArgumentException("Phone number is required. Example: '62813941306101'.");
         }
-        $this->additionalInfo->validate();
+        
+        if (strlen($this->phoneNo) < 9) {
+            throw new \InvalidArgumentException("phoneNo must be at least 9 digits. Ensure that phoneNo is not empty. Example: '62813941306101'.");
+        }
+    
+        if (strlen($this->phoneNo) > 16) {
+            throw new \InvalidArgumentException("phoneNo must be 16 characters or fewer. Ensure that phoneNo is no longer than 16 characters. Example: '62813941306101'.");
+        }
+    
+        if ($this->additionalInfo !== null) {
+            $this->additionalInfo->validate();
+        } else {
+            throw new \InvalidArgumentException("Additional Info is required");
+        }
     }
 
     public function generateJSONBody(): string

@@ -35,9 +35,9 @@ class TokenServices
         $stringToSign = $clientId . "|" . $timestamp;
         $signature = "";
         $success = openssl_sign($stringToSign, $signature, $privateKey, OPENSSL_ALGO_SHA256);
-
         if (!$success) {
-            throw new Exception('Failed to generate signature');
+            $error = openssl_error_string();
+            throw new Exception('Failed to generate signature ' . $error);
         }
         $base64Signature = base64_encode($signature);
 

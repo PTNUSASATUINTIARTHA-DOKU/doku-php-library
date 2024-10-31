@@ -24,40 +24,48 @@ use Doku\Snap\Controllers\DirectDebitController;
 class DirectDebitTest extends TestCase
 {
         private const PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----
-MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCvuA0S+R8RGEoT
-xZYfksdNam3/iNrKzY/RqGbN4Gf0juIN8XnUM8dGv4DVqmXQwRMMeQ3N/Y26pMDJ
-1v/i6E5BwWasBAveSk7bmUBQYMURzxrvBbvfRNvIwtYDa+cx39HamfiYYOHq4hZV
-S6G2m8SqDEhONxhHQmEP9FPHSOjPQWKSlgxrT3BKI9ESpQofcxKRX3hyfh6MedWT
-lZpXUJrI9bd6Azg3Fd5wpfHQlLcKSR8Xr2ErH7dNS4I21DTHR+6qx02Tocv5D30O
-DamA6yG9hxnFERLVE+8GnJE52Yjjsm5otGRwjHS4ngSShc/Ak1ZyksaCTFl0xEwT
-J1oeESffAgMBAAECggEAHv9fxw4NTe2z+6LqZa113RE+UEqrFgWHLlv/rqe8jua5
-t+32KNnteGyF5KtHhLjajGO6bLEi1F8F51U3FKcYTv84BnY8Rb1kBdcWAlffy9F2
-Fd40EyHJh7PfHwFk6mZqVZ69vNuyXsX9XJSX9WerHLhH9QxBCykJiE/4i3owH4dF
-Cd/7ervsP32ukGY3rs/mdcO8ThAWffF5QyGd/A3NMf8jRCZ3FwYfEPrgaj9IHV2f
-UrwgVc7JqQaCJTvvjrm4Epjp+1mca036eoDj40H+ImF9qQ80jZee/vvqRXjfU5Qx
-ys/MHD6S2aGEG5N5VnEuHLHvT51ytTpKA+mAY/armQKBgQDrQVtS8dlfyfnPLRHy
-p8snF/hpqQQF2k1CDBJTaHfNXG37HlccGzo0vreFapyyeSakCdA3owW7ET8DBiO5
-WN2Qgb7Vab/7vEiGltK4YU/62+g4F0LjWPp25wnbVj81XXW95QrWKjytjU/tgO2p
-h47qr8C+3HqMPj1pQ5tcKpJXCwKBgQC/Nrkn0kT+u4KOxXix5RkRDxwfdylCvuKc
-3EfMHFs4vELi1kOhwXEbVTIsbFpTmsXclofqZvjkhepeu9CM6PN2T852hOaI+1Wo
-4v57UTW/nkpyo8FZ09PtBvOau5B6FpQU0uaKWrZ0dX/f0aGbQKUxJnFOq++7e7mi
-IBfX1QCm/QKBgHtVWkFT1XgodTSuFji2ywSFxo/uMdO3rMUxevILVLNu/6GlOFnd
-1FgOnDvvtpLCfQWGt4hTiQ+XbQdy0ou7EP1PZ/KObD3XadZVf8d2DO4hF89AMqrp
-3PU1Dq/UuXKKus2BJHs+zWzXJs4Gx5IXJU/YMB5fjEe14ZAsB2j8UJgdAoGANjuz
-MFQ3NXjBgvUHUo2EGo6Kj3IgxcmWRJ9FzeKNDP54ihXzgMF47yOu42KoC+ZuEC6x
-xg4Gseo5mzzx3cWEqB3ilUMEj/2ZQhl/zEIwWHTw8Kr5gBzQkv3RwiVIyRf2UCGx
-ObSY41cgOb8fcwVW1SXuJT4m9KoW8KDholnLoZECgYEAiNpTvvIGOoP/QT8iGQkk
-r4GK50j9BoPSJhiM6k236LSc5+iZRKRVUCFEfyMPx6AY+jD2flfGxUv2iULp92XG
-2eE1H6V1gDZ4JJw3s5847z4MNW3dj9nIi2bpFssnmoS5qP2IpmJW0QQmRmJZ8j2j
-OrzKGlO90/6sNzIDd2DbRSM=
+MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC3EFZ9ahjQQLzq
+9Nf3d9BbmDaMIEaFSsrgmxUUslWWKcpR3FWNT8anUm1p5imw3AcPDMwnc8P1f6Fy
+25eWSSgqdIeKvP7T93b+ShYCkJeGnpPN6VWqfdmECt2cBxgpQtOjjqU1jUYG5sPX
+fKCbFdE8D+BESzWHia/+EhpTFv4xmbaFhQtUjqhsMUNUEmr4GQY9UhSFGhHM+MVJ
+T3MGJFKxkKLGnx0R7i9gP9eFE+wvFHbREzrgs/D5j1J2/o1oGSBeSzHj5CT3ZPNJ
+Hg7aVvRkUptfqZQAfMHuoL804hICXQxYPfSSQnJuC2fpOtrJRedtPuAeDMWN/T7R
+REEXsHvRAgMBAAECggEABvS7uJnAth8TnqDtmOVoWSakQfhS/asdIOI7r5TkLCfL
+3IbxCETVAVQgPLMmd+YwbXm4wzICqvAt2BGwhaEjgdN6OAMc8rx3PMvfYLsSSub5
+KkyYuPj9vCb2i0B4wk6cAJ3BuNJ0q/v2SpideK8gS3Y1+Rpbfxo0AgU5k1kvEP7c
+C5KLeJpfJUsYzdROgz4Nm31N1f78b+xpmBk5BunVi/p5V88ffD8E0cXXvgGAOrll
+StUZF6TcZRHWZm4uBwKzapDdRUJw4bfAs7KkPu1BjXYb+UQTJtf3QkGdPdkbpIAq
+NqUTZHcpid69rs7WRHYbnpLesE5S/EnjsSTvKkqTAQKBgQDemRGgu3nGmTkItl/5
+8RMe8EgKWrZ5bbrmifCV9sbBzSvCG/x67lmYH1nEQgb7P+cshSxExNx8oNMBKjo5
+SbYD8t+brHrbAKpeMspIKituorSgKyAI78qmerDwETdVLjaptAeB2rtItDflKLhi
+vvc2oMENrs9P6vwRaQBRL46lEQKBgQDSiJigOBrlZ7ktIYcgjhItj5ym2tBQZR3l
+r3se8QCJBX5qkhHBr8ZW+RNbhVUIJOc6zS+FVkNXDjTujshXmCg2rvunRMeEY8lr
+bqY6b1qU7Dy2ayUxOcCrMncyu0m+816sKea439IAbBsOBDpLfy3c9XVxRQNl/9jA
+vkVlW/1qwQKBgEtG8oorvGPoHzyOCGkLGM9GrOYrhTgNXr5l+aGNYevaSakMM9cS
+0eO6/m17csb29mO86ZqcBIB1FsZ3FFeZUN+G/A22R5nWYMcYYAYFlMiGZ5Ue4GeF
+SEACj+GvwMmipkO/qSZF5T4SDDEIE0r5j7q+pGrPKja5neL5Ym0SKygxAoGAT0/Y
+N5uLPlrp3r+fuTrsTC+q8wzBp1fAgJOwDUL7UaM5MYqfl9jRHlis2zCKjQvh9Dvy
+KAgMTFJ0zF4LyTvwAlG/Sg9WHmC9M3S2uJLUi//HC22n0DiShav4TatSp9XlF3Sd
+j435/eC7/HbJQ0HBFFmACdDW6+kLTekgGYQjHsECgYBMiwrH5sAV9bWa8M4cTZFj
+rftc352gjDhdxFsUmU6oDBa5ErMaVqe+r/RiIMWO3a3PBoYyYqMRF5JB/pF+ZN7D
+bEjWwooi232C/6fIDRnQtJs/huZm1msK410lJ8dsCG/5H+nuFpPiGQgHCwXiwSw+
+ZMjguO6OOHnN77tklXQqCg==
 -----END PRIVATE KEY-----";
     private Snap $snap;
     private $directDebitController;
-    private const CLIENT_ID = "BRN-0221-1693209567392";
+    private const CLIENT_ID = "BRN-0208-1720408264694";
     private const IP_ADDRESS = "127.0.0.1";
-    private const SECRET_KEY = "SK-tDzY6MSLBWlNXy3qCsUU";
-    private const PUBLIC_KEY = "";
-    private const ISSUER = "";
+    private const SECRET_KEY = "SK-VknOxwR4xZSEPnG7fpJo";
+    private const PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtxBWfWoY0EC86vTX93fQ
+W5g2jCBGhUrK4JsVFLJVlinKUdxVjU/Gp1JtaeYpsNwHDwzMJ3PD9X+hctuXlkko
+KnSHirz+0/d2/koWApCXhp6TzelVqn3ZhArdnAcYKULTo46lNY1GBubD13ygmxXR
+PA/gREs1h4mv/hIaUxb+MZm2hYULVI6obDFDVBJq+BkGPVIUhRoRzPjFSU9zBiRS
+sZCixp8dEe4vYD/XhRPsLxR20RM64LPw+Y9Sdv6NaBkgXksx4+Qk92TzSR4O2lb0
+ZFKbX6mUAHzB7qC/NOISAl0MWD30kkJybgtn6TrayUXnbT7gHgzFjf0+0URBF7B7
+0QIDAQAB
+-----END PUBLIC KEY-----";
+    private const ISSUER = "doku";
     private const IS_PRODUCTION = false;
     private const AUTH_CODE = "123456789";
 
@@ -223,11 +231,12 @@ OrzKGlO90/6sNzIDd2DbRSM=
             ->method('doBalanceInquiry')
             ->with(
                 $this->equalTo($request),
-                $this->equalTo(self::AUTH_CODE)
+                $this->equalTo(self::AUTH_CODE),
+                $this->equalTo(self::IP_ADDRESS)
             )
             ->willReturn($expectedResponse);
 
-        $response = $this->snap->doBalanceInquiry($request, self::AUTH_CODE);
+        $response = $this->snap->doBalanceInquiry($request, self::AUTH_CODE, self::IP_ADDRESS);
 
         $this->assertEquals("2001100", $response->responseCode);
     }
@@ -242,7 +251,7 @@ OrzKGlO90/6sNzIDd2DbRSM=
             ->method('doBalanceInquiry')
             ->willReturn($expectedResponse);
 
-        $response = $this->snap->doBalanceInquiry($request, self::AUTH_CODE);
+        $response = $this->snap->doBalanceInquiry($request, self::AUTH_CODE,self::IP_ADDRESS);
 
         $this->assertEquals("5001100", $response->responseCode);
     }

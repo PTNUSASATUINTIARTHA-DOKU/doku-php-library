@@ -49,7 +49,7 @@ class DirectDebitController
             $timestamp,
             $secretKey
         );
-        $externalId = Helper::generateExternalId();;
+        $externalId = time();;
         $header = Helper::generateRequestHeaderDto(
             $timestamp,
             $signature,
@@ -84,7 +84,7 @@ class DirectDebitController
             $timestamp, 
             $secretKey
         );
-        $externalId = Helper::generateExternalId();
+        $externalId = time();
         $header = Helper::generateRequestHeaderDto(
             $timestamp, 
             $signature, 
@@ -157,7 +157,7 @@ class DirectDebitController
             $accountUnbindingRequestDto->generateJSONBody(), 
             $timestamp, 
             $secretKey);
-        $externalId =  Helper::generateExternalId();
+        $externalId =  time();
         $header =  Helper::generateRequestHeaderDto(
             $timestamp, 
             $signature, 
@@ -192,7 +192,7 @@ class DirectDebitController
             $accountUnbindingRequestDto->generateJSONBody(), 
             $timestamp, 
             $secretKey);
-        $externalId =  Helper::generateExternalId();
+        $externalId =  time();
         $header =  Helper::generateRequestHeaderDto(
             $timestamp, 
             $signature, 
@@ -210,7 +210,6 @@ class DirectDebitController
 
     public function doCardRegistration(
         CardRegistrationRequestDto $cardRegistrationRequestDto,
-        string $deviceId,
         string $clientId,
         string $tokenB2B,
         string $secretKey,
@@ -229,25 +228,24 @@ class DirectDebitController
             $timestamp,
             $secretKey
         );
-        $externalId = Helper::generateExternalId();
+        $externalId = time();
         $header = Helper::generateRequestHeaderDto(
             $timestamp,
             $signature,
             $clientId,
             $externalId,
-            $cardRegistrationRequestDto->additionalInfo->channel,
+            'DH',
             $tokenB2B,
             null,
-            $deviceId,
+            null,
             null
         );
         return $this->directDebitServices->doCardRegistrationProcess($header, $cardRegistrationRequestDto, $isProduction);
     }
-
-    public function doRefund(RefundRequestDto $refundRequestDto, $privateKey, $clientId, $tokenB2B, $tokenB2B2C, $secretKey, $isProduction): RefundResponseDto
+    public function doRefund(RefundRequestDto $refundRequestDto, $privateKey, $clientId, $tokenB2B, $tokenB2B2C, $secretKey,  $ipAddress, $deviceId, $isProduction): RefundResponseDto
     {
         $timestamp = $this->tokenServices->getTimestamp();
-        $endPointUrl = Config::getBaseURL($isProduction) . Config::DIRECT_DEBIT_REFUND_URL;
+        $endPointUrl = Config::DIRECT_DEBIT_REFUND_URL;
         $httpMethod = 'POST';
 
         $signature = $this->tokenServices->generateSymmetricSignature(
@@ -259,7 +257,7 @@ class DirectDebitController
             $secretKey
         );
 
-        $externalId = Helper::generateExternalId();
+        $externalId = time();
         
         $header = Helper::generateRequestHeaderDto(
             $timestamp,
@@ -268,8 +266,8 @@ class DirectDebitController
             $externalId,
             null, // channelId
             $tokenB2B,
-            null, // ipAddress
-            null, // deviceId
+            $ipAddress, // ipAddress
+            $deviceId, // deviceId
             $tokenB2B2C
         );
 
@@ -297,7 +295,7 @@ class DirectDebitController
             $timestamp,
             $secretKey
         );
-        $externalId = Helper::generateExternalId();
+        $externalId = time();
         $header = Helper::generateRequestHeaderDto(
             $timestamp,
             $signature,
@@ -334,7 +332,7 @@ class DirectDebitController
             $secretKey
         );
 
-        $externalId = Helper::generateExternalId();
+        $externalId = time();
         $header = Helper::generateRequestHeaderDto(
             $timestamp,
             $signature,

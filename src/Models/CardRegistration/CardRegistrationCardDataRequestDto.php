@@ -39,17 +39,23 @@ class CardRegistrationCardDataRequestDto
             throw new \InvalidArgumentException("expiryDate is required in format MMYY");
         }
     
-        // Validasi optional fields
-        if ($this->identificationNo !== null && !is_string($this->identificationNo)) {
-            throw new \InvalidArgumentException("identificationNo must be a string");
+            // Validasi optional fields
+        if ($this->identificationNo !== null) {
+            if (!is_string($this->identificationNo)) {
+                throw new \InvalidArgumentException("identificationNo must be a string");
+            }
         }
-    
-        if ($this->identificationType !== null && !is_string($this->identificationType)) {
-            throw new \InvalidArgumentException("identificationType must be a string");
+
+        if ($this->identificationType !== null) {
+            if (!is_string($this->identificationType)) {
+                throw new \InvalidArgumentException("identificationType must be a string");
+            }
         }
-    
-        if ($this->email !== null && !filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
-            throw new \InvalidArgumentException("email must be a valid email address");
+
+        if ($this->email !== null) {
+            if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+                throw new \InvalidArgumentException("email must be a valid email address");
+            }
         }
     }
     

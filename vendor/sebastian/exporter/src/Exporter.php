@@ -74,8 +74,9 @@ final readonly class Exporter
 
     /**
      * @param array<mixed> $data
+     * @param positive-int $maxLengthForStrings
      */
-    public function shortenedRecursiveExport(array &$data, ?RecursionContext $processed = null): string
+    public function shortenedRecursiveExport(array &$data, int $maxLengthForStrings = 40, ?RecursionContext $processed = null): string
     {
         if (!$processed) {
             $processed = new RecursionContext;
@@ -84,7 +85,7 @@ final readonly class Exporter
         $overallCount = @count($data, COUNT_RECURSIVE);
         $counter      = 0;
 
-        $export = $this->shortenedCountedRecursiveExport($data, $processed, $counter);
+        $export = $this->shortenedCountedRecursiveExport($data, $processed, $counter, $maxLengthForStrings);
 
         if ($this->shortenArraysLongerThan > 0 &&
             $overallCount > $this->shortenArraysLongerThan) {
@@ -102,14 +103,16 @@ final readonly class Exporter
      *
      * Newlines are replaced by the visible string '\n'.
      * Contents of arrays and objects (if any) are replaced by '...'.
+     *
+     * @param positive-int $maxLengthForStrings
      */
-    public function shortenedExport(mixed $value): string
+    public function shortenedExport(mixed $value, int $maxLengthForStrings = 40): string
     {
         if (is_string($value)) {
             $string = str_replace("\n", '', $this->exportString($value));
 
-            if (mb_strlen($string) > 40) {
-                return mb_substr($string, 0, 30) . '...' . mb_substr($string, -7);
+            if (mb_strlen($string) > $maxLengthForStrings) {
+                return mb_substr($string, 0, $maxLengthForStrings - 10) . '...' . mb_substr($string, -7);
             }
 
             return $string;
@@ -220,8 +223,9 @@ final readonly class Exporter
 
     /**
      * @param array<mixed> $data
+     * @param positive-int $maxLengthForStrings
      */
-    private function shortenedCountedRecursiveExport(array &$data, RecursionContext $processed, int &$counter): string
+    private function shortenedCountedRecursiveExport(array &$data, RecursionContext $processed, int &$counter, int $maxLengthForStrings): string
     {
         $result = [];
 
@@ -240,10 +244,10 @@ final readonly class Exporter
                 if ($processed->contains($data[$key]) !== false) {
                     $result[] = '*RECURSION*';
                 } else {
-                    $result[] = '[' . $this->shortenedCountedRecursiveExport($data[$key], $processed, $counter) . ']';
+                    $result[] = '[' . $this->shortenedCountedRecursiveExport($data[$key], $processed, $counter, $maxLengthForStrings) . ']';
                 }
             } else {
-                $result[] = $this->shortenedExport($value);
+                $result[] = $this->shortenedExport($value, $maxLengthForStrings);
             }
 
             $counter++;

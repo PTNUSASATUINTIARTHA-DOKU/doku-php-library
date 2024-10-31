@@ -42,8 +42,6 @@ class PaymentRequestDto
             if (strlen($this->chargeToken) > 32) {
                 throw new \InvalidArgumentException("chargeToken must be at most 32 characters long");
             }
-        } elseif (!in_array($this->additionalInfo->channel, ['EMONEY_OVO_SNAP'])) {
-            throw new \InvalidArgumentException('Invalid channel');
         }
     }
 
