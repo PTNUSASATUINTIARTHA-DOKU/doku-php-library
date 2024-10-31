@@ -16,7 +16,11 @@ class AccountUnbindingRequestDto
         if (empty($this->tokenId)) {
             throw new \InvalidArgumentException("Token ID is required");
         }
-        $this->additionalInfo->validate();
+        if ($this->additionalInfo !== null) {
+            $this->additionalInfo->validate();
+        } else {
+            throw new \InvalidArgumentException("Additional Info is required");
+        }
     }
 
     public function generateJSONBody(): string

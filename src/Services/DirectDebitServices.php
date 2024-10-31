@@ -73,8 +73,8 @@ class DirectDebitServices
         
         $response = Helper::doHitAPI($apiEndpoint, $headers, $requestBody, 'POST');
         $responseObject = json_decode($response, true);
-
-        if (isset($responseObject['responseCode']) && $responseObject['responseCode'] === '2000500') {
+        $httpStatus = substr($responseObject['responseCode'], 0, 3);
+        if (isset($responseObject['responseCode']) && $httpStatus === '200') {
             return new AccountBindingResponseDto(
                 $responseObject['responseCode'],
                 $responseObject['responseMessage'],
@@ -82,14 +82,14 @@ class DirectDebitServices
                 $responseObject['redirectUrl'],
                 new AccountBindingAdditionalInfoResponseDto(
                     $responseObject['additionalInfo']['custIdMerchant'],
-                    $responseObject['additionalInfo']['status'],
+                    $responseObject['additionalInfo']['accountStatus'],
                     $responseObject['additionalInfo']['authCode']
                 )
             );
         } else {
             return new AccountBindingResponseDto(
                 $responseObject['responseCode'],
-                'Error binding account: ' . $responseObject['responseMessage'],
+                $responseObject['responseMessage'],
                 null,
                 null,
                 null
@@ -108,21 +108,19 @@ class DirectDebitServices
         $headers = Helper::prepareHeaders($requestHeaderDto);
         $response = Helper::doHitAPI($apiEndpoint, $headers, $requestBody, 'POST');
         $responseObject = json_decode($response, true);
-       
-
-        if (isset($responseObject['responseCode'])) {
-            if ($responseObject['responseCode'] === '2005400') {
+        $httpStatus = substr($responseObject['responseCode'], 0, 3);
+        if (isset($responseObject['responseCode']) && $httpStatus === '200') {
                 return new PaymentResponseDto(
                     $responseObject['responseCode'],
                     $responseObject['responseMessage'],
                     $responseObject['webRedirectUrl'],
                     $responseObject['referenceNo']
                 );
-            }else{
-                return  $responseObject;
-            }
-            
+        }else{
+            return  $responseObject;
         }
+            
+        
     }
 
     public function doAccountUnbindingProcess(
@@ -137,8 +135,8 @@ class DirectDebitServices
         
         $response = Helper::doHitAPI($apiEndpoint, $headers, $requestBody, 'POST');
         $responseObject = json_decode($response, true);
-
-        if (isset($responseObject['responseCode']) && $responseObject['responseCode'] === '2000500') {
+        $httpStatus = substr($responseObject['responseCode'], 0, 3);
+        if (isset($responseObject['responseCode']) && $httpStatus === '200') {
             return new AccountUnbindingResponseDto(
                 $responseObject['responseCode'],
                 $responseObject['responseMessage'],
@@ -167,8 +165,8 @@ class DirectDebitServices
         
         $response = Helper::doHitAPI($apiEndpoint, $headers, $requestBody, 'POST');
         $responseObject = json_decode($response, true);
-
-        if (isset($responseObject['responseCode']) && $responseObject['responseCode'] === '2000500') {
+        $httpStatus = substr($responseObject['responseCode'], 0, 3);
+        if (isset($responseObject['responseCode']) && $httpStatus === '200') {
             return new AccountUnbindingResponseDto(
                 $responseObject['responseCode'],
                 $responseObject['responseMessage'],
@@ -187,18 +185,22 @@ class DirectDebitServices
     public function encryptCbc(string $input, string $secretKey): string
     {
         try {
-            $secretKey = getSecretKey($secretKey);
-            $iv = generateIv(); // Menghasilkan IV
+            $secretKey = $this->getSecretKey($secretKey);
+            $iv = $this->generateIv(); // Menghasilkan IV
 
             // Mengenkripsi data
-            $cipherText = openssl_encrypt($input, 'AES-128-CBC', $secretKey, 0, $iv);
+            $cipherText = openssl_encrypt($input, 'AES-128-CBC', $secretKey, OPENSSL_RAW_DATA, $iv);
+            if ($cipherText === false) {
+                throw new \RuntimeException('Encryption failed: ' . openssl_error_string());
+            }
 
             // Menggabungkan ciphertext dan IV menjadi string base64
             $ivString = base64_encode($iv);
             return base64_encode($cipherText) . '|' . $ivString;
-        } catch (Exception $error) {
+        } catch (\Exception $error) {
             // Menangani kesalahan
             echo 'Encryption error: ' . $error->getMessage();
+            throw $error; // Anda bisa memilih untuk melempar ulang kesalahan
         }
     }
     public function getSecretKey(string $secretKey): string
@@ -225,11 +227,10 @@ class DirectDebitServices
         $apiEndpoint = $baseUrl . Config::CARD_REGISTRATION_URL;
         $requestBody = json_encode($requestDto);
         $headers = Helper::prepareHeaders($requestHeaderDto);
-        
         $response = Helper::doHitAPI($apiEndpoint, $headers, $requestBody, 'POST');
         $responseObject = json_decode($response, true);
-
-        if (isset($responseObject['responseCode']) && $responseObject['responseCode'] === '2000500') {
+        $httpStatus = substr($responseObject['responseCode'], 0, 3);
+        if (isset($responseObject['responseCode']) && $httpStatus === '200') {
             $additionalInfo = new CardRegistrationAdditionalInfoResponseDto(
                 $responseObject['additionalInfo']['custIdMerchant'] ?? null,
                 $responseObject['additionalInfo']['status'] ?? null,
@@ -246,7 +247,7 @@ class DirectDebitServices
         } else {
             return new CardRegistrationResponseDto(
                 $responseObject['responseCode'] ?? '5000500',
-                'Error registering card: ' . ($responseObject['responseMessage'] ?? 'Unknown error'),
+                $responseObject['responseMessage'] ?? 'Unknown error',
                 null,
                 null,
                 null
@@ -266,11 +267,13 @@ class DirectDebitServices
         $requestBody = $refundRequestDto->generateJSONBody();
         
         $response = Helper::doHitAPI($apiEndpoint, $headers, $requestBody, 'POST');
+        echo "masuk";
+        var_dump($response);
         $responseObject = json_decode($response, true);
 
         // Validate the response
         if (!isset($responseObject['responseCode']) || !isset($responseObject['responseMessage'])) {
-            throw new \Exception("Invalid response from refund API");
+            throw new \Exception("Invalid response from refund API ".$response .json_encode($headers));
         }
 
         // Create TotalAmount from response
@@ -300,11 +303,12 @@ class DirectDebitServices
         $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_BALANCE_INQUIRY_URL;
         $requestBody = $balanceInquiryRequestDto->generateJSONBody();
         $headers = Helper::prepareHeaders($requestHeaderDto);
+        // print_r(json_encode($headers));
 
         $response = Helper::doHitAPI($apiEndpoint, $headers, $requestBody, 'POST');
         $responseObject = json_decode($response, true);
-
-        if (isset($responseObject['responseCode']) && $responseObject['responseCode'] === '2000500') {
+        $httpStatus = substr($responseObject['responseCode'], 0, 3);
+        if (isset($responseObject['responseCode']) && $httpStatus === '200') {
             return new BalanceInquiryResponseDto(
                 $responseObject['responseCode'],
                 $responseObject['responseMessage'],
@@ -398,7 +402,7 @@ class DirectDebitServices
     ): NotifyPaymentDirectDebitResponseDto {
         // Validate the X-SIGNATURE
         $stringToSign = $this->createStringToSign($requestDto, $xTimestamp);
-        $isValidSignature = $this->validateSymmetricSignature($xSignature, $stringToSign, $clientSecret. $tokenB2B);
+        $isValidSignature = $this->validateSymmetricSignature($xSignature, $stringToSign, $clientSecret);
         if (!$isValidSignature) {
             return new NotifyPaymentDirectDebitResponseDto(
                 "4010000",

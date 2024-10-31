@@ -48,8 +48,11 @@ class AccountBindingAdditionalInfoRequestDto
 
     public function validate(): void
     {
-        if (!in_array($this->channel, ['Mandiri', 'BRI', 'CIMB', 'Allo', 'OVO'])) {
-            throw new \InvalidArgumentException("Invalid channel");
+        // if (!in_array($this->channel, ['Mandiri', 'BRI', 'CIMB', 'Allo', 'OVO'])) {
+        //     throw new \InvalidArgumentException("Invalid channel");
+        // }
+        if (empty($this->channel)) {
+            throw new \InvalidArgumentException("additionalInfo.channel cannot be null. Ensure that additionalInfo.channel is one of the valid channels. Example: 'DIRECT_DEBIT_ALLO_SNAP'.");
         }
         if (empty($this->custIdMerchant)) {
             throw new \InvalidArgumentException("Customer ID Merchant is required");

@@ -16,6 +16,9 @@ use function implode;
 use function substr;
 use ReflectionClass;
 
+/**
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise for this library
+ */
 final readonly class TypeName
 {
     private ?string $namespaceName;
@@ -45,13 +48,17 @@ final readonly class TypeName
     }
 
     /**
-     * @phpstan-ignore missingType.generics
+     * @param ReflectionClass<object> $type
      */
     public static function fromReflection(ReflectionClass $type): self
     {
+        $simpleName = $type->getShortName();
+
+        assert($simpleName !== '');
+
         return new self(
             $type->getNamespaceName(),
-            $type->getShortName(),
+            $simpleName,
         );
     }
 

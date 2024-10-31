@@ -145,10 +145,10 @@ class Snap
         return $this->tokenB2B;
     }
 
-    public function getTokenB2B2C(string $authCode, string $privateKey, string $clientId, string $isProduction): TokenB2B2CResponseDto
+    public function getTokenB2B2C(string $authCode): TokenB2B2CResponseDto
     {
         try {
-            $tokenB2B2CResponseDto = $this->tokenB2BController->getTokenB2B2C($authCode, $privateKey, $clientId, $isProduction);
+            $tokenB2B2CResponseDto = $this->tokenB2BController->getTokenB2B2C($authCode, $this->privateKey, $this->clientId, $this->isProduction);
             $this->setTokenB2B2C($tokenB2B2CResponseDto);
             return $tokenB2B2CResponseDto;
         } catch (Exception $e) {
@@ -446,7 +446,6 @@ class Snap
             $tokenB2BResponse = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
             $this->setTokenB2B($tokenB2BResponse);
         }
-
         // Check token B2B2C
         $isTokenB2B2CInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B2C, $this->tokenB2B2CExpiresIn, $this->tokenB2B2CGeneratedTimestamp);
         if ($isTokenB2B2CInvalid) {
@@ -467,28 +466,25 @@ class Snap
 
     public function doAccountUnbinding(
         AccountUnbindingRequestDto $accountUnbindingRequestDto,
-        string $privateKey,
-        string $clientId,
-        string $secretKey,
-        string $isProduction
+        string $ipAddress
     ): AccountUnbindingResponseDto {
         $accountUnbindingRequestDto->validateAccountUnbindingRequestDto();
 
         $isTokenInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
 
         if ($isTokenInvalid) {
-            $tokenB2BResponse = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
+            $tokenB2BResponse = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
             $this->setTokenB2B($tokenB2BResponse);
         }
 
         return $this->directDebitController->doAccountUnbinding(
             $accountUnbindingRequestDto,
-            $privateKey,
-            $clientId,
+            $this->privateKey,
+            $this->clientId,
             $this->tokenB2B,
-            $this->ipAddress,
-            $secretKey,
-            $isProduction
+            $ipAddress,
+            $this->secretKey,
+            $this->isProduction
         );
     }
 
@@ -520,56 +516,53 @@ class Snap
     }
 
     public function doCardRegistration(
-        CardRegistrationRequestDto $cardRegistrationRequestDto,
-        string $deviceId,
-        string $privateKey,
-        string $clientId,
-        string $secretKey,
-        string $isProduction
+        CardRegistrationRequestDto $cardRegistrationRequestDto
     ): CardRegistrationResponseDto {
         $cardRegistrationRequestDto->validate();
         $isTokenB2bInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
         if ($isTokenB2bInvalid) {
-            $tokenB2BResponse = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
+            $tokenB2BResponse = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
             $this->setTokenB2B($tokenB2BResponse);
         }
         
-        $response = $this->directDebitController->doCardRegistration($cardRegistrationRequestDto, $deviceId, $clientId, $this->tokenB2B, $secretKey, $isProduction);
+        $response = $this->directDebitController->doCardRegistration($cardRegistrationRequestDto, $this->clientId, $this->tokenB2B, $this->secretKey, $this->isProduction);
         return $response;
     }
 
-    public function doRefund(RefundRequestDto $refundRequestDto, $authCode, $privateKey, $clientId, $secretKey, $isProduction): RefundResponseDto
+    public function doRefund(RefundRequestDto $refundRequestDto, $authCode, $ipAddress,$deviceId): RefundResponseDto
     {
         $refundRequestDto->validateRefundRequestDto();
 
         // Check token B2B
         $isTokenB2BInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
         if ($isTokenB2BInvalid) {
-            $tokenB2BResponseDto = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
+            $tokenB2BResponseDto = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
             $this->setTokenB2B($tokenB2BResponseDto);
         }
 
         // Check token B2B2C
         $isTokenB2B2CInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B2C, $this->tokenB2B2CExpiresIn, $this->tokenB2B2CGeneratedTimestamp);
         if ($isTokenB2B2CInvalid) {
-            $tokenB2B2CResponseDto = $this->tokenB2BController->getTokenB2B2C($authCode, $privateKey, $clientId, $isProduction);
+            $tokenB2B2CResponseDto = $this->tokenB2BController->getTokenB2B2C($authCode, $this->privateKey, $this->clientId, $this->isProduction);
             $this->setTokenB2B2C($tokenB2B2CResponseDto);
         }
 
         $refundResponseDto = $this->directDebitController->doRefund(
             $refundRequestDto,
-            $privateKey,
-            $clientId,
+            $this->privateKey,
+            $this->clientId,
             $this->tokenB2B,
             $this->tokenB2B2C,
-            $secretKey,
-            $isProduction
+            $this->secretKey,
+            $ipAddress,
+            $deviceId,
+            $this->isProduction
         );
 
         return $refundResponseDto;
     }
 
-    public function doBalanceInquiry(BalanceInquiryRequestDto $balanceInquiryRequestDto, string $authCode): BalanceInquiryResponseDto
+    public function doBalanceInquiry(BalanceInquiryRequestDto $balanceInquiryRequestDto, string $authCode, string $ipAddress): BalanceInquiryResponseDto
     {
         $balanceInquiryRequestDto->validateBalanceInquiryRequestDto();
 
@@ -591,7 +584,7 @@ class Snap
             $balanceInquiryRequestDto,
             $this->privateKey,
             $this->clientId,
-            $this->ipAddress,
+            $ipAddress,
             $this->tokenB2B2C,
             $this->tokenB2B,
             $this->secretKey,

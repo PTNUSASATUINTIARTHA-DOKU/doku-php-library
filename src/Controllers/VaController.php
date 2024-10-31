@@ -81,7 +81,7 @@ class VaController
             null
         );
 
-        return $this->vaServices->doUpdateVa($header, $updateVaRequestDto);
+        return $this->vaServices->doUpdateVa($header, $updateVaRequestDto,$isProduction);
     }
 
     public function doDeletePaymentCode(
@@ -118,7 +118,7 @@ class VaController
             null
         );
 
-        $response = $this->vaServices->doDeletePaymentCode($requestHeaderDto, $deleteVaRequestDto);
+        $response = $this->vaServices->doDeletePaymentCode($requestHeaderDto, $deleteVaRequestDto,$isProduction);
         
         return $response;
     }
@@ -157,7 +157,7 @@ class VaController
             null
         );
 
-        return $this->vaServices->doCheckStatusVa($header, $checkVARequestDto);
+        return $this->vaServices->doCheckStatusVa($header, $checkVARequestDto,$isProduction);
     }
 
     public function convertVAInquiryRequestSnapToV1Form($snapJson): string

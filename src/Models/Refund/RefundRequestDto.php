@@ -2,6 +2,7 @@
 
 namespace Doku\Snap\Models\Refund;
 use Doku\Snap\Models\TotalAmount\TotalAmount;
+
 class RefundRequestDto
 {
     public $additionalInfo;
@@ -32,22 +33,30 @@ class RefundRequestDto
         if (empty($this->originalPartnerReferenceNo)) {
             throw new \InvalidArgumentException("originalPartnerReferenceNo is required");
         }
-        if (empty($this->originalExternalId)) {
-            throw new \InvalidArgumentException("originalExternalId is required");
-        }
+
         if (!$this->refundAmount instanceof TotalAmount) {
             throw new \InvalidArgumentException("refundAmount must be an instance of TotalAmount");
         }
+
         if (empty($this->partnerRefundNo)) {
             throw new \InvalidArgumentException("partnerRefundNo is required");
         }
-        if (empty($this->partnerRefundNo)) {
-            throw new \InvalidArgumentException("partnerRefundNo is required");
-        }
+
+        // Validasi partnerRefundNo berdasarkan channel di additionalInfo
+        $channel = $this->additionalInfo->channel;
         $length = strlen($this->partnerRefundNo);
-        if ($length < 32 || $length > 64) {
-            throw new \InvalidArgumentException("partnerRefundNo must be between 32 and 64 characters long");
+
+        if ($channel === 'DIRECT_DEBIT_ALLO_SNAP') {
+            if ($length < 32 || $length > 64) {
+                throw new \InvalidArgumentException("partnerRefundNo must be between 32 and 64 characters long for DIRECT_DEBIT_ALLO_SNAP");
+            }
+        } else {
+            if ($length > 64) {
+                throw new \InvalidArgumentException("partnerRefundNo must not exceed 64 characters long for other channels");
+            }
         }
+
+        // Validasi tambahan info
         $this->additionalInfo->validate();
     }
 

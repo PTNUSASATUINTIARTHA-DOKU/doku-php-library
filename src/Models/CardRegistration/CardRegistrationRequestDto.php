@@ -2,7 +2,7 @@
 namespace Doku\Snap\Models\CardRegistration;
 class CardRegistrationRequestDto
 {
-    public ?CardRegistrationCardDataRequestDto $cardData;
+    public CardRegistrationCardDataRequestDto|string $cardData;
     public ?string $custIdMerchant;
     public ?string $phoneNo;
     public ?CardRegistrationAdditionalInfoRequestDto $additionalInfo;
@@ -23,7 +23,7 @@ class CardRegistrationRequestDto
     {
         $this->cardData->validate();
         if (empty($this->custIdMerchant)) {
-            throw new \InvalidArgumentException("Customer ID Merchant is required");
+            throw new \InvalidArgumentException("custIdMerchant cannot be null. Please provide custIdMerchant. Example: 'cust-001'.");
         }
         if (empty($this->phoneNo)) {
             throw new \InvalidArgumentException("Phone number is required");

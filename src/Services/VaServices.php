@@ -75,7 +75,7 @@ class VaServices
         }
     }
 
-    public function doUpdateVa(RequestHeaderDto $requestHeaderDto, UpdateVaRequestDto $requestDto, string $isProduction = false): UpdateVaResponseDto
+    public function doUpdateVa(RequestHeaderDto $requestHeaderDto, UpdateVaRequestDto $requestDto, string $isProduction): UpdateVaResponseDto
     {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::UPDATE_VA_URL;
@@ -122,7 +122,7 @@ class VaServices
         }
     }
 
-    public function doDeletePaymentCode(RequestHeaderDto $requestHeader, DeleteVaRequestDto $deleteVaRequest, string $isProduction = false): DeleteVaResponseDto
+    public function doDeletePaymentCode(RequestHeaderDto $requestHeader, DeleteVaRequestDto $deleteVaRequest, string $isProduction): DeleteVaResponseDto
     {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DELETE_VA_URL;
@@ -166,7 +166,7 @@ class VaServices
         }
     }
 
-    public function doCheckStatusVa(RequestHeaderDto $requestHeader, CheckStatusVaRequestDto $checkStatusVaRequest, string $isProduction = false): CheckStatusVaResponseDto
+    public function doCheckStatusVa(RequestHeaderDto $requestHeader, CheckStatusVaRequestDto $checkStatusVaRequest, string $isProduction): CheckStatusVaResponseDto
     {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::CHECK_VA;
@@ -218,6 +218,7 @@ class VaServices
             return new CheckStatusVaResponseDto(
                 $responseData['responseCode'],
                 'Error checking status of virtual account: ' . $responseData['responseMessage'],
+                null,
                 null
             );
         }
