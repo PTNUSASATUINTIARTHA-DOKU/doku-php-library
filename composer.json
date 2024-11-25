@@ -21,7 +21,6 @@
     },
     "minimum-stability": "dev",
     "require-dev": {
-        "phpunit/phpunit": "^11.3@dev",
-        "mockery/mockery": "2.0.x-dev"
+        "phpunit/phpunit": "^11.3@dev"
     }
 }

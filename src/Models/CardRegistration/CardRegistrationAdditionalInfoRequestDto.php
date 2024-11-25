@@ -36,14 +36,8 @@ class CardRegistrationAdditionalInfoRequestDto
 
     public function validate(): void
     {
-        if (empty($this->successRegistrationUrl)) {
-            throw new \InvalidArgumentException("additionalInfo.successRegistrationUrl cannot be null. Please provide a additionalInfo.successRegistrationUrl. Example: 'https://www.doku.com'.");
-        }
-        if (empty($this->failedRegistrationUrl)) {
-            throw new \InvalidArgumentException("additionalInfo.failedRegistrationUrl cannot be null. Please provide a additionalInfo.failedRegistrationUrl. Example: 'https://www.doku.com'.");
-        }
-        if (empty($this->channel)) {
-            throw new \InvalidArgumentException("additionalInfo.channel cannot be null. Ensure that additionalInfo.channel is one of the valid channels. Example: 'DIRECT_DEBIT_ALLO_SNAP'.");
+        if (empty($this->customerName)) {
+            throw new \InvalidArgumentException("Customer Name is required");
         }
         if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
             throw new \InvalidArgumentException("Invalid email format");

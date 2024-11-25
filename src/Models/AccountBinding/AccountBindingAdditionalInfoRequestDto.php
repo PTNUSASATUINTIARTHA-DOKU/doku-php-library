@@ -51,20 +51,17 @@ class AccountBindingAdditionalInfoRequestDto
         // if (!in_array($this->channel, ['Mandiri', 'BRI', 'CIMB', 'Allo', 'OVO'])) {
         //     throw new \InvalidArgumentException("Invalid channel");
         // }
-        if (empty($this->channel)) {
-            throw new \InvalidArgumentException("additionalInfo.channel cannot be null. Ensure that additionalInfo.channel is one of the valid channels. Example: 'DIRECT_DEBIT_ALLO_SNAP'.");
-        }
         if (empty($this->custIdMerchant)) {
             throw new \InvalidArgumentException("Customer ID Merchant is required");
         }
-        if (empty($this->customerName)) {
-            throw new \InvalidArgumentException("Customer Name is required");
-        }
+        // if (empty($this->customerName)) {
+        //     throw new \InvalidArgumentException("Customer Name is required");
+        // }
         if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
             throw new \InvalidArgumentException("Invalid email format");
         }
-        if (!preg_match("/^\d{8}$/", $this->dateOfBirth)) {
-            throw new \InvalidArgumentException("Invalid date of birth format. Use YYYYMMDD");
-        }
+        // if (!preg_match("/^\d{8}$/", $this->dateOfBirth)) {
+        //     throw new \InvalidArgumentException("Invalid date of birth format. Use YYYYMMDD");
+        // }
     }
 }

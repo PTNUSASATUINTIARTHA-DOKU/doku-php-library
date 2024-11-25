@@ -23,7 +23,7 @@ class CardRegistrationRequestDto
     {
         $this->cardData->validate();
         if (empty($this->custIdMerchant)) {
-            throw new \InvalidArgumentException("custIdMerchant cannot be null. Please provide custIdMerchant. Example: 'cust-001'.");
+            throw new \InvalidArgumentException("Customer ID Merchant is required");
         }
         if (empty($this->phoneNo)) {
             throw new \InvalidArgumentException("Phone number is required");
@@ -34,7 +34,7 @@ class CardRegistrationRequestDto
     public function generateJSONBody(): string
     {
         return json_encode([
-            'cardData' => $this->cardData->generateJSONBody(),
+            'cardData' => $this->cardData,
             'custIdMerchant' => $this->custIdMerchant,
             'phoneNo' => $this->phoneNo,
             'additionalInfo' => $this->additionalInfo->generateJSONBody()
