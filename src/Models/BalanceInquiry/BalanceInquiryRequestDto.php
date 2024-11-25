@@ -19,7 +19,10 @@ class BalanceInquiryRequestDto
     public function generateJSONBody(): string
     {
         return json_encode([
-            'additionalInfo' => $this->additionalInfo
+            'additionalInfo' => array(
+                'channel' => $this->additionalInfo->channel,
+                'origin' => $this->additionalInfo->origin->toArray()
+            )
         ]);
     }
 }

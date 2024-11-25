@@ -1,5 +1,7 @@
 <?php
 namespace Doku\Snap\Models\CardRegistration;
+
+use Doku\Snap\Models\VA\AdditionalInfo\Origin;
 class CardRegistrationAdditionalInfoRequestDto
 {
     public ?string $channel;
@@ -11,6 +13,7 @@ class CardRegistrationAdditionalInfoRequestDto
     public ?string $dateOfBirth;
     public ?string $successRegistrationUrl;
     public ?string $failedRegistrationUrl;
+    public Origin $origin;
 
     public function __construct(
         ?string $channel,
@@ -32,6 +35,7 @@ class CardRegistrationAdditionalInfoRequestDto
         $this->dateOfBirth = $dateOfBirth;
         $this->successRegistrationUrl = $successRegistrationUrl;
         $this->failedRegistrationUrl = $failedRegistrationUrl;
+        $this->origin = new Origin();
     }
 
     public function validate(): void
@@ -58,7 +62,8 @@ class CardRegistrationAdditionalInfoRequestDto
             'address' => $this->address,
             'dateOfBirth' => $this->dateOfBirth,
             'successRegistrationUrl' => $this->successRegistrationUrl,
-            'failedRegistrationUrl' => $this->failedRegistrationUrl
+            'failedRegistrationUrl' => $this->failedRegistrationUrl,
+            'origin' => $this->origin->toArray()
         ];
     }
 }

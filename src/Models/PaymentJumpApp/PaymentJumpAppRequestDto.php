@@ -54,7 +54,8 @@ class PaymentJumpAppRequestDto
         );
 
         $additionalInfoArr = array(
-            'channel' => $this->additionalInfo->channel
+            'channel' => $this->additionalInfo->channel,
+            'origin' => $this->additionalInfo->origin->toArray()
         );
 
         if ($this->additionalInfo->channel === 'EMONEY_DANA_SNAP') {

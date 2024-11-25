@@ -1,5 +1,7 @@
 <?php
 namespace Doku\Snap\Models\AccountBinding;
+
+use Doku\Snap\Models\VA\AdditionalInfo\Origin;
 class AccountBindingAdditionalInfoRequestDto
 {
     public ?string $channel;
@@ -15,6 +17,7 @@ class AccountBindingAdditionalInfoRequestDto
     public ?string $deviceModel;
     public ?string $osType;
     public ?string $channelId;
+    public ?Origin $origin;
 
     public function __construct(
         ?string $channel,
@@ -44,6 +47,7 @@ class AccountBindingAdditionalInfoRequestDto
         $this->deviceModel = $deviceModel;
         $this->osType = $osType;
         $this->channelId = $channelId;
+        $this->origin = new Origin();
     }
 
     public function validate(): void

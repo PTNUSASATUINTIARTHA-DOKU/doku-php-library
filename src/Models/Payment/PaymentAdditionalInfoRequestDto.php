@@ -1,6 +1,8 @@
 <?php
 namespace Doku\Snap\Models\Payment;
 
+use Doku\Snap\Models\VA\AdditionalInfo\Origin;
+
 class PaymentAdditionalInfoRequestDto
 {
     public ?string $channel;
@@ -12,6 +14,7 @@ class PaymentAdditionalInfoRequestDto
     public ?array $lineItems;
     // Only BRI and OVO
     public? string $paymentType;
+    public Origin $origin;
 
     public function __construct(
         ?string $channel,
@@ -27,5 +30,6 @@ class PaymentAdditionalInfoRequestDto
         $this->failedPaymentUrl = $failedPaymentUrl;
         $this->lineItems = $lineItems;
         $this->paymentType = $paymentType;
+        $this->origin = new Origin();
     }
 }
