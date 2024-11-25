@@ -34,7 +34,8 @@ class AccountBindingRequestDto
             'failedRegistrationUrl' => $this->additionalInfo->failedRegistrationUrl,
             'deviceModel' => $this->additionalInfo->deviceModel,
             'osType' => $this->additionalInfo->osType,
-            'channelId' => $this->additionalInfo->channelId
+            'channelId' => $this->additionalInfo->channelId,
+            'origin' => $this->additionalInfo->origin->toArray()
         );
         return json_encode([
             'phoneNo' => $this->phoneNo,

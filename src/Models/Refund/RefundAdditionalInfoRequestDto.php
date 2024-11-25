@@ -2,13 +2,17 @@
 
 namespace Doku\Snap\Models\Refund;
 
+use Doku\Snap\Models\VA\AdditionalInfo\Origin;
+
 class RefundAdditionalInfoRequestDto
 {
     public $channel;
+    public Origin $origin;
 
     public function __construct(string $channel)
     {
         $this->channel = $channel;
+        $this->origin = new Origin();
     }
 
     public function validate()
@@ -21,7 +25,8 @@ class RefundAdditionalInfoRequestDto
     public function generateJSONBody(): array
     {
         return [
-            'channel' => $this->channel
+            'channel' => $this->channel,
+            'origin' => $this->origin->toArray()
         ];
     }
 }

@@ -25,6 +25,7 @@ class AccountUnbindingRequestDto
             'tokenId' => $this->tokenId,
             'additionalInfo' => array(
                 'channel' => $this->additionalInfo->channel,
+                'origin' => $this->additionalInfo->origin->toArray()
             )
         ]);
     }

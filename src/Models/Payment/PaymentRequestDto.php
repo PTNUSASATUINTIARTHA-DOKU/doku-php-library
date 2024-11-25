@@ -57,7 +57,8 @@ class PaymentRequestDto
             'remarks' => $this->additionalInfo->remarks,
             'successPaymentUrl' => $this->additionalInfo->successPaymentUrl,
             'failedPaymentUrl' => $this->additionalInfo->failedPaymentUrl,
-            'lineItems' => $this->additionalInfo->lineItems
+            'lineItems' => $this->additionalInfo->lineItems,
+            'origin' => $this->additionalInfo->origin->toArray()
         );
         return json_encode([
             'partnerReferenceNo' => $this->partnerReferenceNo,
