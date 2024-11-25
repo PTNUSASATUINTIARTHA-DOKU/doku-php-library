@@ -22,7 +22,7 @@ class RequestHeaderDto
         ?string $ipAddress,
         ?string $deviceId,
         ?string $tokenB2B2C,
-        ?string $xChannelId = "H2H"
+        ?string $xChannelId = "DH"
     ) {
         $this->xTimestamp = $xTimestamp;
         $this->xSignature = $xSignature;

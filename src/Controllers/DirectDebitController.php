@@ -34,6 +34,7 @@ class DirectDebitController
     public function doPaymentJumpApp(
         PaymentJumpAppRequestDto $paymentJumpAppRequestDto,
         string $deviceId,
+        string $ipAddress,
         string $clientId,
         string $tokenB2B,
         string $secretKey,
@@ -49,7 +50,7 @@ class DirectDebitController
             $timestamp,
             $secretKey
         );
-        $externalId = time();;
+        $externalId = time();
         $header = Helper::generateRequestHeaderDto(
             $timestamp,
             $signature,
@@ -57,7 +58,7 @@ class DirectDebitController
             $externalId,
             $paymentJumpAppRequestDto->additionalInfo->channel,
             $tokenB2B,
-            null,
+            $ipAddress,
             $deviceId,
             null
         );
@@ -178,12 +179,11 @@ class DirectDebitController
         string $privateKey,
         string $clientId,
         string $tokenB2B,
-        string $ipAddress,
         string $secretKey,
         string $isProduction
     ): AccountUnbindingResponseDto {
         $timestamp = Helper::getTimestamp();
-        $apiEndpoint = Config::DIRECT_DEBIT_ACCOUNT_UNBINDING_URL;
+        $apiEndpoint = Config::DIRECT_DEBIT_CARD_UNBINDING_URL;
         $httpMethod = 'POST';
         $signature = $this->tokenServices->generateSymmetricSignature(
             $httpMethod, 
@@ -200,7 +200,7 @@ class DirectDebitController
             $externalId, 
             null, 
             $tokenB2B, 
-            $ipAddress,
+            null,
             null,
             null
         );

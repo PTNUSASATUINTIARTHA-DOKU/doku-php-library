@@ -54,7 +54,7 @@ class DirectDebitServices
         } else {
              return new PaymentJumpAppResponseDto(
                 $responseObject['responseCode'],
-                'Error creating virtual account: ' . $responseObject['responseMessage'],
+                $responseObject['responseMessage'],
                 null,
                 null
             );
@@ -102,11 +102,13 @@ class DirectDebitServices
         PaymentRequestDto $paymentRequestDto,
         string $isProduction
     ) {
+       
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_PAYMENT_URL;
         $requestBody = $paymentRequestDto->generateJSONBody();
         $headers = Helper::prepareHeaders($requestHeaderDto);
         $response = Helper::doHitAPI($apiEndpoint, $headers, $requestBody, 'POST');
+        
         $responseObject = json_decode($response, true);
         $httpStatus = substr($responseObject['responseCode'], 0, 3);
         if (isset($responseObject['responseCode']) && $httpStatus === '200') {
@@ -170,8 +172,8 @@ class DirectDebitServices
             return new AccountUnbindingResponseDto(
                 $responseObject['responseCode'],
                 $responseObject['responseMessage'],
-                $responseObject['referenceNo'],
-                $responseObject['redirectUrl']
+                "",
+                ""
             );
         } else {
             return new AccountUnbindingResponseDto(
@@ -267,8 +269,6 @@ class DirectDebitServices
         $requestBody = $refundRequestDto->generateJSONBody();
         
         $response = Helper::doHitAPI($apiEndpoint, $headers, $requestBody, 'POST');
-        echo "masuk";
-        var_dump($response);
         $responseObject = json_decode($response, true);
 
         // Validate the response
@@ -303,7 +303,6 @@ class DirectDebitServices
         $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_BALANCE_INQUIRY_URL;
         $requestBody = $balanceInquiryRequestDto->generateJSONBody();
         $headers = Helper::prepareHeaders($requestHeaderDto);
-        // print_r(json_encode($headers));
 
         $response = Helper::doHitAPI($apiEndpoint, $headers, $requestBody, 'POST');
         $responseObject = json_decode($response, true);

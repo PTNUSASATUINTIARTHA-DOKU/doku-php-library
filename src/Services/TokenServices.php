@@ -35,9 +35,9 @@ class TokenServices
         $stringToSign = $clientId . "|" . $timestamp;
         $signature = "";
         $success = openssl_sign($stringToSign, $signature, $privateKey, OPENSSL_ALGO_SHA256);
+
         if (!$success) {
-            $error = openssl_error_string();
-            throw new Exception('Failed to generate signature ' . $error);
+            throw new Exception('Failed to generate signature');
         }
         $base64Signature = base64_encode($signature);
 
@@ -78,7 +78,6 @@ class TokenServices
         }
 
         if (isset($responseData['error'])) {
-            print_r($responseData['error']);
             throw new Exception('Missing error in response data');
         }
 
@@ -130,7 +129,6 @@ class TokenServices
         }
 
         if (isset($responseData['error'])) {
-            print_r($responseData['error']);
             throw new Exception('Error in response data');
         }
 

@@ -6,7 +6,6 @@ class PaymentResponseDto
     public ?string $responseMessage;
     public ?string $webRedirectUrl;
     public ?string $partnerReferenceNo;
-    public ?string $referenceNo;
 
     public function __construct(
         ?string $responseCode,
@@ -18,6 +17,5 @@ class PaymentResponseDto
         $this->responseMessage = $responseMessage;
         $this->webRedirectUrl = $webRedirectUrl;
         $this->partnerReferenceNo = $partnerReferenceNo;
-        $this->referenceNo = $referenceNo;
     }
 }

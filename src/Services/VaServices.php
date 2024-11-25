@@ -218,7 +218,6 @@ class VaServices
             return new CheckStatusVaResponseDto(
                 $responseData['responseCode'],
                 'Error checking status of virtual account: ' . $responseData['responseMessage'],
-                null,
                 null
             );
         }
