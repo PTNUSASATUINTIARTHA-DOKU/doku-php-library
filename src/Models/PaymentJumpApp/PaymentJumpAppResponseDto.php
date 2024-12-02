@@ -5,18 +5,21 @@ class PaymentJumpAppResponseDto
     public ?string $responseCode;
     public ?string $responseMessage;
     public ?string $webRedirectUrl;
-    public ?string $partnerReferenceNo;
+    public ?string $referenceNo;
+    public ?PaymentJumpAppAdditionalInfoResponseDto $additionalInfo;
 
     public function __construct(
         ?string $responseCode,
         ?string $responseMessage,
         ?string $webRedirectUrl,
-        ?string $partnerReferenceNo
+        ?string $referenceNo,
+        ?string $additionalInfo
     ) {
         $this->responseCode = $responseCode;
         $this->responseMessage = $responseMessage;
         $this->webRedirectUrl = $webRedirectUrl;
-        $this->partnerReferenceNo = $partnerReferenceNo;
+        $this->referenceNo = $referenceNo;
+        $this->additionalInfo = $additionalInfo;
     }
 
     public function generateJSONBody(): string
@@ -25,7 +28,8 @@ class PaymentJumpAppResponseDto
             "responseCode" => $this->responseCode,
             "responseMessage" => $this->responseMessage,
             "webRedirectUrl" => $this->webRedirectUrl,
-            "partnerReferenceNo" => $this->partnerReferenceNo
+            "referenceNo" => $this->referenceNo,
+            "additionalInfo"=> $this->additionalInfo,
         );
         return json_encode($payload);
     }
