@@ -10,15 +10,18 @@ class PaymentJumpAppAdditionalInfoRequestDto
     // Shopeepay
     public ?string $metadata;
     public Origin $origin;
+    public ?string $supportDeepLinkCheckoutUrl;
 
     public function __construct(
         ?string $channel,
         ?string $orderTitle,
-        ?string $metadata
+        ?string $metadata,
+        ?string $supportDeepLinkCheckoutUrl
     ) {
         $this->channel = $channel;
         $this->orderTitle = $orderTitle;
         $this->metadata = $metadata;
         $this->origin = new Origin();
+        $this->supportDeepLinkCheckoutUrl = $supportDeepLinkCheckoutUrl;
     }
 }
