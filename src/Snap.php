@@ -72,24 +72,24 @@ class Snap
     private ?string $ipAddress = "";
     private bool $isSimulation = false;
   
-    public function __construct(string $privateKey, string $publicKey, string $dokuPublicKey, string $clientId, string $issuer, string $isProduction, string $secretKey)
+    public function __construct(string $privateKey, string $publicKey, string $dokuPublicKey, string $clientId, string $issuer, bool $isProduction, string $secretKey)
 
-    {
-        $this->privateKey = $privateKey;
-        $this->publicKey = $publicKey;
-        $this->dokuPublicKey = $dokuPublicKey;
-        $this->issuer = $issuer;
-        $this->clientId =$clientId;
-        $this->isProduction = $isProduction;
-        $this->secretKey = $secretKey;
+        {
+            $this->privateKey = $privateKey;
+            $this->publicKey = $publicKey;
+            $this->dokuPublicKey = $dokuPublicKey;
+            $this->issuer = $issuer;
+            $this->clientId =$clientId;
+            $this->isProduction = $isProduction ? 'true' : 'false';
+            $this->secretKey = $secretKey;
 
-        $this->tokenB2BController = new TokenController();
-        $this->notificationController = new NotificationController();
-        $this->vaController = new VaController();
-        $this->directDebitController = new DirectDebitController();
-        $tokenB2BResponseDto = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
-        $this->setTokenB2B($tokenB2BResponseDto);
-    }
+            $this->tokenB2BController = new TokenController();
+            $this->notificationController = new NotificationController();
+            $this->vaController = new VaController();
+            $this->directDebitController = new DirectDebitController();
+            $tokenB2BResponseDto = $this->tokenB2BController->getTokenB2B($privateKey, $clientId, $isProduction);
+            $this->setTokenB2B($tokenB2BResponseDto);
+        }
 
     private function validateString(string $input): string
     {
