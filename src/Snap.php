@@ -39,6 +39,7 @@ use Doku\Snap\Models\BalanceInquiry\BalanceInquiryRequestDto;
 use Doku\Snap\Models\BalanceInquiry\BalanceInquiryResponseDto;
 use Doku\Snap\Models\CheckStatus\CheckStatusResponseDto;
 use Doku\Snap\Models\CheckStatus\CheckStatusRequestDto;
+use Doku\Snap\Models\CheckStatus\DirectDebitCheckStatusRequestDto;
 use Doku\Snap\Models\TotalAmount\TotalAmount;
 use Doku\Snap\Models\VA\VirtualAccountData\CreateVaResponseVirtualAccountData;
 use Doku\Snap\Models\VA\AdditionalInfo\CreateVaResponseAdditionalInfo;
@@ -386,8 +387,12 @@ class Snap
         PaymentJumpAppRequestDto $requestDto,
         string $deviceId,
         string $ipAddress,
-    ): PaymentJumpAppResponseDto {
-        $requestDto->validatePaymentJumpAppRequestDto();
+    ) {
+        $validate =   $requestDto->validatePaymentJumpAppRequestDto();
+        if( $validate){
+         return $validate;
+        }
+      
 
         // Check if we're in sandbox mode and use simulation if so
       
@@ -407,8 +412,12 @@ class Snap
         AccountBindingRequestDto $accountBindingRequestDto,
         string $ipAddress,
         string $deviceId
-    ): AccountBindingResponseDto {
-        $accountBindingRequestDto->validateAccountBindingRequestDto();
+    ) {
+        $validate =    $accountBindingRequestDto->validateAccountBindingRequestDto();
+        if( $validate){
+         return $validate;
+        }
+       
         // Check if we're in sandbox mode and use simulation if so
       
         $isTokenInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
@@ -435,7 +444,11 @@ class Snap
         string $authCode,
         string $ipAddress
     ) {
-        $paymentRequestDto->validatePaymentRequestDto();
+        $validate = $paymentRequestDto->validatePaymentRequestDto();
+        if( $validate){
+         return $validate;
+        }
+        
         
       
         // Check token B2B
@@ -466,8 +479,12 @@ class Snap
     public function doAccountUnbinding(
         AccountUnbindingRequestDto $accountUnbindingRequestDto,
         string $ipAddress
-    ): AccountUnbindingResponseDto {
-        $accountUnbindingRequestDto->validateAccountUnbindingRequestDto();
+    ) {
+        $validate = $accountUnbindingRequestDto->validateAccountUnbindingRequestDto();
+        if( $validate){
+         return $validate;
+        }
+        
 
         $isTokenInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
 
@@ -489,8 +506,12 @@ class Snap
 
     public function doCardUnbinding(
         AccountUnbindingRequestDto $accountUnbindingRequestDto
-    ): AccountUnbindingResponseDto {
-        $accountUnbindingRequestDto->validateAccountUnbindingRequestDto();
+    ) {
+        $validate =  $accountUnbindingRequestDto->validateAccountUnbindingRequestDto();
+        if( $validate){
+         return $validate;
+        }
+       
 
         $isTokenInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
 
@@ -511,8 +532,12 @@ class Snap
 
     public function doCardRegistration(
         CardRegistrationRequestDto $cardRegistrationRequestDto
-    ): CardRegistrationResponseDto {
-        $cardRegistrationRequestDto->validate();
+    ) {
+        $validate =  $cardRegistrationRequestDto->validate();
+        if( $validate){
+         return $validate;
+        }
+        
         $isTokenB2bInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
         if ($isTokenB2bInvalid) {
             $tokenB2BResponse = $this->tokenB2BController->getTokenB2B($this->privateKey, $this->clientId, $this->isProduction);
@@ -523,9 +548,12 @@ class Snap
         return $response;
     }
 
-    public function doRefund(RefundRequestDto $refundRequestDto, $authCode, $ipAddress,$deviceId): RefundResponseDto
+    public function doRefund(RefundRequestDto $refundRequestDto, $authCode, $ipAddress,$deviceId)
     {
-        $refundRequestDto->validateRefundRequestDto();
+        $validate =  $refundRequestDto->validateRefundRequestDto();
+        if( $validate){
+         return $validate;
+        }
 
         // Check token B2B
         $isTokenB2BInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
@@ -556,9 +584,13 @@ class Snap
         return $refundResponseDto;
     }
 
-    public function doBalanceInquiry(BalanceInquiryRequestDto $balanceInquiryRequestDto, string $authCode, string $ipAddress): BalanceInquiryResponseDto
+    public function doBalanceInquiry(BalanceInquiryRequestDto $balanceInquiryRequestDto, string $authCode, string $ipAddress)
     {
-        $balanceInquiryRequestDto->validateBalanceInquiryRequestDto();
+        $validate =  $balanceInquiryRequestDto->validateBalanceInquiryRequestDto();
+        if( $validate){
+         return $validate;
+        }
+        
 
         // Check token B2B
         $isTokenB2bInvalid = $this->tokenB2BController->isTokenInvalid($this->tokenB2B, $this->tokenB2BExpiresIn, $this->tokenB2BGeneratedTimestamp);
@@ -587,12 +619,12 @@ class Snap
     }
 
     public function doCheckStatus(
-        CheckStatusRequestDto $checkStatusRequestDto
-    ): CheckStatusResponseDto {
-        $checkStatusRequestDto->validateCheckStatusRequestDto();
-
-        // Check if we're in sandbox mode and use simulation if so
-      
+        DirectDebitCheckStatusRequestDto $checkStatusRequestDto
+    ) {
+       $validate =  $checkStatusRequestDto->validateCodeRequestDto();
+       if( $validate){
+        return $validate;
+       }
 
         // Check token B2B
         $isTokenB2bInvalid = $this->tokenB2BController->isTokenInvalid(

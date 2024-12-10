@@ -27,16 +27,25 @@ class PaymentJumpAppRequestDto
         $this->additionalInfo = $additionalInfo;
     }
 
-    public function validatePaymentJumpAppRequestDto(): void
+    public function validatePaymentJumpAppRequestDto()
     {
         if (empty($this->partnerReferenceNo)) {
-            throw new \InvalidArgumentException('Partner Reference Number is required');
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'Partner Reference Number is required'
+            ];
         }
         if (empty($this->amount)) {
-            throw new \InvalidArgumentException('Valid amount is required');
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'Valid amount is required'
+            ];
         }
         if (!in_array($this->additionalInfo->channel, ['EMONEY_SHOPEE_PAY_SNAP', 'EMONEY_DANA_SNAP'])) {
-            throw new \InvalidArgumentException('Invalid channel');
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'Invalid channel'
+            ];
         }
     }
 

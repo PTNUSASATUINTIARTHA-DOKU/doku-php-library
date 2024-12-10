@@ -28,19 +28,28 @@ class PaymentRequestDto
         $this->chargeToken = $chargeToken;
     }
 
-    public function validatePaymentRequestDto(): void
+    public function validatePaymentRequestDto()
     {
         if (empty($this->partnerReferenceNo)) {
-            throw new \InvalidArgumentException("Partner Reference Number is required");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'Partner Reference Number is required'
+            ];
         }
 
         // Cek channel
         if ($this->additionalInfo->channel === 'DIRECT_DEBIT_BRI_SNAP') {
             if (empty($this->chargeToken)) {
-                throw new \InvalidArgumentException("Invalid mandatory field chargeToken");
+                return [
+                    'responseCode' => '4000701',
+                    'responseMessage' => 'Invalid mandatory field chargeToken'
+                ];
             }
             if (strlen($this->chargeToken) > 32) {
-                throw new \InvalidArgumentException("chargeToken must be at most 32 characters long");
+                return [
+                    'responseCode' => '4000701',
+                    'responseMessage' => 'chargeToken must be at most 32 characters long'
+                ];
             }
         }
     }

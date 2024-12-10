@@ -38,16 +38,25 @@ class CardRegistrationAdditionalInfoRequestDto
         $this->origin = new Origin();
     }
 
-    public function validate(): void
+    public function validate()
     {
         if (empty($this->customerName)) {
-            throw new \InvalidArgumentException("Customer Name is required");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'Customer Name is required'
+            ];
         }
         if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
-            throw new \InvalidArgumentException("Invalid email format");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'Invalid email format'
+            ];
         }
         if (!preg_match("/^\d{8}$/", $this->dateOfBirth)) {
-            throw new \InvalidArgumentException("Invalid date of birth format. Use YYYYMMDD");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'Invalid date of birth format. Use YYYYMMDD'
+            ];
         }
     }
 

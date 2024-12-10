@@ -18,7 +18,10 @@ class RefundAdditionalInfoRequestDto
     public function validate()
     {
         if (empty($this->channel)) {
-            throw new \InvalidArgumentException("channel is required");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'channel is required'
+            ];
         }
     }
 

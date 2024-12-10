@@ -20,6 +20,7 @@ use Doku\Snap\Models\Refund\RefundRequestDto;
 use Doku\Snap\Models\Refund\RefundResponseDto;
 use Doku\Snap\Models\BalanceInquiry\BalanceInquiryRequestDto;
 use Doku\Snap\Models\BalanceInquiry\BalanceInquiryResponseDto;
+use Doku\Snap\Models\CheckStatus\DirectDebitCheckStatusRequestDto;
 use Doku\Snap\Models\CheckStatus\CheckStatusRequestDto;
 use Doku\Snap\Models\CheckStatus\CheckStatusResponseDto;
 use Doku\Snap\Models\CheckStatus\RefundHistoryDto;
@@ -35,7 +36,7 @@ class DirectDebitServices
         RequestHeaderDto $requestHeaderDto,
         PaymentJumpAppRequestDto $requestDto,
         string $isProduction
-    ): PaymentJumpAppResponseDto {
+    ) {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_PAYMENT_URL;
         $requestBody = $requestDto->generateJSONBody();
@@ -52,12 +53,10 @@ class DirectDebitServices
                 $responseObject['partnerReferenceNo']
             );
         } else {
-             return new PaymentJumpAppResponseDto(
-                $responseObject['responseCode'],
-                $responseObject['responseMessage'],
-                null,
-                null
-            );
+            return [
+                'responseCode' =>  $responseObject['responseCode'],
+                'responseMessage' =>  $responseObject['responseMessage']
+            ];
         }
     }
 
@@ -65,7 +64,7 @@ class DirectDebitServices
         RequestHeaderDto $requestHeaderDto,
         AccountBindingRequestDto $accountBindingRequestDto,
         string $isProduction
-    ): AccountBindingResponseDto {
+    ) {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_ACCOUNT_BINDING_URL;
         $requestBody = $accountBindingRequestDto->generateJSONBody();
@@ -78,8 +77,8 @@ class DirectDebitServices
             return new AccountBindingResponseDto(
                 $responseObject['responseCode'],
                 $responseObject['responseMessage'],
-                $responseObject['referenceNo'],
-                $responseObject['redirectUrl'],
+                isset($responseObject['referenceNo']) ? $responseObject['referenceNo'] : null,
+                isset($responseObject['redirectUrl']) ? $responseObject['redirectUrl'] : null,
                 new AccountBindingAdditionalInfoResponseDto(
                     $responseObject['additionalInfo']['custIdMerchant'],
                     $responseObject['additionalInfo']['accountStatus'],
@@ -87,13 +86,10 @@ class DirectDebitServices
                 )
             );
         } else {
-            return new AccountBindingResponseDto(
-                $responseObject['responseCode'],
-                $responseObject['responseMessage'],
-                null,
-                null,
-                null
-            );
+            return [
+                'responseCode' =>  $responseObject['responseCode'],
+                'responseMessage' =>  $responseObject['responseMessage']
+            ];
         }
     }
 
@@ -116,10 +112,13 @@ class DirectDebitServices
                     $responseObject['responseCode'],
                     $responseObject['responseMessage'],
                     $responseObject['webRedirectUrl'],
-                    $responseObject['referenceNo']
+                    isset($responseObject['referenceNo']) ? $responseObject['referenceNo'] : null,
                 );
         }else{
-            return  $responseObject;
+            return [
+                'responseCode' =>  $responseObject['responseCode'],
+                'responseMessage' =>  $responseObject['responseMessage']
+            ];
         }
             
         
@@ -129,7 +128,7 @@ class DirectDebitServices
         RequestHeaderDto $requestHeaderDto,
         AccountUnbindingRequestDto $accountUnbindingRequestDto,
         string $isProduction
-    ): AccountUnbindingResponseDto {
+    ) {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_ACCOUNT_UNBINDING_URL;
         $requestBody = $accountUnbindingRequestDto->generateJSONBody();
@@ -142,16 +141,14 @@ class DirectDebitServices
             return new AccountUnbindingResponseDto(
                 $responseObject['responseCode'],
                 $responseObject['responseMessage'],
-                $responseObject['referenceNo'],
+                isset($responseObject['referenceNo']) ? $responseObject['referenceNo'] : null,
                 ""
             );
         } else {
-            return new AccountUnbindingResponseDto(
-                $responseObject['responseCode'],
-                'Error unbinding account: ' . $responseObject['responseMessage'],
-                '',
-                ''
-            );
+            return [
+                'responseCode' =>  $responseObject['responseCode'],
+                'responseMessage' =>  $responseObject['responseMessage']
+            ];
         }
     }
 
@@ -159,7 +156,7 @@ class DirectDebitServices
         RequestHeaderDto $requestHeaderDto,
         AccountUnbindingRequestDto $accountUnbindingRequestDto,
         string $isProduction
-    ): AccountUnbindingResponseDto {
+    ) {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_CARD_UNBINDING_URL;
         $requestBody = $accountUnbindingRequestDto->generateJSONBody();
@@ -176,12 +173,10 @@ class DirectDebitServices
                 ""
             );
         } else {
-            return new AccountUnbindingResponseDto(
-                $responseObject['responseCode'],
-                'Error unbinding account: ' . $responseObject['responseMessage'],
-                '',
-                ''
-            );
+            return [
+                'responseCode' =>  $responseObject['responseCode'],
+                'responseMessage' =>  $responseObject['responseMessage']
+            ];
         }
     }
     public function encryptCbc(string $input, string $secretKey): string
@@ -224,7 +219,7 @@ class DirectDebitServices
         RequestHeaderDto $requestHeaderDto,
         CardRegistrationRequestDto $requestDto,
         string $isProduction
-    ): CardRegistrationResponseDto {
+    ) {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::CARD_REGISTRATION_URL;
         $requestBody = json_encode($requestDto);
@@ -242,18 +237,15 @@ class DirectDebitServices
             return new CardRegistrationResponseDto(
                 $responseObject['responseCode'],
                 $responseObject['responseMessage'],
-                $responseObject['referenceNo'] ?? null,
+                isset($responseObject['referenceNo']) ? $responseObject['referenceNo'] : null,
                 $responseObject['redirectUrl'] ?? null,
                 $additionalInfo
             );
         } else {
-            return new CardRegistrationResponseDto(
-                $responseObject['responseCode'] ?? '5000500',
-                $responseObject['responseMessage'] ?? 'Unknown error',
-                null,
-                null,
-                null
-            );
+            return [
+                'responseCode' =>  $responseObject['responseCode'],
+                'responseMessage' =>  $responseObject['responseMessage']
+            ];
         }
     }
 
@@ -261,7 +253,7 @@ class DirectDebitServices
         RequestHeaderDto $header, 
         RefundRequestDto $refundRequestDto, 
         string $isProduction
-    ): RefundResponseDto {
+    ) {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_REFUND_URL;
         
@@ -276,7 +268,10 @@ class DirectDebitServices
             throw new \Exception("Invalid response from refund API ".$response .json_encode($headers));
         }
 
-        // Create TotalAmount from response
+       
+        $httpStatus = substr($responseObject['responseCode'], 0, 3);
+        if (isset($responseObject['responseCode']) && $httpStatus === '200') {
+            // Create TotalAmount from response
         $refundAmount = new TotalAmount(
             $responseObject['refundAmount']['value'] ?? '',
             $responseObject['refundAmount']['currency'] ?? ''
@@ -292,13 +287,19 @@ class DirectDebitServices
             $responseObject['partnerRefundNo'] ?? '',
             $responseObject['refundTime'] ?? ''
         );
+        } else {
+            return [
+                'responseCode' =>  $responseObject['responseCode'],
+                'responseMessage' =>  $responseObject['responseMessage']
+            ];
+        }
     }
 
     public function doBalanceInquiryProcess(
         RequestHeaderDto $requestHeaderDto, 
         BalanceInquiryRequestDto $balanceInquiryRequestDto, 
         string $isProduction
-    ): BalanceInquiryResponseDto {
+    ) {
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_BALANCE_INQUIRY_URL;
         $requestBody = $balanceInquiryRequestDto->generateJSONBody();
@@ -314,19 +315,18 @@ class DirectDebitServices
                 $responseObject['accountInfos']
             );
         } else {
-            return new BalanceInquiryResponseDto(
-                $responseObject['responseCode'] ?? '5000500',
-                'Error performing balance inquiry: ' . ($responseObject['responseMessage'] ?? 'Unknown error'),
-                []
-            );
+            return [
+                'responseCode' =>  $responseObject['responseCode'],
+                'responseMessage' =>  $responseObject['responseMessage']
+            ];
         }
     }
 
     public function doCheckStatus(
         RequestHeaderDto $requestHeaderDto,
-        CheckStatusRequestDto $checkStatusRequestDto,
+        DirectDebitCheckStatusRequestDto $checkStatusRequestDto,
         string $isProduction
-    ): CheckStatusResponseDto {
+    ){
         $baseUrl = Config::getBaseURL($isProduction);
         $apiEndpoint = $baseUrl . Config::DIRECT_DEBIT_CHECK_STATUS_URL;
         $requestBody = $checkStatusRequestDto->generateJSONBody();
@@ -334,7 +334,6 @@ class DirectDebitServices
 
         $response = Helper::doHitAPI($apiEndpoint, $headers, $requestBody, 'POST');
         $responseObject = json_decode($response, true);
-
         if (isset($responseObject['responseCode']) && $responseObject['responseCode'] === '0000') {
             return new CheckStatusResponseDto(
                 $responseObject['responseCode'],
@@ -361,17 +360,10 @@ class DirectDebitServices
                 )
             );
         } else {
-            return new CheckStatusResponseDto(
-                $responseObject['responseCode'],
-                'Error checking direct debit status: ' . $responseObject['responseMessage'],
-                $checkStatusRequestDto->originalPartnerReferenceNo,
-                '', '', '', '', '', '', '', '', '', '',
-                [],
-                new TotalAmount('0', 'IDR'),
-                new TotalAmount('0', 'IDR'),
-                '',
-                new CheckStatusAdditionalInfoResponseDto('', '')
-            );
+            return [
+                'responseCode' =>  $responseObject['responseCode'],
+                'responseMessage' =>  $responseObject['responseMessage']
+            ];
         }
     }
 
@@ -403,11 +395,10 @@ class DirectDebitServices
         $stringToSign = $this->createStringToSign($requestDto, $xTimestamp);
         $isValidSignature = $this->validateSymmetricSignature($xSignature, $stringToSign, $clientSecret);
         if (!$isValidSignature) {
-            return new NotifyPaymentDirectDebitResponseDto(
-                "4010000",
-                Helper::generateExternalId(),
-                "Unauthorized. Invalid Signature"
-            );
+            return [
+                'responseCode' => "4010000",
+                'responseMessage' =>  "Unauthorized. Invalid Signature"
+            ];
         }
 
         return new NotifyPaymentDirectDebitResponseDto(

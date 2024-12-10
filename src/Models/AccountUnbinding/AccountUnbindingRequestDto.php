@@ -11,10 +11,13 @@ class AccountUnbindingRequestDto
         $this->additionalInfo = $additionalInfo;
     }
 
-    public function validateAccountUnbindingRequestDto(): void
+    public function validateAccountUnbindingRequestDto()
     {
         if (empty($this->tokenId)) {
-            throw new \InvalidArgumentException("Token ID is required");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'Token ID is required'
+            ];
         }
         $this->additionalInfo->validate();
     }
