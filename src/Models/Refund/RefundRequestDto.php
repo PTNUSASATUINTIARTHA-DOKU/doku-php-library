@@ -30,21 +30,30 @@ class RefundRequestDto
     public function validateRefundRequestDto()
     {
         if (empty($this->originalPartnerReferenceNo)) {
-            throw new \InvalidArgumentException("originalPartnerReferenceNo is required");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'originalPartnerReferenceNo is required'
+            ];
         }
         
         if (!$this->refundAmount instanceof TotalAmount) {
-            throw new \InvalidArgumentException("refundAmount must be an instance of TotalAmount");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'refundAmount must be an instance of TotalAmount'
+            ];
         }
         if (empty($this->partnerRefundNo)) {
-            throw new \InvalidArgumentException("partnerRefundNo is required");
-        }
-        if (empty($this->partnerRefundNo)) {
-            throw new \InvalidArgumentException("partnerRefundNo is required");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'partnerRefundNo is required'
+            ];
         }
         $length = strlen($this->partnerRefundNo);
         if ($length < 32 || $length > 64) {
-            throw new \InvalidArgumentException("partnerRefundNo must be between 32 and 64 characters long");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'partnerRefundNo must be between 32 and 64 characters long'
+            ];
         }
         $this->additionalInfo->validate();
     }

@@ -25,31 +25,49 @@ class CardRegistrationCardDataRequestDto
         $this->email = $email;
     }
 
-    public function validate(): void
+    public function validate()
     {
         if (empty($this->bankCardNo) || strlen($this->bankCardNo) > 20) {
-            throw new \InvalidArgumentException("bankCardNo is required and must not exceed 20 characters");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'bankCardNo is required and must not exceed 20 characters'
+            ];
         }
     
         if (empty($this->bankCardType)) {
-            throw new \InvalidArgumentException("bankCardType is required");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'bankCardType is required'
+            ];
         }
     
         if (empty($this->expiryDate) || strlen($this->expiryDate) !== 4 || !preg_match('/^(0[1-9]|1[0-2])[0-9]{2}$/', $this->expiryDate)) {
-            throw new \InvalidArgumentException("expiryDate is required in format MMYY");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'expiryDate is required in format MMYY'
+            ];
         }
     
         // Validasi optional fields
         if ($this->identificationNo !== null && !is_string($this->identificationNo)) {
-            throw new \InvalidArgumentException("identificationNo must be a string");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'identificationNo must be a string'
+            ];
         }
     
         if ($this->identificationType !== null && !is_string($this->identificationType)) {
-            throw new \InvalidArgumentException("identificationType must be a string");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'identificationType must be a string'
+            ];
         }
     
         if ($this->email !== null && !filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
-            throw new \InvalidArgumentException("email must be a valid email address");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'email must be a valid email address'
+            ];
         }
     }
     

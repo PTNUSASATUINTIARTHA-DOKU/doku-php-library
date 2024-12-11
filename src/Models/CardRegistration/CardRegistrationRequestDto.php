@@ -19,14 +19,20 @@ class CardRegistrationRequestDto
         $this->additionalInfo = $additionalInfo;
     }
 
-    public function validate(): void
+    public function validate()
     {
         $this->cardData->validate();
         if (empty($this->custIdMerchant)) {
-            throw new \InvalidArgumentException("Customer ID Merchant is required");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'Customer ID Merchant is required'
+            ];
         }
         if (empty($this->phoneNo)) {
-            throw new \InvalidArgumentException("Phone number is required");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'Phone number is required'
+            ];
         }
         $this->additionalInfo->validate();
     }

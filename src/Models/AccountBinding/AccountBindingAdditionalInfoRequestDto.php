@@ -50,19 +50,25 @@ class AccountBindingAdditionalInfoRequestDto
         $this->origin = new Origin();
     }
 
-    public function validate(): void
+    public function validate()
     {
         // if (!in_array($this->channel, ['Mandiri', 'BRI', 'CIMB', 'Allo', 'OVO'])) {
         //     throw new \InvalidArgumentException("Invalid channel");
         // }
         if (empty($this->custIdMerchant)) {
-            throw new \InvalidArgumentException("Customer ID Merchant is required");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'Customer ID Merchant is required'
+            ];
         }
         // if (empty($this->customerName)) {
         //     throw new \InvalidArgumentException("Customer Name is required");
         // }
         if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
-            throw new \InvalidArgumentException("Invalid email format");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'Invalid email format'
+            ];
         }
         // if (!preg_match("/^\d{8}$/", $this->dateOfBirth)) {
         //     throw new \InvalidArgumentException("Invalid date of birth format. Use YYYYMMDD");

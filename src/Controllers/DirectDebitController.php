@@ -18,6 +18,7 @@ use Doku\Snap\Models\Refund\RefundRequestDto;
 use Doku\Snap\Models\Refund\RefundResponseDto;
 use Doku\Snap\Models\BalanceInquiry\BalanceInquiryRequestDto;
 use Doku\Snap\Models\BalanceInquiry\BalanceInquiryResponseDto;
+use Doku\Snap\Models\CheckStatus\DirectDebitCheckStatusRequestDto;
 use Doku\Snap\Models\CheckStatus\CheckStatusRequestDto;
 use Doku\Snap\Models\CheckStatus\CheckStatusResponseDto;
 use Doku\Snap\Models\NotifyPayment\NotifyPaymentDirectDebitRequestDto;
@@ -39,7 +40,7 @@ class DirectDebitController
         string $tokenB2B,
         string $secretKey,
         string $isProduction
-    ): PaymentJumpAppResponseDto {
+    ) {
         $timestamp = Helper::getTimestamp();
         $apiEndpoint = Config::DIRECT_DEBIT_PAYMENT_URL;
         $signature = $this->tokenServices->generateSymmetricSignature(
@@ -73,7 +74,7 @@ class DirectDebitController
         string $ipAddress,
         string $secretKey,
         string $isProduction
-    ): AccountBindingResponseDto {
+    ) {
         $timestamp = Helper::getTimestamp();
         $apiEndpoint = Config::DIRECT_DEBIT_ACCOUNT_BINDING_URL;
         $httpMethod = 'POST';
@@ -147,7 +148,7 @@ class DirectDebitController
         string $ipAddress,
         string $secretKey,
         string $isProduction
-    ): AccountUnbindingResponseDto {
+    ) {
         $timestamp = Helper::getTimestamp();
         $apiEndpoint = Config::DIRECT_DEBIT_ACCOUNT_UNBINDING_URL;
         $httpMethod = 'POST';
@@ -181,7 +182,7 @@ class DirectDebitController
         string $tokenB2B,
         string $secretKey,
         string $isProduction
-    ): AccountUnbindingResponseDto {
+    ) {
         $timestamp = Helper::getTimestamp();
         $apiEndpoint = Config::DIRECT_DEBIT_CARD_UNBINDING_URL;
         $httpMethod = 'POST';
@@ -214,7 +215,7 @@ class DirectDebitController
         string $tokenB2B,
         string $secretKey,
         string $isProduction
-    ): CardRegistrationResponseDto {
+    ) {
         $cardData = json_encode($cardRegistrationRequestDto->cardData);
         $encryptCbc = $this->directDebitServices->encryptCbc($cardData,$secretKey);
         $cardRegistrationRequestDto->cardData = $encryptCbc;
@@ -283,7 +284,7 @@ class DirectDebitController
         string $tokenB2B,
         string $secretKey,
         string $isProduction
-    ): BalanceInquiryResponseDto {
+    ) {
         $timestamp = $this->tokenServices->getTimestamp();
         $apiEndpoint = Config::DIRECT_DEBIT_BALANCE_INQUIRY_URL;
         $httpMethod = 'POST';
@@ -313,13 +314,13 @@ class DirectDebitController
 
 
     public function doCheckStatus(
-        CheckStatusRequestDto $checkStatusRequestDto,
+        DirectDebitCheckStatusRequestDto $checkStatusRequestDto,
         string $privateKey,
         string $clientId,
         string $tokenB2B,
         string $secretKey,
         string $isProduction
-    ): CheckStatusResponseDto {
+    ) {
         $timestamp = Helper::getTimestamp();
         $apiEndpoint =Config::DIRECT_DEBIT_CHECK_STATUS_URL;
 
@@ -355,7 +356,7 @@ class DirectDebitController
         string $clientSecret,
         string $tokenB2B,
         string $isProduction
-    ): NotifyPaymentDirectDebitResponseDto {
+    ) {
         return $this->directDebitServices->handleDirectDebitNotification(
             $requestDto,
             $xSignature,

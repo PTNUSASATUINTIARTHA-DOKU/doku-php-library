@@ -11,10 +11,13 @@ class AccountBindingRequestDto
         $this->additionalInfo = $additionalInfo;
     }
 
-    public function validateAccountBindingRequestDto(): void
+    public function validateAccountBindingRequestDto()
     {
         if (empty($this->phoneNo)) {
-            throw new \InvalidArgumentException("Phone number is required");
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'Phone number is required'
+            ];
         }
         $this->additionalInfo->validate();
     }
