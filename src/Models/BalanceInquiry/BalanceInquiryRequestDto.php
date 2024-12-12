@@ -13,7 +13,7 @@ class BalanceInquiryRequestDto
 
     public function validateBalanceInquiryRequestDto(): void
     {
-        // logic
+        $this->additionalInfo->validate();
     }
 
     public function generateJSONBody(): string

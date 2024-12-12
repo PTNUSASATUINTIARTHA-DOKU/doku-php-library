@@ -32,13 +32,31 @@ class PaymentJumpAppRequestDto
         if (empty($this->partnerReferenceNo)) {
             return [
                 'responseCode' => '4000701',
-                'responseMessage' => 'Partner Reference Number is required'
+                'responseMessage' => 'partnerReferenceNo is required'
+            ];
+        }
+        if (empty($this->urlParam)) {
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'urlParam is required'
             ];
         }
         if (empty($this->amount)) {
             return [
                 'responseCode' => '4000701',
-                'responseMessage' => 'Valid amount is required'
+                'responseMessage' => 'amount is required'
+            ];
+        }
+        if (empty($this->amount->value)) {
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'amount.value is required'
+            ];
+        }
+        if (empty($this->amount->currency)) {
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'amount.currency is required'
             ];
         }
         if (!in_array($this->additionalInfo->channel, ['EMONEY_SHOPEE_PAY_SNAP', 'EMONEY_DANA_SNAP'])) {

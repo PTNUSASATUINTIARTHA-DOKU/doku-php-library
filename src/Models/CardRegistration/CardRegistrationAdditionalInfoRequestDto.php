@@ -40,10 +40,22 @@ class CardRegistrationAdditionalInfoRequestDto
 
     public function validate()
     {
-        if (empty($this->customerName)) {
+        if (empty($this->channel)) {
             return [
                 'responseCode' => '4000701',
-                'responseMessage' => 'Customer Name is required'
+                'responseMessage' => 'additionalInfo.channel is required'
+            ];
+        }
+        if (empty($this->successRegistrationUrl)) {
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'additionalInfo.successRegistrationUrl is required'
+            ];
+        }
+        if (empty($this->failedRegistrationUrl)) {
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'additionalInfo.failedRegistrationUrl is required'
             ];
         }
         if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
