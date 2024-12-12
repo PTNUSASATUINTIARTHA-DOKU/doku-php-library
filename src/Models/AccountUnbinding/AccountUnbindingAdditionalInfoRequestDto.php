@@ -15,11 +15,11 @@ class AccountUnbindingAdditionalInfoRequestDto
 
     public function validate()
     {
-        // if (!in_array($this->channel, ['DIRECT_DEBIT_MANDIRI_SNAP', 'DIRECT_DEBIT_BRI_SNAP', 'DIRECT_DEBIT_CIMB_SNAP', 'DIRECT_DEBIT_ALLO_SNAP', 'EMONEY_OVO_SNAP'])) {
-        //     return [
-        //         'responseCode' => '4000701',
-        //         'responseMessage' => 'Invalid channel'
-        //     ];
-        // }
+        if (empty($this->channel)) {
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'additionalInfo.channel is required'
+            ];
+        }
     }
 }

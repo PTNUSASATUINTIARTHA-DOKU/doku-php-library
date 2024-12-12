@@ -25,15 +25,10 @@ class CardRegistrationRequestDto
         if (empty($this->custIdMerchant)) {
             return [
                 'responseCode' => '4000701',
-                'responseMessage' => 'Customer ID Merchant is required'
+                'responseMessage' => 'custIdMerchant is required'
             ];
         }
-        if (empty($this->phoneNo)) {
-            return [
-                'responseCode' => '4000701',
-                'responseMessage' => 'Phone number is required'
-            ];
-        }
+
         $this->additionalInfo->validate();
     }
 

@@ -33,11 +33,59 @@ class PaymentRequestDto
         if (empty($this->partnerReferenceNo)) {
             return [
                 'responseCode' => '4000701',
-                'responseMessage' => 'Partner Reference Number is required'
+                'responseMessage' => 'partnerReferenceNo is required'
             ];
         }
-
+        if (empty($this->amount)) {
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'amount is required'
+            ];
+        }
+        if (empty($this->amount->value)) {
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'amount.value is required'
+            ];
+        }
+        if (empty($this->amount->currency)) {
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'amount.currency is required'
+            ];
+        }
+        if (empty($this->payOptionDetails)) {
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'payOptionDetails is required'
+            ];
+        }
+        if (empty($this->additionalInfo)) {
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'additionalInfo is required'
+            ];
+        }
+        if (empty($this->additionalInfo->channel)) {
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'additionalInfo.channel is required'
+            ];
+        }
+        if (empty($this->additionalInfo->successPaymentUrl)) {
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'additionalInfo.successPaymentUrl is required'
+            ];
+        }
+        if (empty($this->additionalInfo->failedPaymentUrl)) {
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'additionalInfo.failedPaymentUrl is required'
+            ];
+        }
         // Cek channel
+
         if ($this->additionalInfo->channel === 'DIRECT_DEBIT_BRI_SNAP') {
             if (empty($this->chargeToken)) {
                 return [
