@@ -36,10 +36,28 @@ class RefundRequestDto
             ];
         }
         
-        if (!$this->refundAmount instanceof TotalAmount) {
+        if (empty($this->refundAmount)) {
             return [
                 'responseCode' => '4000701',
-                'responseMessage' => 'refundAmount must be an instance of TotalAmount'
+                'responseMessage' => 'refundAmount is required'
+            ];
+        }
+        if (empty($this->refundAmount->value)) {
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'refundAmount.value is required'
+            ];
+        }
+        if (empty($this->refundAmount->currency)) {
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'refundAmount.currency is required'
+            ];
+        }
+        if (empty($this->additionalInfo->channel)) {
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'additionalInfo.channel is required'
             ];
         }
         if (empty($this->partnerRefundNo)) {
@@ -48,13 +66,23 @@ class RefundRequestDto
                 'responseMessage' => 'partnerRefundNo is required'
             ];
         }
-        $length = strlen($this->partnerRefundNo);
-        if ($length < 32 || $length > 64) {
-            return [
-                'responseCode' => '4000701',
-                'responseMessage' => 'partnerRefundNo must be between 32 and 64 characters long'
-            ];
+        $length = strlen($this->partnerRefundNo); 
+        if (!in_array($this->additionalInfo->channel, ['EMONEY_SHOPEE_PAY_SNAP', 'EMONEY_DANA_SNAP'])) {
+            if ($length > 64 && $length < 32) {
+                return [
+                    'responseCode' => '4000701',
+                    'responseMessage' => 'partnerRefundNo max length is 12'
+                ];
+            }
+        }else{
+            if ($length > 64) {
+                return [
+                    'responseCode' => '4000701',
+                    'responseMessage' => 'partnerRefundNo max length is 64'
+                ];
+            }
         }
+       
         $this->additionalInfo->validate();
     }
 

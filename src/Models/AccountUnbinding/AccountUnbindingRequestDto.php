@@ -16,7 +16,7 @@ class AccountUnbindingRequestDto
         if (empty($this->tokenId)) {
             return [
                 'responseCode' => '4000701',
-                'responseMessage' => 'Token ID is required'
+                'responseMessage' => 'tokenId is required'
             ];
         }
         $this->additionalInfo->validate();

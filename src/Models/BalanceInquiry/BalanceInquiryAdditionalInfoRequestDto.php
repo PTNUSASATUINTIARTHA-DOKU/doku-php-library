@@ -14,4 +14,13 @@ class BalanceInquiryAdditionalInfoRequestDto
         $this->channel = $channel;
         $this->origin = new Origin();
     }
+    public function validate()
+    {
+        if (empty($this->channel)) {
+            return [
+                'responseCode' => '4000701',
+                'responseMessage' => 'additionalInfo.channel is required'
+            ];
+        }
+    }
 }

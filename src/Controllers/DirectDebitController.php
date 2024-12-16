@@ -57,7 +57,7 @@ class DirectDebitController
             $signature,
             $clientId,
             $externalId,
-            $paymentJumpAppRequestDto->additionalInfo->channel,
+            null,
             $tokenB2B,
             $ipAddress,
             $deviceId,
@@ -243,7 +243,7 @@ class DirectDebitController
         );
         return $this->directDebitServices->doCardRegistrationProcess($header, $cardRegistrationRequestDto, $isProduction);
     }
-    public function doRefund(RefundRequestDto $refundRequestDto, $privateKey, $clientId, $tokenB2B, $tokenB2B2C, $secretKey,  $ipAddress, $deviceId, $isProduction): RefundResponseDto
+    public function doRefund(RefundRequestDto $refundRequestDto, $privateKey, $clientId, $tokenB2B, $tokenB2B2C, $secretKey,  $ipAddress, $deviceId, $isProduction)
     {
         $timestamp = $this->tokenServices->getTimestamp();
         $endPointUrl = Config::DIRECT_DEBIT_REFUND_URL;

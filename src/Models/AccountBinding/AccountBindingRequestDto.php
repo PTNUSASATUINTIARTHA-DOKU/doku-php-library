@@ -16,7 +16,7 @@ class AccountBindingRequestDto
         if (empty($this->phoneNo)) {
             return [
                 'responseCode' => '4000701',
-                'responseMessage' => 'Phone number is required'
+                'responseMessage' => 'phoneNo is required'
             ];
         }
         $this->additionalInfo->validate();

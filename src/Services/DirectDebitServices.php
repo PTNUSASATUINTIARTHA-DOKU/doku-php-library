@@ -50,7 +50,8 @@ class DirectDebitServices
                 $responseObject['responseCode'],
                 $responseObject['responseMessage'],
                 $responseObject['webRedirectUrl'],
-                $responseObject['partnerReferenceNo']
+                isset($responseObject['partnerReferenceNo']) ? $responseObject['partnerReferenceNo'] : null,
+                $responseObject['additionalInfo']
             );
         } else {
             return [
@@ -334,31 +335,9 @@ class DirectDebitServices
 
         $response = Helper::doHitAPI($apiEndpoint, $headers, $requestBody, 'POST');
         $responseObject = json_decode($response, true);
-        if (isset($responseObject['responseCode']) && $responseObject['responseCode'] === '0000') {
-            return new CheckStatusResponseDto(
-                $responseObject['responseCode'],
-                $responseObject['responseMessage'],
-                $responseObject['originalPartnerReferenceNo'],
-                $responseObject['originalReferenceNo'],
-                $responseObject['approvalCode'],
-                $responseObject['originalExternalId'],
-                $responseObject['serviceCode'],
-                $responseObject['latestTransactionStatus'],
-                $responseObject['transactionStatusDesc'],
-                $responseObject['originalResponseCode'],
-                $responseObject['originalResponseMessage'],
-                $responseObject['sessionId'],
-                $responseObject['requestId'],
-                $this->parseRefundHistory($responseObject['refundHistory']),
-                new TotalAmount($responseObject['transAmount']['value'], $responseObject['transAmount']['currency']),
-                new TotalAmount($responseObject['feeAmount']['value'], $responseObject['feeAmount']['currency']),
-                $responseObject['paidTime'],
-                new CheckStatusAdditionalInfoResponseDto(
-                    $responseObject['additionalInfo']['deviceId'],
-                    $responseObject['additionalInfo']['channel'],
-                    $responseObject['additionalInfo']['acquirer'] ?? null
-                )
-            );
+        $httpStatus = substr($responseObject['responseCode'], 0, 3);
+        if (isset($responseObject['responseCode']) && $httpStatus === '200') {
+            return $responseObject;
         } else {
             return [
                 'responseCode' =>  $responseObject['responseCode'],

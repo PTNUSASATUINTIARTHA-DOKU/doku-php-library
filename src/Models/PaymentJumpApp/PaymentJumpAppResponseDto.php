@@ -6,14 +6,14 @@ class PaymentJumpAppResponseDto
     public ?string $responseMessage;
     public ?string $webRedirectUrl;
     public ?string $referenceNo;
-    public ?PaymentJumpAppAdditionalInfoResponseDto $additionalInfo;
+    public ?array $additionalInfo;
 
     public function __construct(
         ?string $responseCode,
         ?string $responseMessage,
         ?string $webRedirectUrl,
         ?string $referenceNo,
-        ?string $additionalInfo
+        ?array $additionalInfo 
     ) {
         $this->responseCode = $responseCode;
         $this->responseMessage = $responseMessage;
@@ -28,9 +28,11 @@ class PaymentJumpAppResponseDto
             "responseCode" => $this->responseCode,
             "responseMessage" => $this->responseMessage,
             "webRedirectUrl" => $this->webRedirectUrl,
-            "referenceNo" => $this->referenceNo,
             "additionalInfo"=> $this->additionalInfo,
         );
+        if (!empty($this->referenceNo)) {
+            $payload['referenceNo'] = $this->referenceNo;
+        }
         return json_encode($payload);
     }
 }
