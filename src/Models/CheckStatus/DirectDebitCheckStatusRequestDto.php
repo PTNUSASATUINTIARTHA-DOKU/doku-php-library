@@ -84,7 +84,7 @@ class DirectDebitCheckStatusRequestDto
             'merchantId' => $this->merchantId,
             'subMerchantId' => $this->subMerchantId,
             'externalStoreId' => $this->externalStoreId,
-            'additionalInfo' => $this->additionalInfo ? $this->additionalInfo->generateJSONBody() : null
+            'additionalInfo' => $this->additionalInfo ? $this->additionalInfo : null
         ]);
     }
 }

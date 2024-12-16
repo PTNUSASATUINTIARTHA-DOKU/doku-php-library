@@ -141,7 +141,7 @@ class TokenServices
                 $responseData['accessTokenExpiryTime'] ?? '',
                 $responseData['refreshToken'] ?? '',
                 $responseData['refreshTokenExpiryTime'] ?? '',
-                (object) $responseData['additionalInfo'] ?? null
+                isset($responseObject['additionalInfo']) ? $responseObject['additionalInfo'] : null
             );
         } catch (Error $e) {
             throw new Exception('Failed to create TokenB2B2CResponseDto: ' . $e->getMessage());

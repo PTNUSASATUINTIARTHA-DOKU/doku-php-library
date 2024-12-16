@@ -7,7 +7,7 @@ class PaymentJumpAppRequestDto
     public ?string $partnerReferenceNo;
     public ?string $validUpTo;
     public ?string $pointOfInitiation;
-    public ?UrlParamDto $urlParam;
+    public ?array $urlParam;
     public ?TotalAmount $amount;
     public ?PaymentJumpAppAdditionalInfoRequestDto $additionalInfo;
 
@@ -15,7 +15,7 @@ class PaymentJumpAppRequestDto
         ?string $partnerReferenceNo,
         ?string $validUpTo,
         ?string $pointOfInitiation,
-        ?UrlParamDto $urlParam,
+        ?array $urlParam,
         ?TotalAmount $amount,
         ?PaymentJumpAppAdditionalInfoRequestDto $additionalInfo
     ) {
@@ -74,22 +74,23 @@ class PaymentJumpAppRequestDto
             'currency' => $this->amount->currency
         );
 
-        $urlParamArr = array(
-            'url' => $this->urlParam->url,
-            'type' => $this->urlParam->type,
-            'isDeepLink' => $this->urlParam->isDeepLink
-        );
+        $urlParamArr = $this->urlParam;
 
-        $additionalInfoArr = array(
+         $additionalInfoArr = array(
             'channel' => $this->additionalInfo->channel,
             'origin' => $this->additionalInfo->origin->toArray()
-        );
+          );
 
-        if ($this->additionalInfo->channel === 'EMONEY_DANA_SNAP') {
-            $additionalInfoArr['orderTitle'] = $this->additionalInfo->orderTitle;
-        } elseif ($this->additionalInfo->channel === 'EMONEY_SHOPEE_PAY_SNAP') {
-            $additionalInfoArr['metadata'] = $this->additionalInfo->metadata;
-        }
+          if (!empty($this->additionalInfo->orderTitle)) {
+              $additionalInfoArr['orderTitle'] = $this->additionalInfo->orderTitle;
+          } elseif (!empty($this->additionalInfo->metadata)) {
+              $additionalInfoArr['metadata'] = $this->additionalInfo->metadata;
+          } elseif (!empty($this->additionalInfo->supportDeepLinkCheckoutUrl)) {
+              $additionalInfoArr['supportDeepLinkCheckoutUrl'] = $this->additionalInfo->supportDeepLinkCheckoutUrl;
+          }
+
+
+      
 
         $payload = array(
             'partnerReferenceNo' => $this->partnerReferenceNo,

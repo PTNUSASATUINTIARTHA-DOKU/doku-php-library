@@ -54,12 +54,7 @@ class PaymentRequestDto
                 'responseMessage' => 'amount.currency is required'
             ];
         }
-        if (empty($this->payOptionDetails)) {
-            return [
-                'responseCode' => '4000701',
-                'responseMessage' => 'payOptionDetails is required'
-            ];
-        }
+       
         if (empty($this->additionalInfo)) {
             return [
                 'responseCode' => '4000701',

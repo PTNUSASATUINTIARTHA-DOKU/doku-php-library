@@ -66,9 +66,9 @@ class RefundRequestDto
                 'responseMessage' => 'partnerRefundNo is required'
             ];
         }
+        $length = strlen($this->partnerRefundNo); 
         if (!in_array($this->additionalInfo->channel, ['EMONEY_SHOPEE_PAY_SNAP', 'EMONEY_DANA_SNAP'])) {
-            $length = strlen($this->partnerRefundNo); 
-            if ($length > 12) {
+            if ($length > 64 && $length < 32) {
                 return [
                     'responseCode' => '4000701',
                     'responseMessage' => 'partnerRefundNo max length is 12'
