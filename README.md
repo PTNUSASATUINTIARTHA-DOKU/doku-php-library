@@ -279,6 +279,81 @@ Parameters for **createVA** and **updateVA**
 #### II. Virtual Account (DIPC)
 - **Description:** Custom virtual account codes created by the merchant.
 - **Use Case:** Useful when merchants require custom payment identifiers.
+- **Function:** `directInquiryVa`
+
+    ```php
+        use Doku\Snap\Models\DirectInquiry\InquiryResponseBodyDto;
+        use Doku\Snap\Models\DirectInquiry\InquiryResponseVirtualAccountDataDto;
+        use Doku\Snap\Models\DirectInquiry\InquiryReasonDto;
+        use Doku\Snap\Models\DirectInquiry\InquiryResponseAdditionalInfoDto;
+        use Doku\Snap\Models\VA\VirtualAccountConfig\CreateVaVirtualAccountConfig;
+        use Doku\Snap\Models\TotalAmount\TotalAmount;
+        $requestBody = $this->request->getJSON(true);
+        $authorization = $this->request->getHeaderLine('Authorization');
+        $isValid = $this->snap->validateTokenB2B($authorization);
+        if ($isValid) {
+           
+            $responseCode =2002400;
+            $responseMessage = 'Successful';
+            $inquiryRequestId = $requestBody['inquiryRequestId'];
+
+
+            $partnerServiceId = $requestBody['partnerServiceId'];
+            $customerNo = $requestBody['customerNo'];
+            $virtualAccountNo = $requestBody['virtualAccountNo'];
+            $virtualAccountName = "Nama ". time();
+            $trxId =  "INV_MERCHANT_" . time();
+            $virtualAccountEmail = "email." . time() . "@gmail.com";
+            $virtualAccountPhone =time();
+            $totalAmount = new TotalAmount(
+                "25000.00",
+               "IDR"
+            );
+            $inquiryStatus = "00";
+            $additionalInfo = new InquiryResponseAdditionalInfoDto(
+                $requestBody['additionalInfo']['channel'],
+                $trxId,
+                new CreateVaVirtualAccountConfig(
+                    true,
+                    "100000.00",
+                    "10000.00"
+                )
+            );
+            $inquiryReason = new InquiryReasonDto(
+                "Success",
+                "Sukses"
+            );
+            $virtualAccountTrxType = "C";
+            $freeText = [
+                [
+                    "english" => "Free text",
+                    "indonesia" => "Tulisan Bebas"
+                ]
+            ];
+            $vaData = new InquiryResponseVirtualAccountDataDto(
+                $partnerServiceId,
+                $customerNo,
+                $virtualAccountNo,
+                $virtualAccountName,
+                $virtualAccountEmail,
+                $virtualAccountPhone,
+                $totalAmount,
+                $virtualAccountTrxType,
+                $additionalInfo,
+                $inquiryStatus,
+                $inquiryReason,
+                $inquiryRequestId,
+                $freeText
+
+            );
+            $body = new InquiryResponseBodyDto(
+                    $responseCode,
+                    $responseMessage,
+                    $vaData
+            );
+            return $this->respond($body);
+        }
+    ```
 
 #### III. Check Virtual Account Status
  | **Parameter**        | **Description**                                                             | **Data Type**       | **Required** |
