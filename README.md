@@ -288,7 +288,9 @@ Parameters for **createVA** and **updateVA**
         use Doku\Snap\Models\DirectInquiry\InquiryResponseAdditionalInfoDto;
         use Doku\Snap\Models\VA\VirtualAccountConfig\CreateVaVirtualAccountConfig;
         use Doku\Snap\Models\TotalAmount\TotalAmount;
-        $requestBody = $this->request->getJSON(true);
+        
+        directInquiry(){
+          $requestBody = $this->request->getJSON(true);
         $authorization = $this->request->getHeaderLine('Authorization');
         $isValid = $this->snap->validateTokenB2B($authorization);
         if ($isValid) {
@@ -352,6 +354,7 @@ Parameters for **createVA** and **updateVA**
                     $vaData
             );
             return $this->respond($body);
+        }
         }
     ```
 
@@ -700,18 +703,7 @@ The following fields are common across **Allo Bank, BRI and CIMB** requests:
       </tr>
     </tbody>
   </table> 
-
-  - **Function:** `Payment Function Name`
-    ```php
-    Code HERE
-    ```
-  ##### BRI
-  - **Function:** `Payment Function Name`
-    ```php
-    Code HERE
-    ```
-
-  ##### CIMB
+   ##### CIMB
   CIMB spesific parameters
   <table>
     <thead>
@@ -731,12 +723,57 @@ The following fields are common across **Allo Bank, BRI and CIMB** requests:
     </tr>
     </tbody>
   </table> 
-  
-  - **Function:** `Payment Function Name`
+  - **Function:** `Payment Function doPayment for Direct Debit`
     ```php
-    Code HERE
-    ```
+     use Doku\Snap\Models\TotalAmount\TotalAmount;
+     use Doku\Snap\Models\Payment\PaymentRequestDto;
+     use Doku\Snap\Models\Payment\PaymentAdditionalInfoRequestDto;
+     public function directDebitPayment(){
+        $requestData = $this->request->getJSON(true);
+        $payOptionDetails =json_decode(json_encode($requestData['payOptionDetails'] ?? null));
+        $partnerReferenceNo = $requestData['partnerReferenceNo'] ?? null;
+        $amount = new TotalAmount(
+            $requestData['amount']['value'],
+            $requestData['amount']['currency']
+        );
+        $additionalInfo = new PaymentAdditionalInfoRequestDto(
+            $requestData['additionalInfo']['channel'],
+            $requestData['additionalInfo']['remarks'],
+            $requestData['additionalInfo']['successPaymentUrl'],
+            $requestData['additionalInfo']['failedPaymentUrl'],
+            $requestData['additionalInfo']['lineItems'],
+            $requestData['additionalInfo']['paymentType'] ?? null
+        );
+        $feeType = $requestData['feeType'] ?? '';
+        $chargeToken = $requestData['chargeToken'] ?? '';
+        $request = new PaymentRequestDto(
+            $partnerReferenceNo,
+            $amount,
+            $payOptionDetails,
+            $additionalInfo,
+            $feeType,
+            $chargeToken
+        );
+        $ipAddress = $this->request->getHeaderLine('X-IP-ADDRESS');
+        $authCode = $requestData['authCode'];
+       
+        $response = $this->snap->doPayment($request, $authCode, $ipAddress);
+        if (is_array($response) || is_object($response)) {
+            $responseObject = (array)$response; // Ubah objek ke array jika perlu
+        } else {
+            throw new \Exception('Unexpected response type');
+        }
+        // var_dump($responseObject);
+        // Ambil responseCode
+        $responseCode = $responseObject['responseCode'];
 
+        // Atur status HTTP berdasarkan tiga angka pertama
+        $statusCode = substr($responseCode, 0, 3);
+        $this->response->setStatusCode((int)$statusCode); // Set status HTTP
+        return $this->response->setJSON($responseObject);
+
+        
+    }
 
 ### D. E-Wallet
 
@@ -839,17 +876,6 @@ DANA spesific parameters
     </tbody>
   </table> 
 
- - **Function:** `Payment Function Name`
-    ```php
-    Code HERE
-    ```
-
-##### ShopeePay
- - **Function:** `Payment Function Name`
-    ```php
-    Code HERE
-    ```
-
 ##### OVO
 After customer's account is bind merchant can send payment request from customer to DOKU. [How to bind](#b-binding--registration-operations)
 
@@ -942,28 +968,178 @@ After customer's account is bind merchant can send payment request from customer
     </tbody>
   </table> 
 
-- **Function:** `Payment Function Name`
-  ````php
-  Code HERE
-  ````
+- **Function:** `Payment Function doPayment for Dana, OVO & Shopepay`
+    ```php
+     use Doku\Snap\Models\TotalAmount\TotalAmount;
+     use Doku\Snap\Models\Payment\PaymentRequestDto;
+     use Doku\Snap\Models\Payment\PaymentAdditionalInfoRequestDto;
+     public function directDebitPayment(){
+        $requestData = $this->request->getJSON(true);
+        $payOptionDetails =json_decode(json_encode($requestData['payOptionDetails'] ?? null));
+        $partnerReferenceNo = $requestData['partnerReferenceNo'] ?? null;
+        $amount = new TotalAmount(
+            $requestData['amount']['value'],
+            $requestData['amount']['currency']
+        );
+        $additionalInfo = new PaymentAdditionalInfoRequestDto(
+            $requestData['additionalInfo']['channel'],
+            $requestData['additionalInfo']['remarks'],
+            $requestData['additionalInfo']['successPaymentUrl'],
+            $requestData['additionalInfo']['failedPaymentUrl'],
+            $requestData['additionalInfo']['lineItems'],
+            $requestData['additionalInfo']['paymentType'] ?? null
+        );
+        $feeType = $requestData['feeType'] ?? '';
+        $chargeToken = $requestData['chargeToken'] ?? '';
+        $request = new PaymentRequestDto(
+            $partnerReferenceNo,
+            $amount,
+            $payOptionDetails,
+            $additionalInfo,
+            $feeType,
+            $chargeToken
+        );
+        $ipAddress = $this->request->getHeaderLine('X-IP-ADDRESS');
+        $authCode = $requestData['authCode'];
+       
+        $response = $this->snap->doPayment($request, $authCode, $ipAddress);
+        if (is_array($response) || is_object($response)) {
+            $responseObject = (array)$response; // Ubah objek ke array jika perlu
+        } else {
+            throw new \Exception('Unexpected response type');
+        }
+        // var_dump($responseObject);
+        // Ambil responseCode
+        $responseCode = $responseObject['responseCode'];
+
+        // Atur status HTTP berdasarkan tiga angka pertama
+        $statusCode = substr($responseCode, 0, 3);
+        $this->response->setStatusCode((int)$statusCode); // Set status HTTP
+        return $this->response->setJSON($responseObject);
+
+        
+    }
 ## 3. Other Operation
 
 ### A. Check Transaction Status
 
   ```php
-  Code HERE
+   public function debitStatus()
+    {
+        $requestData = $this->request->getJSON(true);
+        $originalPartnerReferenceNo =  $requestData['originalPartnerReferenceNo'] ?? '';
+        $originalReferenceNo =  $requestData['originalReferenceNo'] ?? '';
+        $originalExternalId =  $requestData['originalExternalId'] ?? '';
+        $serviceCode =  $requestData['serviceCode'] ?? '';
+        $transactionDate =  $requestData['transactionDate'] ?? '';
+        $amountValue = $requestData['amount']['value'] ?? '';
+        $amountCurrency = $requestData['amount']['currency'] ?? '';
+        $amount = new TotalAmount($amountValue, $amountCurrency);
+        
+        $merchantId =  $requestData['merchantId'] ?? '';
+        $subMerchantId =  $requestData['subMerchantId'] ?? '';
+        $externalStoreId =  $requestData['externalStoreId'] ?? '';
+        $deviceId = $requestData['additionalInfo']['deviceId'] ?? '';
+        $channel = $requestData['additionalInfo']['channel'] ?? '';
+        $additionalInfo = new CheckStatusAdditionalInfoRequestDto($deviceId, $channel);
+        $requestBody = new DirectDebitCheckStatusRequestDto(
+            $originalPartnerReferenceNo,
+            $originalReferenceNo,
+            $originalExternalId,
+            $serviceCode,
+            $transactionDate,
+            $amount,
+            $merchantId,
+            $subMerchantId,
+            $externalStoreId,
+            $additionalInfo
+        );
+
+        $response = $this->snap->doCheckStatus($requestBody);
+
+        if (is_array($response) || is_object($response)) {
+            $responseObject = (array)$response; // Ubah objek ke array jika perlu
+        } else {
+            throw new \Exception('Unexpected response type');
+        }
+        $responseCode = $responseObject['responseCode'];
+        $statusCode = substr($responseCode, 0, 3);
+        $this->response->setStatusCode((int)$statusCode);
+        return $this->response->setJSON($responseObject);
+        
+    }
   ```
 
 ### B. Refund
 
   ```php
-  Code HERE
+  public function refund()
+    {
+        $requestData = $this->request->getJSON(true);
+        $additionalInfo = new RefundAdditionalInfoRequestDto(
+            $requestData['additionalInfo']['channel']
+        );
+        $originalPartnerReferenceNo =  $requestData['originalPartnerReferenceNo'] ?? '';
+        $originalExternalId =  $requestData['originalExternalId'] ?? '';
+        $refundAmount = new TotalAmount(
+            $requestData['refundAmount']['value'],
+            $requestData['refundAmount']['currency']
+        );
+        $reason =  $requestData['reason'] ?? '';
+        $partnerRefundNo =  $requestData['partnerRefundNo'] ?? '';
+        $ipAddress = $this->request->getHeaderLine('X-IP-ADDRESS');
+        $authCode = $requestData['authCode'];
+        $deviceId = $this->request->getHeaderLine('deviceId');
+        $requestBody = new RefundRequestDto(
+            $additionalInfo,
+            $originalPartnerReferenceNo,
+            $originalExternalId,
+            $refundAmount,
+            $reason,
+            $partnerRefundNo
+        );
+        $response = $this->snap->doRefund($requestBody, $authCode, $ipAddress, $deviceId);
+
+        if (is_array($response) || is_object($response)) {
+            $responseObject = (array)$response; // Ubah objek ke array jika perlu
+        } else {
+            throw new \Exception('Unexpected response type');
+        }
+        $responseCode = $responseObject['responseCode'];
+        $statusCode = substr($responseCode, 0, 3);
+        $this->response->setStatusCode((int)$statusCode); 
+        return $this->response->setJSON($responseObject);
+
+    }
   ```
 
 ### C. Balance Inquiry
 
   ```php
-  Code HERE
+     public function checkBalance()
+    {
+        $requestData = $this->request->getJSON(true);
+
+        $additionalInfo = new BalanceInquiryAdditionalInfoRequestDto(
+            $requestData['additionalInfo']['channel']
+        );
+        $requestBody = new BalanceInquiryRequestDto(
+            $additionalInfo
+        );
+        $ipAddress = $this->request->getHeaderLine('X-IP-ADDRESS');
+        $authCode = $requestData['authCode'];
+        $response = $this->snap->doBalanceInquiry($requestBody, $authCode, $ipAddress);
+
+        if (is_array($response) || is_object($response)) {
+            $responseObject = (array)$response; // Ubah objek ke array jika perlu
+        } else {
+            throw new \Exception('Unexpected response type');
+        }
+        $responseCode = $responseObject['responseCode'];
+        $statusCode = substr($responseCode, 0, 3);
+        $this->response->setStatusCode((int)$statusCode); 
+        return $this->response->setJSON($responseObject);
+    }
   ```
 
 ## 4. Error Handling and Troubleshooting
