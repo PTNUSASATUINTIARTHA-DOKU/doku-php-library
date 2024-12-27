@@ -559,7 +559,6 @@ Each card/account can only registered/bind to one customer on one merchant. Cust
 
      public function cardRegist()
     {
-        // Mendapatkan data request dalam format JSON
         $requestData = $this->request->getJSON(true);
         $cardData = new CardRegistrationCardDataRequestDto(
             $requestData['cardData']['bankCardNo'],
