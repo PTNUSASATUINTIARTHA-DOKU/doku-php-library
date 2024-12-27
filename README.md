@@ -652,15 +652,32 @@ Each card/account can only registered/bind to one customer on one merchant. Cust
       use Doku\Snap\Models\AccountUnbinding\AccountUnbindingRequestDto;
       use Doku\Snap\Models\AccountUnbinding\AccountUnbindingAdditionalInfoRequestDto;
 
-      $additionalInfo = new AccountUnbindingAdditionalInfoRequestDto("Mandiri");
+      public function cardUnbinding()
+    {
+        $requestData = $this->request->getJSON(true);
+        $tokenId =  $requestData['tokenId'] ?? '';
+        $additionalInfo = new AccountUnbindingAdditionalInfoRequestDto(
+            $requestData['additionalInfo']['channel']
+        );
+        $requestBody = new AccountUnbindingRequestDto(
+            $tokenId,
+            $additionalInfo
+        );
+        $ipAddress = $this->request->getHeaderLine('X-IP-ADDRESS');
 
-      $cardUnbindingRequestDto = new AccountUnbindingRequestDto(
-          "tokenB2b2c123",  // tokenId (tokenB2b2c)
-          $additionalInfo
-      );
+        $response = $this->snap->doCardUnbinding($requestBody);
 
-      $result = $snap->doCardUnbinding($cardUnbindingRequestDto, $privateKey, $clientId, $secretKey, $isProduction);
-      echo json_encode($result, JSON_PRETTY_PRINT);
+        if (is_array($response) || is_object($response)) {
+            $responseObject = (array)$response; // Ubah objek ke array jika perlu
+        } else {
+            throw new \Exception('Unexpected response type');
+        }
+        $responseCode = $responseObject['responseCode'];
+        $statusCode = substr($responseCode, 0, 3);
+        $this->response->setStatusCode((int)$statusCode); 
+        return $this->response->setJSON($responseObject);
+        
+    }
     ```
 
 ### C. Direct Debit and E-Wallet 
