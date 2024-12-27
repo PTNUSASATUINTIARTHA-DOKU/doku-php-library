@@ -18,6 +18,7 @@ If your looking for another language  [Node.js](https://github.com/PTNUSASATUINT
       - [II. Card Registration](#ii-card-registration)
     - [C. Direct Debit and E-Wallet](#c-direct-debit-and-e-wallet)
       - [I. Request Payment](#i-request-payment)
+      - [I. Request Payment Jump APP ](#ii-request-payment-jump-app)
   - [3. Other Operation](#3-other-operation)
     - [Check Transaction Status](#a-check-transaction-status)
     - [Refund](#b-refund)
@@ -578,6 +579,16 @@ Each card/account can only registered/bind to one customer on one merchant. Cust
     ```
 
 2. **UnRegistration**
+    - **Function:** `getTokenB2B2C`
+    ```PHP
+    public function getTokenB2B2C() {
+        $requestData = $this->request->getJSON(true);
+
+        $authCode = $requestData['authCode'];
+        $tokenData = $this->snap->getTokenB2B2C($authCode);
+        return $this->response->setJSON($tokenData);
+   }
+   ```
     - **Function:** `doCardUnbinding`
 
     ```php
@@ -747,9 +758,8 @@ Here’s how you can use the `doPayment` function for both payment types:
 
       }
       ```
-### D. E-Wallet Jump App
 
-#### I. Request Payment
+#### II. Request Payment Jump APP
 | **Acquirer**       | **Channel Name**        | 
 |-------------------|--------------------------|
 | DANA              | EMONEY_DANA_SNAP   | 
