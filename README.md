@@ -522,6 +522,16 @@ Each card/account can only registered/bind to one customer on one merchant. Cust
     ```
 
 1. **Unbinding**
+     - **Function:** `getTokenB2B2C`
+    ```PHP
+    public function getTokenB2B2C() {
+        $requestData = $this->request->getJSON(true);
+
+        $authCode = $requestData['authCode'];
+        $tokenData = $this->snap->getTokenB2B2C($authCode);
+        return $this->response->setJSON($tokenData);
+   }
+   ```
     - **Function:** `doAccountUnbinding`
     ```php
     use Doku\Snap\Models\AccountUnbinding\AccountUnbindingRequestDto;
