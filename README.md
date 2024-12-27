@@ -753,6 +753,7 @@ Here’s how you can use the `doPayment` function for both payment types:
 | **Acquirer**       | **Channel Name**        | 
 |-------------------|--------------------------|
 | DANA              | EMONEY_DANA_SNAP   | 
+| OVO               | EMONEY_OVO_SNAP   | 
 | ShopeePay         | EMONEY_SHOPEE_PAY_SNAP  |
 
 The following fields are common across **DANA and ShopeePay** requests:
@@ -846,10 +847,11 @@ DANA spesific parameters
     </tr>
     </tbody>
   </table> 
-For Shopeepay and Dana you can use the `doPaymentJumpApp` function for for Jumpapp behaviour:
-  - **Function:** `doPaymentJumpApp`
-    
-    ```php
+For Shopeepay and Dana you can use the `doPaymentJumpApp` function for for Jumpapp behaviour
+
+- **Function:** `doPaymentJumpApp`
+
+```php
      use Doku\Snap\Models\TotalAmount\TotalAmount;
      use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppRequestDto;
       use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppAdditionalInfoRequestDto;
@@ -901,7 +903,9 @@ For Shopeepay and Dana you can use the `doPaymentJumpApp` function for for Jumpa
         return $this->response->setJSON($responseObject);
         
     }
-      ```
+```
+
+  
       
 ## 3. Other Operation
 
