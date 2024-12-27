@@ -555,37 +555,52 @@ Each card/account can only registered/bind to one customer on one merchant. Cust
     ```php
     use Doku\Snap\Models\CardRegistration\CardRegistrationRequestDto;
     use Doku\Snap\Models\CardRegistration\CardRegistrationAdditionalInfoRequestDto;
+    use Doku\Snap\Models\CardRegistration\CardRegistrationCardDataRequestDto;
 
-    $additionalInfo = new CardRegistrationAdditionalInfoRequestDto(
-        'Mandiri',
-        'John Doe',
-        'john@example.com',
-        '1234567890',
-        'ID',
-        '123 Main St',
-        '19900101',
-        'http://success.url',
-        'http://failed.url'
-    );
+     public function cardRegist()
+    {
+        // Mendapatkan data request dalam format JSON
+        $requestData = $this->request->getJSON(true);
+        $cardData = new CardRegistrationCardDataRequestDto(
+            $requestData['cardData']['bankCardNo'],
+            $requestData['cardData']['bankCardType'],
+            $requestData['cardData']['expiryDate'],
+            $requestData['cardData']['identificationNo'],
+            $requestData['cardData']['identificationType'],
+            $requestData['cardData']['email'],
+        );
+        $custIdMerchant = $requestData['custIdMerchant'] ?? null;
+        $phoneNo = $requestData['phoneNo'] ?? null;
+        $additionalInfo = new CardRegistrationAdditionalInfoRequestDto(
+            $requestData['additionalInfo']['channel'],
+            $requestData['additionalInfo']['customerName']?? null,
+            $requestData['additionalInfo']['email'],
+            $requestData['additionalInfo']['idCard'] ?? null,
+            $requestData['additionalInfo']['country'] ?? null,
+            $requestData['additionalInfo']['address'] ?? null,
+            $requestData['additionalInfo']['dateOfBirth'] ?? null,
+            $requestData['additionalInfo']['successRegistrationUrl']?? null,
+            $requestData['additionalInfo']['failedRegistrationUrl']?? null
+        );
+        $requestBody = new CardRegistrationRequestDto(
+            $cardData,
+            $custIdMerchant,
+            $phoneNo,
+            $additionalInfo
+        );
+        $response = $this->snap->doCardRegistration($requestBody);
 
-    $cardRegistrationRequestDto = new CardRegistrationRequestDto(
-        'encrypted_card_data',
-        'cust123',
-        '081234567890',
-        $additionalInfo
-    );
-
-    $deviceId = "DEVICE_ID_123";
-    $response = $snap->doCardRegistration(
-        $cardRegistrationRequestDto,
-        $deviceId,
-        $privateKey,
-        $clientId,
-        $secretKey,
-        $isProduction
-    );
-
-    echo json_encode($response, JSON_PRETTY_PRINT);
+        if (is_array($response) || is_object($response)) {
+            $responseObject = (array)$response; // Ubah objek ke array jika perlu
+        } else {
+            throw new \Exception('Unexpected response type');
+        }
+        $responseCode = $responseObject['responseCode'];
+        $statusCode = substr($responseCode, 0, 3);
+        $this->response->setStatusCode((int)$statusCode); 
+        return $this->response->setJSON($responseObject);
+        
+    }
     ```
 
 2. **UnRegistration**
