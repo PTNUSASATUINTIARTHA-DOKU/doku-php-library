@@ -753,7 +753,6 @@ Here’s how you can use the `doPayment` function for both payment types:
 | **Acquirer**       | **Channel Name**        | 
 |-------------------|--------------------------|
 | DANA              | EMONEY_DANA_SNAP   | 
-| OVO               | EMONEY_OVO_SNAP   | 
 | ShopeePay         | EMONEY_SHOPEE_PAY_SNAP  |
 
 The following fields are common across **DANA and ShopeePay** requests:
