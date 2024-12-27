@@ -496,29 +496,46 @@ Each card/account can only registered/bind to one customer on one merchant. Cust
     use Doku\Snap\Models\AccountBinding\AccountBindingRequestDto;
     use Doku\Snap\Models\AccountBinding\AccountBindingAdditionalInfoRequestDto;
 
-    $additionalInfo = new AccountBindingAdditionalInfoRequestDto(
-      "Mandiri",  // channel
-      "CUST123",  // custIdMerchant
-      "John Doe",  // customerName
-      "john.doe@example.com",  // email
-      "1234567890",  // idCard
-      "Indonesia",  // country
-      "123 Main St, Jakarta",  // address
-      "19900101",  // dateOfBirth
-      "https://success.example.com",  // successRegistrationUrl
-      "https://fail.example.com",  // failedRegistrationUrl
-      "iPhone 12",  // deviceModel
-      "iOS",  // osType
-      "CH001"  // channelId
-    );
+     public function accountBinding()
+    {
+        $requestData = $this->request->getJSON(true);
+        $partnerReferenceNo = $requestData['phoneNo'] ?? null;
+        
+        $additionalInfo = new AccountBindingAdditionalInfoRequestDto(
+            $requestData['additionalInfo']['channel'],
+            $requestData['additionalInfo']['custIdMerchant'],
+            $requestData['additionalInfo']['customerName']?? null,
+            $requestData['additionalInfo']['email'],
+            $requestData['additionalInfo']['idCard'] ?? null,
+            $requestData['additionalInfo']['country'] ?? null,
+            $requestData['additionalInfo']['address'] ?? null,
+            $requestData['additionalInfo']['dateOfBirth'] ?? null,
+            $requestData['additionalInfo']['successRegistrationUrl'],
+            $requestData['additionalInfo']['failedRegistrationUrl'],
+            $requestData['additionalInfo']['deviceModel'] ?? null,
+            $requestData['additionalInfo']['osType'] ?? null,
+            $requestData['additionalInfo']['channelId'] ?? null
+        );
+        $requestBody = new AccountBindingRequestDto(
+            $partnerReferenceNo,
+            $additionalInfo
+        );
+        
+        $ipAddress = $this->request->getHeaderLine('X-IP-ADDRESS');
+        $deviceId = $this->request->getHeaderLine('X-DEVICE-ID');
+        $response = $this->snap->doAccountBinding($requestBody, $ipAddress, $deviceId);
 
-    $accountBindingRequestDto = new AccountBindingRequestDto(
-      "6281234567890",  // phoneNo
-      $additionalInfo
-    );
-
-    $result = $snap->doAccountBinding($accountBindingRequestDto, $privateKey, $clientId, $secretKey, $isProduction);
-    echo json_encode($result, JSON_PRETTY_PRINT);
+        if (is_array($response) || is_object($response)) {
+            $responseObject = (array)$response; // Ubah objek ke array jika perlu
+        } else {
+            throw new \Exception('Unexpected response type');
+        }
+        $responseCode = $responseObject['responseCode'];
+        $statusCode = substr($responseCode, 0, 3);
+        $this->response->setStatusCode((int)$statusCode); 
+        return $this->response->setJSON($responseObject);
+        
+    }
     ```
 
 1. **Unbinding**
@@ -537,15 +554,31 @@ Each card/account can only registered/bind to one customer on one merchant. Cust
     use Doku\Snap\Models\AccountUnbinding\AccountUnbindingRequestDto;
     use Doku\Snap\Models\AccountUnbinding\AccountUnbindingAdditionalInfoRequestDto;
 
-    $additionalInfo = new AccountUnbindingAdditionalInfoRequestDto("Mandiri");
+     public function accountUnbinding()
+    {
+        $requestData = $this->request->getJSON(true);
+        $tokenId =  $requestData['tokenId'] ?? '';
+        $additionalInfo = new AccountUnbindingAdditionalInfoRequestDto(
+            $requestData['additionalInfo']['channel']
+        );
+        $requestBody = new AccountUnbindingRequestDto(
+            $tokenId,
+            $additionalInfo
+        );
+        $ipAddress = $this->request->getHeaderLine('X-IP-ADDRESS');
 
-    $accountUnbindingRequestDto = new AccountUnbindingRequestDto(
-        "tokenB2b2c123",  // tokenId (tokenB2b2c)
-        $additionalInfo
-    );
+        $response = $this->snap->doAccountUnbinding($requestBody, $ipAddress);
 
-    $result = $snap->doAccountUnbinding($accountUnbindingRequestDto, $privateKey, $clientId, $secretKey, $isProduction);
-    echo json_encode($result, JSON_PRETTY_PRINT);  
+        if (is_array($response) || is_object($response)) {
+            $responseObject = (array)$response; // Ubah objek ke array jika perlu
+        } else {
+            throw new \Exception('Unexpected response type');
+        }
+        $responseCode = $responseObject['responseCode'];
+        $statusCode = substr($responseCode, 0, 3);
+        $this->response->setStatusCode((int)$statusCode); 
+        return $this->response->setJSON($responseObject);
+    }
     ```
 
 #### II. Card Registration
