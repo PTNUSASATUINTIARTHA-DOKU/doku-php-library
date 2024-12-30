@@ -45,8 +45,7 @@ Before using the Doku Snap SDK, you need to initialize it with your credentials:
 1. **Client ID** and **Secret Key**: Retrieve these from the Integration menu in your Doku Dashboard
 2. **Private Key** and **Public Key** : Generate your Private Key and Public Key
    
-Merchant privateKey and publiKey
-How to generate :
+How to generate Merchant privateKey and publicKey :
 1. generate private key RSA : openssl genrsa -out private.key 2048
 2. set passphrase your private key RSA : openssl pkcs8 -topk8 -inform PEM -outform PEM -in private.key -out pkcs8.key -v1 PBE-SHA1-3DES
 3. generate public key RSA : openssl rsa -in private.key -outform PEM -pubout -out public.pem
