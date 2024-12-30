@@ -18,7 +18,7 @@ If your looking for another language  [Node.js](https://github.com/PTNUSASATUINT
       - [II. Card Registration](#ii-card-registration)
     - [C. Direct Debit and E-Wallet](#c-direct-debit-and-e-wallet)
       - [I. Request Payment](#i-request-payment)
-      - [I. Request Payment Jump APP ](#ii-request-payment-jump-app)
+      - [II. Request Payment Jump APP ](#ii-request-payment-jump-app)
   - [3. Other Operation](#3-other-operation)
     - [Check Transaction Status](#a-check-transaction-status)
     - [Refund](#b-refund)
@@ -42,9 +42,13 @@ composer require doku/doku-php-library
 
 ### Configuration
 Before using the Doku Snap SDK, you need to initialize it with your credentials:
-
 1. **Client ID** and **Secret Key**: Retrieve these from the Integration menu in your Doku Dashboard
-2. **Private Key**: Generate your Private Key following 
+2. **Private Key** and **Public Key** : Generate your Private Key and Public Key
+Merchant privateKey and publiKey
+How to generate :
+1. generate private key RSA : openssl genrsa -out private.key 2048
+2. set passphrase your private key RSA : openssl pkcs8 -topk8 -inform PEM -outform PEM -in private.key -out pkcs8.key -v1 PBE-SHA1-3DES
+3. generate public key RSA : openssl rsa -in private.key -outform PEM -pubout -out public.pem
 
 The encryption model applied to messages involves both asymmetric and symmetric encryption, utilizing a combination of Private Key and Public Key, adhering to the following standards:
 
@@ -837,7 +841,6 @@ Here’s how you can use the `doPayment` function for both payment types:
 | **Acquirer**       | **Channel Name**        | 
 |-------------------|--------------------------|
 | DANA              | EMONEY_DANA_SNAP   | 
-| OVO               | EMONEY_OVO_SNAP   | 
 | ShopeePay         | EMONEY_SHOPEE_PAY_SNAP  |
 
 The following fields are common across **DANA and ShopeePay** requests:
