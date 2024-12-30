@@ -44,6 +44,7 @@ composer require doku/doku-php-library
 Before using the Doku Snap SDK, you need to initialize it with your credentials:
 1. **Client ID** and **Secret Key**: Retrieve these from the Integration menu in your Doku Dashboard
 2. **Private Key** and **Public Key** : Generate your Private Key and Public Key
+   
 Merchant privateKey and publiKey
 How to generate :
 1. generate private key RSA : openssl genrsa -out private.key 2048
