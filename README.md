@@ -42,7 +42,7 @@ composer require doku/doku-php-library
 
 ### Configuration
 Before using the Doku Snap SDK, you need to initialize it with your credentials:
-1. **Client ID** and **Secret Key**: Retrieve these from the Integration menu in your Doku Dashboard
+1. **Client ID**, **Secret Key** and **DOKU Public Key**: Retrieve these from the Integration menu in your Doku Dashboard
 2. **Private Key** and **Public Key** : Generate your Private Key and Public Key
    
 How to generate Merchant privateKey and publicKey :
@@ -60,6 +60,7 @@ The encryption model applied to messages involves both asymmetric and symmetric 
 |-----------------|----------------------------------------------------|--------------|
 | `privateKey`    | The private key for the partner service.           | ✅          |
 | `publicKey`     | The public key for the partner service.            | ✅           |
+| `dokuPublicKey` | Key that merchants use to verify DOKU request      | ✅           |
 | `clientId`      | The client ID associated with the service.         | ✅           |
 | `secretKey`     | The secret key for the partner service.            | ✅           |
 | `isProduction`  | Set to true for production environment             | ✅           |
