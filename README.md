@@ -89,7 +89,7 @@ $snap = new Snap($privateKey, $publicKey, $dokuPublicKey, $clientId, $issuer, $i
 Always start by initializing the Snap object.
 
 ```php
-$snap = new Snap($privateKey, $publicKey, $clientId, $issuer, $isProduction, $secretKey, $authCode);
+$snap = new Snap($privateKey, $publicKey, $dokuPublicKey, $clientId, $issuer, $isProduction, $secretKey, $authCode);
 ```
 ### Virtual Account
 #### I. Virtual Account (DGPC & MGPC)
