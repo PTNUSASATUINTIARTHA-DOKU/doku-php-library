@@ -77,9 +77,10 @@ $clientId = "YOUR_CLIENT_ID";
 $secretKey = "YOUR_SECRET_KEY";
 $isProduction = false;
 $issuer = "YOUR_ISSUER"; 
-$authCode = "YOUR_AUTH_CODE"; 
+$authCode = "YOUR_AUTH_CODE";
+$dokuPublicKey = "DOKU_PUBLIC_KEY"; 
 
-$snap = new Snap($privateKey, $publicKey, $clientId, $issuer, $isProduction, $secretKey, $authCode);
+$snap = new Snap($privateKey, $publicKey, $dokuPublicKey, $clientId, $issuer, $isProduction, $secretKey, $authCode);
 ```
 
 ## 2. Usage
