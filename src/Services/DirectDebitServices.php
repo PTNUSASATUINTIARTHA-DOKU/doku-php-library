@@ -44,8 +44,8 @@ class DirectDebitServices
         
         $response = Helper::doHitAPI($apiEndpoint, $headers, $requestBody, 'POST');
         $responseObject = json_decode($response, true);
-
-        if (isset($responseObject['responseCode']) && $responseObject['responseCode'] === '2000500') {
+        $httpStatus = substr($responseObject['responseCode'], 0, 3);
+        if (isset($responseObject['responseCode']) && $httpStatus === '200') {
             return new PaymentJumpAppResponseDto(
                 $responseObject['responseCode'],
                 $responseObject['responseMessage'],
