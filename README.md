@@ -946,28 +946,29 @@ For Shopeepay and Dana you can use the `doPaymentJumpApp` function for for Jumpa
       use Doku\Snap\Models\PaymentJumpApp\PaymentJumpAppAdditionalInfoRequestDto;
       use Doku\Snap\Models\PaymentJumpApp\UrlParamDto;
 
-     public function paymentJumpApp()
+    public function paymentJumpApp()
     {
         $requestData = $this->request->getJSON(true);
         $partnerReferenceNo =  $requestData['partnerReferenceNo'] ?? '';
         $validUpTo =  $requestData['validUpTo'] ?? '';
         $pointOfInitiation =  $requestData['pointOfInitiation'] ?? '';
-        $urlParam = new UrlParamDto(
-            $requestData['urlParam'][0]['url'],
-            $requestData['urlParam'][0]['type'],
-            $requestData['urlParam'][0]['isDeepLink']
-        );
+        $urlParam = array_map(function ($item) {
+            return new UrlParamDto(
+                $item['url'] ?? null,
+                $item['type'] ?? null,
+                $item['isDeepLink'] ?? null
+            );
+        }, $requestData['urlParam'] ?? []);
         $amount = new TotalAmount(
             $requestData['amount']['value'],
             $requestData['amount']['currency']
         );
-        $metadata = isset($requestData['additionalInfo']['metadata']) ? $requestData['additionalInfo']['metadata'] : null;
-        $supportDeepLinkCheckoutUrl = isset($requestData['additionalInfo']['supportDeepLinkCheckoutUrl']) ? $requestData['additionalInfo']['supportDeepLinkCheckoutUrl'] : null;
         $additionalInfo = new PaymentJumpAppAdditionalInfoRequestDto(
-            $requestData['additionalInfo']['channel'],
-            $requestData['additionalInfo']['orderTitle'],
-            $metadata,
-            $supportDeepLinkCheckoutUrl
+            $requestData['additionalInfo']['channel']?? null,
+            $requestData['additionalInfo']['orderTitle']?? null,
+            $requestData['additionalInfo']['metadata']?? null,
+            $requestData['additionalInfo']['supportDeepLinkCheckoutUrl']?? null,
+            $requestData['additionalInfo']['origin']?? null,
         );
         $requestBody = new PaymentJumpAppRequestDto(
             $partnerReferenceNo,
