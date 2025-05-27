@@ -51,7 +51,7 @@ class DirectDebitServices
                 $responseObject['responseMessage'],
                 $responseObject['webRedirectUrl'],
                 isset($responseObject['partnerReferenceNo']) ? $responseObject['partnerReferenceNo'] : null,
-                $responseObject['additionalInfo']
+                isset($responseObject['additionalInfo']) ? $responseObject['additionalInfo'] : null
             );
         } else {
             return [
