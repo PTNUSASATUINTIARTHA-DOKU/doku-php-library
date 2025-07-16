@@ -32,6 +32,7 @@ class CreateVaRequestDto
     public ?CreateVaRequestAdditionalInfo $additionalInfo;
     public ?string $virtualAccountTrxType;
     public ?string $expiredDate;
+    public ?array $freeText;
 
     public function __construct(
         ?string $partnerServiceId,
@@ -44,7 +45,8 @@ class CreateVaRequestDto
         ?TotalAmount $totalAmount,
         ?CreateVaRequestAdditionalInfo $createVaAdditionalInfoDTO,
         ?string $virtualAccountTrxType,
-        ?string $expiredDate
+        ?string $expiredDate,
+        ?array $freeText
     ) {
         $this->partnerServiceId = $partnerServiceId;
         $this->customerNo = $customerNo;
@@ -57,6 +59,7 @@ class CreateVaRequestDto
         $this->additionalInfo = $createVaAdditionalInfoDTO;
         $this->virtualAccountTrxType = $virtualAccountTrxType;
         $this->expiredDate = $expiredDate;
+        $this->freeText = $freeText;
     }
 
     public function generateJSONBody(): string
@@ -105,9 +108,35 @@ class CreateVaRequestDto
         $this->validateAdditionalInfo();
         $this->validateChannel();
         $this->validateMinMaxAmount();
+        $this->validateFreeText();
         return true;
     }
-
+    private function validateFreeText(): void
+    {
+        if ($this->freeText === null) {
+            return;
+        }
+        if (!is_array($this->freeText)) {
+            throw new InvalidArgumentException("freeText must be an array.");
+        }
+        foreach ($this->freeText as $item) {
+            if (!is_array($item)) {
+                throw new InvalidArgumentException("Each item in freeText must be an associative array.");
+            }
+            if (!isset($item['english']) || !isset($item['indonesia'])) {
+                throw new InvalidArgumentException("Each freeText item must have 'english' and 'indonesia' keys.");
+            }
+            if (!is_string($item['english']) || !is_string($item['indonesia'])) {
+                throw new InvalidArgumentException("Both 'english' and 'indonesia' in freeText must be strings.");
+            }
+            if (strlen($item['english']) < 1 || strlen($item['english']) > 64) {
+                throw new InvalidArgumentException("freeText 'english' must be between 1 and 64 characters.");
+            }
+            if (strlen($item['indonesia']) < 1 || strlen($item['indonesia']) > 64) {
+                throw new InvalidArgumentException("freeText 'indonesia' must be between 1 and 64 characters.");
+            }
+        }
+    }
     private function validatePartnerServiceId(): void
     {
         if ($this->partnerServiceId === null) {
