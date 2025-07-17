@@ -198,6 +198,17 @@ Parameters for **createVA** and **updateVA**
       <td>String</td>
       <td>❌</td>
     </tr>
+    <tr>
+      <td rowspan="2"><code>freeText</code></td>
+      <td colspan="2"><code>English</code>: Free text for additional description. <br> <small>Example: "Free text"</small></td>
+      <td>String(64)</td>
+      <td>❌</td>
+    </tr>
+    <tr>
+      <td colspan="2"><code>Indonesia</code>: Free text for additional description. <br> <small>Example: "Tulisan Bebas"</small></td>
+      <td>String(64)</td>
+      <td>❌</td>
+    </tr>
   </tbody>
 </table>
 
