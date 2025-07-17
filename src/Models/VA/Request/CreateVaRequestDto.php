@@ -46,7 +46,7 @@ class CreateVaRequestDto
         ?CreateVaRequestAdditionalInfo $createVaAdditionalInfoDTO,
         ?string $virtualAccountTrxType,
         ?string $expiredDate,
-        ?array $freeText
+        ?array $freeText = null
     ) {
         $this->partnerServiceId = $partnerServiceId;
         $this->customerNo = $customerNo;
@@ -88,6 +88,7 @@ class CreateVaRequestDto
             'additionalInfo' => $additionalInfoArr,
             'virtualAccountTrxType' => $this->virtualAccountTrxType,
             'expiredDate' => $this->expiredDate,
+            ...(is_null($this->freeText) ? [] : ['freeText' => $this->freeText])
         );
         return json_encode($payload);
     }

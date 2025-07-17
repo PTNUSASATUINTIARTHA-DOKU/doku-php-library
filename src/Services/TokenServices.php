@@ -69,10 +69,8 @@ class TokenServices
             'grantType' => 'client_credentials',
             'additionalInfo' => [],
         ]);
-
         $response = Helper::doHitAPI($apiEndpoint, $headers, $body, 'POST');
         $responseData = json_decode($response, true);
-
         if ($responseData === null) {
             throw new Exception('Null Response Data: Failed to decode JSON response');
         }
